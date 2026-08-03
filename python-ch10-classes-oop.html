@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 10 — Classes and Object-Oriented Programming</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;--py-blue-dark:#306998;--py-blue-deep:#1f4d72;
+    --py-yellow:#FFD43B;--py-yellow-deep:#f0b400;
+    --slate-900:#0f172a;--slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;
+    --slate-500:#64748b;--slate-400:#94a3b8;--slate-300:#cbd5e1;--slate-200:#e2e8f0;
+    --slate-100:#f1f5f9;--slate-50:#f8fafc;
+    --good:#15803d;--good-bg:#dcfce7;--bad:#b91c1c;--bad-bg:#fee2e2;
+    --display:'Sora',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'Fira Code',ui-monospace,monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:var(--body);color:var(--slate-800);background:var(--slate-50);line-height:1.65;-webkit-font-smoothing:antialiased;}
+  a{color:var(--py-blue-dark);}
+  code{font-family:var(--mono);font-size:.92em;}
+  .hero{background:linear-gradient(150deg,var(--py-blue-deep) 0%,var(--py-blue-dark) 55%,var(--py-blue) 100%);color:#fff;padding:64px 24px 0;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;background:radial-gradient(circle,rgba(255,212,59,.22),transparent 70%);}
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{font-family:var(--mono);letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:var(--py-yellow);font-weight:600;margin-bottom:14px;}
+  .hero h1{font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:0 0 18px;letter-spacing:-.02em;}
+  .hero h1 .accent{background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p.lede{font-size:1.12rem;max-width:60ch;color:#e0ecf5;margin:0 0 26px;}
+  .hero-bar{display:flex;flex-wrap:wrap;gap:8px;padding:18px 0 22px;}
+  .hero-bar a{font-size:.82rem;font-weight:600;color:#fff;text-decoration:none;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);padding:7px 13px;border-radius:999px;transition:.18s;}
+  .hero-bar a:hover{background:var(--py-yellow);color:var(--slate-900);border-color:var(--py-yellow);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:grid;grid-template-columns:232px 1fr;gap:42px;align-items:start;}
+  .toc{position:sticky;top:18px;padding:28px 0;align-self:start;}
+  .toc h2{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-500);margin:0 0 12px;}
+  .toc ol{list-style:none;margin:0;padding:0;counter-reset:t;}
+  .toc li{counter-increment:t;}
+  .toc a{display:block;text-decoration:none;color:var(--slate-600);font-size:.9rem;font-weight:500;padding:6px 10px 6px 34px;border-left:2px solid var(--slate-200);position:relative;transition:.16s;}
+  .toc a::before{content:counter(t,decimal-leading-zero);position:absolute;left:8px;top:6px;font-family:var(--mono);font-size:.68rem;color:var(--slate-400);}
+  .toc a:hover{color:var(--py-blue-dark);border-left-color:var(--py-blue);}
+  .toc a.active{color:var(--py-blue-deep);border-left-color:var(--py-yellow-deep);background:#fff;font-weight:600;}
+  main{padding:34px 0 60px;min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:18px;}
+  .sec-tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--py-blue);font-weight:600;margin-bottom:6px;}
+  h2.title{font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.12;margin:0 0 6px;color:var(--slate-900);letter-spacing:-.015em;}
+  h2.title .bar{display:block;width:54px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));margin-top:12px;}
+  h3{font-family:var(--display);font-weight:600;font-size:1.18rem;color:var(--slate-900);margin:30px 0 10px;}
+  p{margin:0 0 14px;}
+  .lead{font-size:1.06rem;color:var(--slate-700);}
+  .code{background:var(--slate-900);border-radius:12px;margin:16px 0;overflow:hidden;border:1px solid #0b1220;box-shadow:0 10px 30px -16px rgba(15,23,42,.5);}
+  .code-top{display:flex;align-items:center;gap:7px;padding:11px 15px;background:#0b1220;border-bottom:1px solid #1e293b;}
+  .code-top .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+  .code-top .dot.r{background:#f87171;}.code-top .dot.y{background:#fbbf24;}.code-top .dot.g{background:#34d399;}
+  .code-top .fn{margin-left:8px;font-family:var(--mono);font-size:.74rem;color:var(--slate-400);}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.7;color:#e2e8f0;}
+  .kw{color:#ff9d6f;}.bif{color:#7cc3ff;}.str{color:#ffd87a;}.num{color:#a5f3a0;}.com{color:#64748b;font-style:italic;}.op{color:#f0abfc;}.out{color:#94a3b8;}
+  .cards{display:grid;gap:12px;margin:18px 0;}
+  details.card{background:#fff;border:1px solid var(--slate-200);border-radius:12px;box-shadow:0 1px 2px rgba(15,23,42,.04);overflow:hidden;}
+  details.card>summary{cursor:pointer;list-style:none;padding:15px 18px;font-weight:600;color:var(--slate-900);display:flex;align-items:center;gap:12px;font-family:var(--display);}
+  details.card>summary::-webkit-details-marker{display:none;}
+  details.card>summary .ix{font-family:var(--mono);font-size:.72rem;color:var(--py-blue-dark);background:#e8f1f8;border-radius:6px;padding:3px 7px;font-weight:600;flex:none;}
+  details.card>summary .chev{margin-left:auto;color:var(--slate-400);transition:.2s;flex:none;}
+  details.card[open]>summary .chev{transform:rotate(90deg);color:var(--py-blue);}
+  details.card .body{padding:0 18px 17px;color:var(--slate-700);}
+  details.card .body>*:first-child{margin-top:0;}
+  .call{border-radius:11px;padding:14px 16px;margin:16px 0;border:1px solid;font-size:.95rem;}
+  .call .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:5px;}
+  .call.good{background:var(--good-bg);border-color:#86efac;color:#14532d;}
+  .call.good .lbl{background:var(--good);color:#fff;}
+  .call.bad{background:var(--bad-bg);border-color:#fca5a5;color:#7f1d1d;}
+  .call.bad .lbl{background:var(--bad);color:#fff;}
+  .call.note{background:#fff8e1;border-color:#fde68a;color:#713f12;}
+  .call.note .lbl{background:var(--py-yellow-deep);color:var(--slate-900);}
+  .call p:last-child{margin-bottom:0;}
+  .call code{background:rgba(15,23,42,.07);padding:1px 5px;border-radius:4px;}
+  .tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--slate-200);}
+  .tbl th{background:var(--py-blue-dark);color:#fff;text-align:left;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:.88rem;}
+  .tbl td{padding:9px 14px;border-top:1px solid var(--slate-200);vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:var(--slate-50);}
+  .tbl td code{color:var(--py-blue-deep);font-weight:600;}
+  figure{margin:22px 0;background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px 16px 8px;text-align:center;}
+  figure svg{max-width:100%;height:auto;}
+  figcaption{font-size:.84rem;color:var(--slate-500);margin-top:8px;padding-bottom:8px;}
+  figcaption b{color:var(--slate-700);font-family:var(--display);}
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.reveal{opacity:1;transform:none;transition:none;}}
+  @media (max-width:880px){.wrap{grid-template-columns:1fr;gap:0;}.toc{display:none;}main{padding-top:24px;}}
+  :focus-visible{outline:3px solid var(--py-yellow-deep);outline-offset:2px;border-radius:4px;}
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Starting Out with Python &middot; Chapter 10</div>
+    <h1>Classes &amp; <span class="accent">Object-Oriented Programming</span></h1>
+    <p class="lede">So far your programs have been collections of functions that pass data around between them. <b>Object-oriented programming</b> flips that arrangement: instead of keeping data and the code that works on it apart, you bundle them together into <b>objects</b>. A <b>class</b> is the template that describes one kind of object; from it you stamp out as many <b>instances</b> as you need, each carrying its own data and its own set of methods.</p>
+    <nav class="hero-bar" aria-label="Chapter topics">
+      <a href="#mindset">Procedural vs. OOP</a>
+      <a href="#classobj">Classes &amp; Objects</a>
+      <a href="#define">Defining a Class</a>
+      <a href="#init">The __init__ Method</a>
+      <a href="#instances">Instances &amp; State</a>
+      <a href="#hiding">Hiding &amp; Accessors</a>
+      <a href="#str">The __str__ Method</a>
+      <a href="#passing">Passing Objects</a>
+      <a href="#uml">Designing with UML</a>
+      <a href="#finding">Finding Classes</a>
+      <a href="#console">Practice Console</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="toc">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#mindset">Procedural vs. OOP</a></li>
+      <li><a href="#classobj">Classes &amp; objects</a></li>
+      <li><a href="#define">Defining a class</a></li>
+      <li><a href="#init">The __init__ method</a></li>
+      <li><a href="#instances">Instances &amp; state</a></li>
+      <li><a href="#hiding">Hiding &amp; accessors</a></li>
+      <li><a href="#str">The __str__ method</a></li>
+      <li><a href="#passing">Passing objects</a></li>
+      <li><a href="#uml">Designing with UML</a></li>
+      <li><a href="#finding">Finding the classes</a></li>
+      <li><a href="#console">Practice console</a></li>
+      <li><a href="#check">Check yourself</a></li>
+      <li><a href="#glossary">Key terms</a></li>
+    </ol>
+  </aside>
+
+  <main>
+    <!-- 1. PROCEDURAL VS OOP -->
+    <section id="mindset" class="reveal">
+      <div class="sec-tag">A shift in thinking</div>
+      <h2 class="title">Procedural vs. object-oriented programming<span class="bar"></span></h2>
+      <p class="lead">Everything you've written so far has been <b>procedural</b>: programs made of functions that perform tasks, with the data kept separate and passed from one function to the next. That works, but as programs grow, the data and the code that's supposed to protect it drift apart, and nothing stops a stray line somewhere from corrupting a value it shouldn't touch.</p>
+
+      <p><b>Object-oriented programming (OOP)</b> takes a different stance. It bundles the data and the code that operates on that data together into a single unit called an <b>object</b>. Inside an object, the data items are called <b>data attributes</b> and the functions are called <b>methods</b>. Combining them this way has a name: <b>encapsulation</b>.</p>
+
+      <figure>
+        <svg viewBox="0 0 460 230" role="img" aria-label="A fuel tank object: a box whose top compartment holds data attributes capacity and level, and whose bottom compartment holds methods; outside code reaches the data only through the methods">
+          <defs>
+            <marker id="ah_o1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#306998"/></marker>
+          </defs>
+          <text x="300" y="20" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="12" font-weight="600">a FuelTank object</text>
+          <rect x="190" y="30" width="220" height="180" rx="12" fill="#f1f5f9" stroke="#306998" stroke-width="1.8"/>
+          <text x="300" y="50" text-anchor="middle" fill="#1f4d72" font-family="Inter,sans-serif" font-size="11.5" font-weight="600">data attributes</text>
+          <g font-family="Fira Code,monospace" font-size="11">
+            <rect x="206" y="58" width="86" height="24" rx="5" fill="#e8f1f8" stroke="#4B8BBE"/><text x="249" y="74" text-anchor="middle" fill="#1f4d72">capacity</text>
+            <rect x="300" y="58" width="86" height="24" rx="5" fill="#e8f1f8" stroke="#4B8BBE"/><text x="343" y="74" text-anchor="middle" fill="#1f4d72">level</text>
+          </g>
+          <line x1="200" y1="92" x2="400" y2="92" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="300" y="110" text-anchor="middle" fill="#1f4d72" font-family="Inter,sans-serif" font-size="11.5" font-weight="600">methods that work on the data</text>
+          <g font-family="Fira Code,monospace" font-size="10.5">
+            <rect x="206" y="120" width="70" height="22" rx="5" fill="#fff8e1" stroke="#f0b400"/><text x="241" y="135" text-anchor="middle" fill="#713f12">fill()</text>
+            <rect x="282" y="120" width="70" height="22" rx="5" fill="#fff8e1" stroke="#f0b400"/><text x="317" y="135" text-anchor="middle" fill="#713f12">drain()</text>
+            <rect x="206" y="148" width="180" height="22" rx="5" fill="#fff8e1" stroke="#f0b400"/><text x="296" y="163" text-anchor="middle" fill="#713f12">get_level()</text>
+          </g>
+          <text x="80" y="118" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="11">code outside</text>
+          <text x="80" y="133" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="11">the object</text>
+          <line x1="130" y1="140" x2="202" y2="140" stroke="#306998" stroke-width="2" marker-end="url(#ah_o1)"/>
+          <text x="166" y="190" text-anchor="middle" fill="#15803d" font-family="Inter,sans-serif" font-size="10">reaches the data only</text>
+          <text x="166" y="203" text-anchor="middle" fill="#15803d" font-family="Inter,sans-serif" font-size="10">through the methods</text>
+        </svg>
+        <figcaption><b>Figure 10-1.</b> An object packages its data attributes together with the methods that operate on them. Outside code interacts with the object through its methods.</figcaption>
+      </figure>
+
+      <div class="cards">
+        <details class="card">
+          <summary><span class="ix">1</span>Data hiding<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>An object's data attributes can be kept <em>private</em> &mdash; hidden from code outside the object, reachable only through its methods. This protects the data from accidental corruption, and it means outside code never has to know how the object stores things internally.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">2</span>Reusability<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Because an object is a self-contained bundle, the same well-designed class can be reused in many different programs &mdash; the same <code>FuelTank</code> could serve a flight simulator, an inventory tracker, or a refueling-logistics tool.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 2. CLASSES & OBJECTS -->
+    <section id="classobj" class="reveal">
+      <div class="sec-tag">Two words to keep straight</div>
+      <h2 class="title">Classes and objects (instances)<span class="bar"></span></h2>
+      <p class="lead">A <b>class</b> is code that specifies the data attributes and methods that a particular <em>kind</em> of object will have. It is not itself an object &mdash; it's the description. An <b>instance</b> (also just called an object) is a concrete thing built from that class.</p>
+
+      <p>Think of an injection mold on a factory floor. The mold isn't a part &mdash; it's the specification for a part. Press it once and you get one part; press it again and you get another. Each part is its own physical object, yet all of them share the shape the mold defines. The <b>mold is the class</b>; each <b>part is an instance</b>. You can make as many instances of one class as you need.</p>
+
+      <figure>
+        <svg viewBox="0 0 480 180" role="img" aria-label="The FuelTank class on the left, with arrows to three separate objects named tank_a, tank_b, and tank_c">
+          <defs>
+            <marker id="ah_c1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#306998"/></marker>
+          </defs>
+          <rect x="20" y="64" width="130" height="52" rx="9" fill="#306998" stroke="#1f4d72" stroke-width="1.6"/>
+          <text x="85" y="86" text-anchor="middle" fill="#fff" font-family="Fira Code,monospace" font-size="13">FuelTank</text>
+          <text x="85" y="104" text-anchor="middle" fill="#cfe2f0" font-family="Inter,sans-serif" font-size="10">the class (template)</text>
+          <g font-family="Fira Code,monospace" font-size="12">
+            <rect x="320" y="14" width="140" height="36" rx="8" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="1.4"/><text x="390" y="37" text-anchor="middle" fill="#1f4d72">tank_a</text>
+            <rect x="320" y="72" width="140" height="36" rx="8" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="1.4"/><text x="390" y="95" text-anchor="middle" fill="#1f4d72">tank_b</text>
+            <rect x="320" y="130" width="140" height="36" rx="8" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="1.4"/><text x="390" y="153" text-anchor="middle" fill="#1f4d72">tank_c</text>
+          </g>
+          <line x1="152" y1="86" x2="316" y2="32" stroke="#306998" stroke-width="2" marker-end="url(#ah_c1)"/>
+          <line x1="152" y1="90" x2="316" y2="90" stroke="#306998" stroke-width="2" marker-end="url(#ah_c1)"/>
+          <line x1="152" y1="94" x2="316" y2="148" stroke="#306998" stroke-width="2" marker-end="url(#ah_c1)"/>
+          <text x="235" y="78" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="10">instances</text>
+        </svg>
+        <figcaption><b>Figure 10-2.</b> One class, many instances. <code>tank_a</code>, <code>tank_b</code>, and <code>tank_c</code> are three separate objects, all built from the one <code>FuelTank</code> class.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 3. DEFINING A CLASS -->
+    <section id="define" class="reveal">
+      <div class="sec-tag">Writing the template</div>
+      <h2 class="title">Defining a class and the <code>self</code> parameter<span class="bar"></span></h2>
+      <p class="lead">A <b>class definition</b> is a set of statements that define the class's methods and data attributes. It begins with the keyword <code>class</code>, the class name, and a colon. By convention class names start with an uppercase letter and use CapWords.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">first_class.py</span></div>
+<pre><span class="kw">class</span> FuelTank<span class="op">:</span>
+    <span class="kw">def</span> report(self)<span class="op">:</span>
+        <span class="bif">print</span>(<span class="str">"I am a fuel tank."</span>)</pre>
+      </div>
+
+      <p>A method is defined just like any other function, with one rule: its first parameter is always <code>self</code>. The <code>self</code> parameter refers to <em>the specific object the method is working on</em>. You don't pass it yourself &mdash; Python supplies it automatically when you call the method through an instance.</p>
+
+      <p>To create an instance, call the class name like a function. To call a method on it, use dot notation:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">use_it.py</span></div>
+<pre>tank <span class="op">=</span> FuelTank()      <span class="com"># create an instance</span>
+tank.report()         <span class="com"># call a method on it &mdash; self is passed automatically</span>
+<span class="out"># I am a fuel tank.</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Why <code>self</code>?</span>
+        <p>When you write <code>tank.report()</code>, Python turns it into "run <code>report</code> with <code>self</code> set to <code>tank</code>." That's how a method knows <em>which</em> object's data to use when many instances exist. Every method lists <code>self</code> first, even though you never pass it in the call.</p>
+      </div>
+    </section>
+
+    <!-- 4. __init__ -->
+    <section id="init" class="reveal">
+      <div class="sec-tag">Setting up an object</div>
+      <h2 class="title">The <code>__init__</code> initializer<span class="bar"></span></h2>
+      <p class="lead">An empty tank isn't very useful. The <b>initializer method</b>, named <code>__init__</code> (two underscores on each side), runs <em>automatically</em> the moment an instance is created. Its job is to set up the object's data attributes. It's usually the first method in a class, and it can take parameters beyond <code>self</code> &mdash; values needed to build the object.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">fueltank.py</span></div>
+<pre><span class="kw">class</span> FuelTank<span class="op">:</span>
+    <span class="kw">def</span> __init__(self, capacity)<span class="op">:</span>
+        self.capacity <span class="op">=</span> capacity   <span class="com"># a data attribute, set from the parameter</span>
+        self.level <span class="op">=</span> <span class="num">0</span>            <span class="com"># every new tank starts empty</span>
+
+    <span class="kw">def</span> fill(self, amount)<span class="op">:</span>
+        self.level <span class="op">=</span> self.level <span class="op">+</span> amount
+
+    <span class="kw">def</span> drain(self, amount)<span class="op">:</span>
+        self.level <span class="op">=</span> self.level <span class="op">-</span> amount</pre>
+      </div>
+
+      <p>Assigning to <code>self.capacity</code> inside a method <em>creates</em> a data attribute that belongs to the object. Now create a tank and the initializer runs for you:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">build_tank.py</span></div>
+<pre>tank <span class="op">=</span> FuelTank(<span class="num">60</span>)    <span class="com"># __init__ runs with capacity = 60, level = 0</span>
+tank.fill(<span class="num">25</span>)
+<span class="bif">print</span>(tank.level)     <span class="out"># 25</span>
+<span class="bif">print</span>(tank.capacity)  <span class="out"># 60</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">The double underscores</span>
+        <p><code>__init__</code> is one of several specially named methods Python recognizes by its <code>__name__</code> pattern. You never call it directly &mdash; writing <code>FuelTank(60)</code> is what triggers it.</p>
+      </div>
+    </section>
+
+    <!-- 5. INSTANCES & STATE -->
+    <section id="instances" class="reveal">
+      <div class="sec-tag">Many objects, many states</div>
+      <h2 class="title">Instance attributes and independent state<span class="bar"></span></h2>
+      <p class="lead">An <b>instance attribute</b> belongs to one specific object. Because each instance gets its own set of attributes, you can create many tanks and change them independently &mdash; filling one has no effect on the others.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">three_tanks.py</span></div>
+<pre>tank_a <span class="op">=</span> FuelTank(<span class="num">60</span>)
+tank_b <span class="op">=</span> FuelTank(<span class="num">60</span>)
+tank_c <span class="op">=</span> FuelTank(<span class="num">60</span>)
+
+tank_a.fill(<span class="num">40</span>)
+tank_c.fill(<span class="num">55</span>)        <span class="com"># tank_b is left untouched</span>
+
+<span class="bif">print</span>(tank_a.level, tank_b.level, tank_c.level)
+<span class="out"># 40 0 55</span></pre>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 480 170" role="img" aria-label="Three FuelTank objects each with its own level: tank_a at 40, tank_b at 0, and tank_c at 55, all with capacity 60">
+          <g font-family="Fira Code,monospace" font-size="12">
+            <text x="60" y="28" text-anchor="middle" fill="#475569" font-size="12">tank_a</text>
+            <text x="240" y="28" text-anchor="middle" fill="#475569" font-size="12">tank_b</text>
+            <text x="420" y="28" text-anchor="middle" fill="#475569" font-size="12">tank_c</text>
+          </g>
+          <!-- tank_a 40/60 -->
+          <rect x="30" y="40" width="60" height="110" rx="6" fill="#fff" stroke="#306998" stroke-width="1.8"/>
+          <rect x="32" y="76" width="56" height="72" rx="3" fill="#4B8BBE" fill-opacity=".5"/>
+          <text x="60" y="166" text-anchor="middle" fill="#1f4d72" font-family="Fira Code,monospace" font-size="11">level 40</text>
+          <!-- tank_b 0/60 -->
+          <rect x="210" y="40" width="60" height="110" rx="6" fill="#fff" stroke="#306998" stroke-width="1.8"/>
+          <text x="240" y="166" text-anchor="middle" fill="#1f4d72" font-family="Fira Code,monospace" font-size="11">level 0</text>
+          <!-- tank_c 55/60 -->
+          <rect x="390" y="40" width="60" height="110" rx="6" fill="#fff" stroke="#306998" stroke-width="1.8"/>
+          <rect x="392" y="51" width="56" height="97" rx="3" fill="#4B8BBE" fill-opacity=".5"/>
+          <text x="420" y="166" text-anchor="middle" fill="#1f4d72" font-family="Fira Code,monospace" font-size="11">level 55</text>
+        </svg>
+        <figcaption><b>Figure 10-3.</b> Three instances of one class, each holding its own <code>level</code>. Changing one tank's state leaves the others alone.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 6. HIDING & ACCESSORS -->
+    <section id="hiding" class="reveal">
+      <div class="sec-tag">Protecting the data</div>
+      <h2 class="title">Hiding attributes, accessors, and mutators<span class="bar"></span></h2>
+      <p class="lead">Our first <code>FuelTank</code> exposed <code>level</code> and <code>capacity</code> directly &mdash; any code anywhere could set <code>tank.level = 9999</code> and overfill it. Good OOP keeps an object's data attributes <b>private</b>, reachable only through the object's own methods. In Python you signal that by starting the attribute name with two underscores.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">fueltank_private.py</span></div>
+<pre><span class="kw">class</span> FuelTank<span class="op">:</span>
+    <span class="kw">def</span> __init__(self, capacity)<span class="op">:</span>
+        self.__capacity <span class="op">=</span> capacity    <span class="com"># private: note the two leading underscores</span>
+        self.__level <span class="op">=</span> <span class="num">0</span>
+
+    <span class="kw">def</span> fill(self, amount)<span class="op">:</span>            <span class="com"># MUTATOR: changes the data</span>
+        self.__level <span class="op">=</span> self.__level <span class="op">+</span> amount
+        <span class="kw">if</span> self.__level <span class="op">&gt;</span> self.__capacity<span class="op">:</span>
+            self.__level <span class="op">=</span> self.__capacity   <span class="com"># guard: never overfill</span>
+
+    <span class="kw">def</span> drain(self, amount)<span class="op">:</span>           <span class="com"># MUTATOR</span>
+        self.__level <span class="op">=</span> self.__level <span class="op">-</span> amount
+        <span class="kw">if</span> self.__level <span class="op">&lt;</span> <span class="num">0</span><span class="op">:</span>
+            self.__level <span class="op">=</span> <span class="num">0</span>             <span class="com"># guard: never below empty</span>
+
+    <span class="kw">def</span> get_level(self)<span class="op">:</span>               <span class="com"># ACCESSOR: returns, doesn't change</span>
+        <span class="kw">return</span> self.__level
+
+    <span class="kw">def</span> get_capacity(self)<span class="op">:</span>            <span class="com"># ACCESSOR</span>
+        <span class="kw">return</span> self.__capacity</pre>
+      </div>
+
+      <p>Two kinds of methods give controlled access to private data:</p>
+      <div class="cards">
+        <details class="card">
+          <summary><span class="ix">A</span>Accessor methods (getters)<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Return the value of an attribute <em>without changing it</em> &mdash; a safe way for outside code to read the data. Here, <code>get_level</code> and <code>get_capacity</code>.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">M</span>Mutator methods (setters)<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Store or change an attribute's value, and they can <em>enforce rules</em> while doing it. Here, <code>fill</code> and <code>drain</code> refuse to push the level above capacity or below zero &mdash; protection the bare attribute could never offer.</p></div>
+        </details>
+      </div>
+
+      <div class="call good">
+        <span class="lbl">This is the payoff of encapsulation</span>
+        <p>Because <code>__level</code> is private and can only move through <code>fill</code> and <code>drain</code>, the tank can <em>guarantee</em> its level stays between 0 and capacity. The rules live with the data they protect.</p>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Storing classes in modules</span>
+        <p>A class is often saved in its own <code>.py</code> file (a module) so many programs can <code>import</code> it. The same <code>FuelTank</code> class could live in <code>fueltank.py</code> and be imported wherever it's needed &mdash; the reusability we mentioned at the start.</p>
+      </div>
+    </section>
+
+    <!-- 7. __str__ -->
+    <section id="str" class="reveal">
+      <div class="sec-tag">Describing an object</div>
+      <h2 class="title">The <code>__str__</code> method<span class="bar"></span></h2>
+      <p class="lead">An object's <b>state</b> is the set of its attribute values at a given moment. It's handy to turn that state into readable text. Define a method named <code>__str__</code> that returns a string, and Python will call it <em>automatically</em> whenever the object is passed to <code>print</code> or to the <code>str</code> function.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">add_str.py</span></div>
+<pre>    <span class="kw">def</span> __str__(self)<span class="op">:</span>
+        <span class="kw">return</span> <span class="str">f"FuelTank: {self.__level} of {self.__capacity} units"</span></pre>
+      </div>
+
+      <p>With that method in place, printing the object just works &mdash; no need to dig out each attribute by hand:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">show_state.py</span></div>
+<pre>tank <span class="op">=</span> FuelTank(<span class="num">60</span>)
+tank.fill(<span class="num">25</span>)
+<span class="bif">print</span>(tank)      <span class="out"># FuelTank: 25 of 60 units   &larr; __str__ ran automatically</span></pre>
+      </div>
+    </section>
+
+    <!-- 8. PASSING OBJECTS -->
+    <section id="passing" class="reveal">
+      <div class="sec-tag">Objects on the move</div>
+      <h2 class="title">Passing objects as arguments<span class="bar"></span></h2>
+      <p class="lead">Methods and functions often need to accept objects. When you pass an object as an argument, you pass a <b>reference</b> to it &mdash; not a copy. The receiving function therefore works on the <em>actual</em> object: it can call the object's methods and, through mutators, change its data.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">pass_object.py</span></div>
+<pre><span class="kw">def</span> top_off(tank)<span class="op">:</span>
+    <span class="com"># works through the object's own methods</span>
+    needed <span class="op">=</span> tank.get_capacity() <span class="op">-</span> tank.get_level()
+    tank.fill(needed)
+
+my_tank <span class="op">=</span> FuelTank(<span class="num">60</span>)
+my_tank.fill(<span class="num">20</span>)
+top_off(my_tank)              <span class="com"># passes a reference to the real object</span>
+<span class="bif">print</span>(my_tank.get_level())     <span class="out"># 60  &mdash; the original tank was changed</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Reference, not copy</span>
+        <p>Because <code>top_off</code> received a reference, the <code>fill</code> it performed affected the same tank the caller holds. This is powerful &mdash; and a reason mutators that enforce rules matter: any code holding a reference can change the object, so the object must keep itself valid.</p>
+      </div>
+    </section>
+
+    <!-- 9. DESIGNING WITH UML -->
+    <section id="uml" class="reveal">
+      <div class="sec-tag">Designing classes</div>
+      <h2 class="title">Modeling a class with a UML diagram<span class="bar"></span></h2>
+      <p class="lead">Before writing a class, it helps to sketch it. The standard tool is a <b>UML diagram</b> &mdash; UML stands for <b>Unified Modeling Language</b>, the same notation you've used in the Java and design courses. A class is drawn as a box divided into three compartments:</p>
+
+      <figure>
+        <svg viewBox="0 0 470 210" role="img" aria-label="The general layout of a UML class diagram: a box split into three compartments labeled class name, data attributes, and methods">
+          <defs>
+            <marker id="ah_u1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#475569"/></marker>
+          </defs>
+          <rect x="250" y="24" width="190" height="160" rx="4" fill="#fff" stroke="#306998" stroke-width="1.8"/>
+          <line x1="250" y1="60" x2="440" y2="60" stroke="#306998" stroke-width="1.8"/>
+          <line x1="250" y1="108" x2="440" y2="108" stroke="#306998" stroke-width="1.8"/>
+          <text x="345" y="47" text-anchor="middle" fill="#94a3b8" font-family="Inter,sans-serif" font-size="12" font-style="italic">class name</text>
+          <text x="345" y="88" text-anchor="middle" fill="#94a3b8" font-family="Inter,sans-serif" font-size="12" font-style="italic">data attributes</text>
+          <text x="345" y="150" text-anchor="middle" fill="#94a3b8" font-family="Inter,sans-serif" font-size="12" font-style="italic">methods</text>
+          <g font-family="Inter,sans-serif" font-size="11.5" fill="#475569">
+            <text x="40" y="46">name of the class</text>
+            <text x="40" y="88">data attributes</text>
+            <text x="40" y="150">methods</text>
+          </g>
+          <line x1="150" y1="42" x2="246" y2="42" stroke="#475569" stroke-width="1.6" marker-end="url(#ah_u1)"/>
+          <line x1="130" y1="84" x2="246" y2="84" stroke="#475569" stroke-width="1.6" marker-end="url(#ah_u1)"/>
+          <line x1="100" y1="146" x2="246" y2="146" stroke="#475569" stroke-width="1.6" marker-end="url(#ah_u1)"/>
+        </svg>
+        <figcaption><b>Figure 10-4.</b> The general layout of a UML class diagram: class name on top, data attributes in the middle, methods at the bottom.</figcaption>
+      </figure>
+
+      <p>Here is our <code>FuelTank</code> drawn as a UML diagram. Following the convention from your Java course, a leading <code>+</code> marks a public member and a leading <code>&#8722;</code> marks a private one. In Python, that private marking corresponds to the <code>__</code> name prefix:</p>
+
+      <figure>
+        <svg viewBox="0 0 340 290" role="img" aria-label="A UML class diagram for FuelTank: name FuelTank; private attributes minus underscore underscore capacity and minus underscore underscore level; public methods init, fill, drain, get_level, get_capacity, and str">
+          <rect x="70" y="20" width="200" height="226" rx="4" fill="#fff" stroke="#306998" stroke-width="1.8"/>
+          <line x1="70" y1="52" x2="270" y2="52" stroke="#306998" stroke-width="1.8"/>
+          <line x1="70" y1="104" x2="270" y2="104" stroke="#306998" stroke-width="1.8"/>
+          <rect x="70" y="20" width="200" height="32" rx="4" fill="#e8f1f8"/>
+          <text x="170" y="41" text-anchor="middle" fill="#1f4d72" font-family="Fira Code,monospace" font-size="14" font-weight="600">FuelTank</text>
+          <g font-family="Fira Code,monospace" font-size="12" fill="#334155">
+            <text x="84" y="73">&#8722; __capacity</text>
+            <text x="84" y="93">&#8722; __level</text>
+          </g>
+          <g font-family="Fira Code,monospace" font-size="12" fill="#334155">
+            <text x="84" y="125">+ __init__(capacity)</text>
+            <text x="84" y="145">+ fill(amount)</text>
+            <text x="84" y="165">+ drain(amount)</text>
+            <text x="84" y="185">+ get_level()</text>
+            <text x="84" y="205">+ get_capacity()</text>
+            <text x="84" y="225">+ __str__()</text>
+          </g>
+          <text x="86" y="268" fill="#15803d" font-family="Inter,sans-serif" font-size="11">+ public</text>
+          <text x="180" y="268" fill="#b91c1c" font-family="Inter,sans-serif" font-size="11">&#8722; private</text>
+        </svg>
+        <figcaption><b>Figure 10-5.</b> A UML diagram for the <code>FuelTank</code> class. Private attributes (marked <code>&#8722;</code>) carry Python's <code>__</code> prefix; methods are public (<code>+</code>).</figcaption>
+      </figure>
+
+      <div class="call note">
+        <span class="lbl">Same notation, three courses</span>
+        <p>This is the identical three-compartment box you draw in the Java and Logic &amp; Design courses. The only Python-specific wrinkle is that the private marking shows up in the code as the <code>__</code> name prefix rather than a separate keyword.</p>
+      </div>
+    </section>
+
+    <!-- 10. FINDING THE CLASSES -->
+    <section id="finding" class="reveal">
+      <div class="sec-tag">From problem to design</div>
+      <h2 class="title">Finding the classes in a problem<span class="bar"></span></h2>
+      <p class="lead">When you start an object-oriented program, the first job is to decide <em>what the classes are</em>. A reliable technique works straight from a written description of the problem:</p>
+
+      <ol style="color:var(--slate-700);">
+        <li>Get a written description of the problem domain.</li>
+        <li>Identify every <b>noun</b> (and noun phrase) &mdash; each is a <em>candidate</em> class.</li>
+        <li>Refine the list: drop nouns that mean the same thing, ones the program doesn't care about, ones that are really individual objects rather than classes, and ones that are just simple values.</li>
+      </ol>
+
+      <p>Take this short description:</p>
+      <div class="call note">
+        <span class="lbl">Problem domain</span>
+        <p><em>"A refueling crew tracks each fuel tank on an aircraft. A tank has a capacity and a current level. The crew fills a tank and drains it, and reads its level before a flight."</em></p>
+      </div>
+
+      <p>Pull the nouns and decide what each becomes:</p>
+      <table class="tbl">
+        <thead><tr><th style="width:32%;">Candidate noun</th><th>Decision</th></tr></thead>
+        <tbody>
+          <tr><td><code>fuel tank</code></td><td>Keep &mdash; a real thing with data and behavior. This becomes the <code>FuelTank</code> class.</td></tr>
+          <tr><td><code>capacity</code>, <code>level</code></td><td>Drop as classes &mdash; these are simple values, so they become <b>data attributes</b> of <code>FuelTank</code>.</td></tr>
+          <tr><td><code>crew</code>, <code>aircraft</code>, <code>flight</code></td><td>Drop for now &mdash; outside what this small program needs to model. (A larger system might promote them to classes.)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Identifying responsibilities</h3>
+      <p>Once you have a class, ask what it is responsible for <b>knowing</b> and <b>doing</b>. What it knows becomes its data attributes; what it does becomes its methods.</p>
+      <table class="tbl">
+        <thead><tr><th style="width:40%;">FuelTank is responsible for&hellip;</th><th>Becomes&hellip;</th></tr></thead>
+        <tbody>
+          <tr><td>knowing its capacity and current level</td><td>attributes <code>__capacity</code>, <code>__level</code></td></tr>
+          <tr><td>filling, draining, and reporting its level</td><td>methods <code>fill</code>, <code>drain</code>, <code>get_level</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="call good">
+        <span class="lbl">The whole arc, in one line</span>
+        <p>Nouns point to <b>classes</b>, the things a class <em>knows</em> point to <b>data attributes</b>, and the things it <em>does</em> point to <b>methods</b>. That's how the <code>FuelTank</code> on this page was designed before a single line was typed.</p>
+      </div>
+    </section>
+
+    <style>
+      .repl{background:#0b1220;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 14px 40px -20px rgba(15,23,42,.6);margin:18px 0;}
+      .repl-head{display:flex;align-items:center;gap:8px;padding:11px 15px;background:#111c30;border-bottom:1px solid #1e293b;}
+      .repl-head .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+      .repl-head .r{background:#f87171;}.repl-head .y{background:#fbbf24;}.repl-head .g{background:#34d399;}
+      .repl-head .ttl{margin-left:6px;font-family:var(--mono);font-size:.76rem;color:#94a3b8;}
+      .repl-head .rst{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:4px 10px;cursor:pointer;}
+      .repl-head .rst:hover{background:#334155;color:#fff;}
+      .repl-start{padding:40px 24px;text-align:center;}
+      .repl-start p{color:#94a3b8;font-size:.92rem;max-width:48ch;margin:0 auto 18px;}
+      .repl-start button{font-family:var(--display);font-weight:600;font-size:.95rem;cursor:pointer;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));color:#1f2937;border:none;border-radius:10px;padding:12px 22px;transition:.18s;}
+      .repl-start button:hover{filter:brightness(1.05);transform:translateY(-1px);}
+      .repl-start button:disabled{opacity:.6;cursor:wait;transform:none;}
+      .repl-status{font-family:var(--mono);font-size:.78rem;color:var(--py-yellow);margin-top:14px;min-height:1em;}
+      .repl-screen{display:none;}
+      .repl-out{font-family:var(--mono);font-size:.85rem;line-height:1.55;color:#e2e8f0;padding:14px 16px 4px;max-height:340px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}
+      .repl-out .echo{color:#cbd5e1;}.repl-out .ps{color:#7cc3ff;}.repl-out .res{color:#a5f3a0;}.repl-out .err{color:#fca5a5;}
+      .repl-line{display:flex;align-items:flex-start;gap:8px;padding:4px 16px 14px;}
+      .repl-line .ps{font-family:var(--mono);font-size:.85rem;color:#7cc3ff;padding-top:2px;flex:none;}
+      .repl-line input{flex:1;background:transparent;border:none;outline:none;color:#e2e8f0;font-family:var(--mono);font-size:.85rem;padding:2px 0;}
+      .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px;}
+      .chips button{font-family:var(--mono);font-size:.76rem;cursor:pointer;background:#fff;border:1px solid var(--slate-300);border-radius:7px;padding:6px 10px;transition:.15s;color:var(--slate-700);}
+      .chips button:hover{border-color:var(--py-blue);background:#eff6fc;color:var(--py-blue-deep);}
+      .chips .lbl-mini{width:100%;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-400);margin-bottom:2px;}
+    </style>    <!-- PRACTICE CONSOLE -->
+    <!-- PRACTICE CONSOLE -->
+    <section id="console" class="reveal">
+      <div class="sec-tag">Hands-on</div>
+      <h2 class="title">Practice in the console<span class="bar"></span></h2>
+      <p class="lead">A real Python interpreter, running entirely in your browser. Click <b>Start</b> to load it (about a 10&nbsp;MB one-time download), then type at the <code>&gt;&gt;&gt;</code> prompt. Define the <code>FuelTank</code> class, create a couple of instances, and watch each keep its own state. Caught in a loop? Hit <b>Reset session</b>.</p>
+
+      <div class="chips">
+        <span class="lbl-mini">Tap a sample to drop it at the prompt:</span>
+        <button data-code="class FuelTank:&#10;    def __init__(self, cap):&#10;        self.__cap = cap&#10;        self.__level = 0&#10;    def fill(self, n):&#10;        self.__level = min(self.__cap, self.__level + n)&#10;    def get_level(self):&#10;        return self.__level&#10;    def __str__(self):&#10;        return f'FuelTank: {self.__level} of {self.__cap}'">define FuelTank</button>
+        <button data-code="t = FuelTank(60)">t = FuelTank(60)</button>
+        <button data-code="t.fill(25)">t.fill(25)</button>
+        <button data-code="t.get_level()">t.get_level()</button>
+        <button data-code="print(t)">print(t)</button>
+        <button data-code="t.fill(100)">overfill t.fill(100)</button>
+        <button data-code="t.get_level()">level after overfill</button>
+        <button data-code="a = FuelTank(60)&#10;b = FuelTank(60)&#10;a.fill(40)&#10;print(a.get_level(), b.get_level())">two independent tanks</button>
+      </div>
+      <div class="repl" id="repl">
+        <div class="repl-head">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="ttl">Python &mdash; interactive mode</span>
+          <button class="rst" id="replReset" style="display:none;">Reset session</button>
+        </div>
+        <div class="repl-start" id="replStart">
+          <p>A genuine CPython interpreter (via Pyodide) loads on demand, so pages you're only reading stay light.</p>
+          <button id="replStartBtn">&#9654;&nbsp; Start the Python interpreter</button>
+          <div class="repl-status" id="replStatus"></div>
+        </div>
+        <div class="repl-screen" id="replScreen">
+          <div class="repl-out" id="replOut"></div>
+          <div class="repl-line">
+            <span class="ps" id="replPrompt">&gt;&gt;&gt;</span>
+            <input id="replInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Python prompt">
+          </div>
+        </div>
+      </div>
+      <div class="call note">
+        <span class="lbl">Heads up</span>
+        <p>The interpreter needs an internet connection to download the first time, and works best in an up-to-date browser. Define the class first, then create instances. Try the overfill chip &mdash; the mutator caps the level at capacity, which is the whole point of keeping <code>__level</code> private.</p>
+      </div>
+    </section>
+
+    <!-- CHECK YOURSELF -->
+    <section id="check" class="reveal">
+      <div class="sec-tag">Review</div>
+      <h2 class="title">Check yourself<span class="bar"></span></h2>
+      <p class="lead">Predict each answer, then open the card. Even better, try it in the console above.</p>
+      <div class="cards">
+        <details class="card">
+          <summary><span class="ix">Q1</span>What's the difference between a class and an instance?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>A class is the <em>description</em> &mdash; the code specifying what data attributes and methods a kind of object has. An instance (object) is a concrete thing built from that class. One class can produce many instances, each with its own data.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q2</span>Every method lists <code>self</code> as its first parameter. What is <code>self</code>, and do you pass it when calling?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>self</code> refers to the specific object the method is working on. You don't pass it &mdash; writing <code>tank.fill(10)</code> makes Python set <code>self</code> to <code>tank</code> automatically. It's how a method knows which instance's data to use.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q3</span>When does <code>__init__</code> run, and what is it for?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>It runs automatically the moment an instance is created &mdash; <code>FuelTank(60)</code> triggers it. Its job is to set up the object's data attributes, often from parameters passed in.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q4</span>Why start a data attribute's name with two underscores, as in <code>__level</code>?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>The <code>__</code> prefix makes the attribute private, so code outside the class can't reach it through the normal name. That forces all access through the object's methods, which can enforce rules and prevent accidental corruption.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q5</span>What's the difference between an accessor and a mutator method?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>An accessor (getter) returns an attribute's value without changing it &mdash; e.g. <code>get_level</code>. A mutator (setter) stores or changes an attribute, and can enforce rules while doing so &mdash; e.g. <code>fill</code>, which refuses to exceed capacity.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q6</span>How do you get <code>print(tank)</code> to show a readable description of an object?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Define a <code>__str__</code> method that returns a string built from the object's attributes. Python calls it automatically when the object is passed to <code>print</code> or <code>str</code>.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q7</span>If you pass an object to a function and the function calls a mutator on it, is the caller's object affected?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Yes. Passing an object passes a <em>reference</em>, not a copy, so the function works on the same object the caller holds. A mutator called inside the function changes that real object.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q8</span>In a UML class diagram, what goes in each of the three compartments, and what do <code>+</code> and <code>&#8722;</code> mean?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Top: the class name. Middle: the data attributes. Bottom: the methods. A leading <code>+</code> marks a public member and a leading <code>&#8722;</code> marks a private one &mdash; in Python, private corresponds to the <code>__</code> name prefix.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- GLOSSARY -->
+    <section id="glossary" class="reveal">
+      <div class="sec-tag">Reference</div>
+      <h2 class="title">Key terms<span class="bar"></span></h2>
+      <dl class="gloss">
+        <div><dt>procedural programming</dt><dd>Writing programs as functions that operate on data kept separate from them.</dd></div>
+        <div><dt>object-oriented programming</dt><dd>Designing programs around objects that bundle data with the code that acts on it.</dd></div>
+        <div><dt>object</dt><dd>An entity that contains data attributes and methods.</dd></div>
+        <div><dt>data attribute</dt><dd>A data item stored inside an object.</dd></div>
+        <div><dt>method</dt><dd>A function defined inside a class that operates on an object's data.</dd></div>
+        <div><dt>encapsulation</dt><dd>Combining data and the code that works on it into a single object.</dd></div>
+        <div><dt>data hiding</dt><dd>Keeping an object's data attributes private, reachable only through its methods.</dd></div>
+        <div><dt>object reusability</dt><dd>The ability to use the same well-designed class in many programs.</dd></div>
+        <div><dt>class</dt><dd>Code that specifies the data attributes and methods of a kind of object.</dd></div>
+        <div><dt>instance</dt><dd>A specific object created from a class; one class can have many.</dd></div>
+        <div><dt>class definition</dt><dd>The statements, beginning with <code>class Name:</code>, that define a class.</dd></div>
+        <div><dt>self</dt><dd>The first parameter of every method; refers to the object the method is acting on.</dd></div>
+        <div><dt>__init__ (initializer)</dt><dd>A method that runs automatically when an instance is created, setting up its attributes.</dd></div>
+        <div><dt>instance attribute</dt><dd>A data attribute that belongs to one specific instance.</dd></div>
+        <div><dt>private attribute</dt><dd>An attribute named with a leading <code>__</code> so outside code can't reach it directly.</dd></div>
+        <div><dt>accessor method</dt><dd>A method that returns an attribute's value without changing it (a getter).</dd></div>
+        <div><dt>mutator method</dt><dd>A method that stores or changes an attribute's value (a setter), often enforcing rules.</dd></div>
+        <div><dt>object state</dt><dd>The values of an object's attributes at a given moment.</dd></div>
+        <div><dt>__str__ method</dt><dd>Returns a string describing an object; called automatically by <code>print</code> and <code>str</code>.</dd></div>
+        <div><dt>dot notation</dt><dd>Reaching an object's method or attribute with <code>object.name</code>.</dd></div>
+        <div><dt>passing by reference</dt><dd>Passing an object as an argument hands over a reference, so the function acts on the real object.</dd></div>
+        <div><dt>UML</dt><dd>Unified Modeling Language; standard notation for depicting object-oriented systems.</dd></div>
+        <div><dt>UML class diagram</dt><dd>A three-compartment box: class name, data attributes, methods.</dd></div>
+        <div><dt>visibility (+ / &#8722;)</dt><dd>UML markers for public (<code>+</code>) and private (<code>&#8722;</code>) members.</dd></div>
+        <div><dt>problem domain</dt><dd>A written description of the problem, mined for nouns to find candidate classes.</dd></div>
+        <div><dt>responsibilities</dt><dd>What a class must know (its attributes) and do (its methods).</dd></div>
+      </dl>
+    </section>
+
+  </main>
+</div>
+
+<footer style="background:var(--slate-900);color:#94a3b8;padding:30px 24px;text-align:center;font-size:.85rem;">
+  <div style="max-width:var(--maxw);margin:0 auto;">
+    <span style="font-family:var(--mono);color:var(--py-yellow);">Chapter 10</span> &middot; Classes and Object-Oriented Programming &middot; original course materials, concepts only
+  </div>
+</footer>
+<style>
+  dl.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;background:#fff;border:1px solid var(--slate-200);border-radius:12px;overflow:hidden;}
+  dl.gloss>div{padding:13px 16px;border-bottom:1px solid var(--slate-100);border-right:1px solid var(--slate-100);}
+  dl.gloss dt{font-family:var(--mono);font-weight:600;color:var(--py-blue-deep);font-size:.86rem;margin-bottom:3px;}
+  dl.gloss dd{margin:0;color:var(--slate-600);font-size:.9rem;line-height:1.5;}
+  dl.gloss code{background:rgba(15,23,42,.06);padding:1px 4px;border-radius:4px;}
+</style><script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var spy = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map[e.target.id]; if(a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin:'-10% 0px -75% 0px', threshold:0 });
+  document.querySelectorAll('main section[id]').forEach(function(s){ spy.observe(s); });
+
+  var rev = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } });
+  }, { threshold:0.08 });
+  document.querySelectorAll('.reveal').forEach(function(s){ rev.observe(s); });
+
+  var PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.4/full/";
+  var startBtn = document.getElementById('replStartBtn');
+  var startBox = document.getElementById('replStart');
+  var statusEl = document.getElementById('replStatus');
+  var screenEl = document.getElementById('replScreen');
+  var outEl    = document.getElementById('replOut');
+  var inputEl  = document.getElementById('replInput');
+  var promptEl = document.getElementById('replPrompt');
+  var resetBtn = document.getElementById('replReset');
+
+  var pyodide=null, pushLine=null, resetConsole=null, loading=false;
+  var history=[], hIdx=0, contMode=false;
+
+  window._webInput = function(p){ var v = window.prompt(p || ""); return v===null ? "" : v; };
+
+  function append(text, cls){
+    if(text===undefined || text===null || text==="") return;
+    var span=document.createElement('span');
+    if(cls) span.className=cls;
+    span.textContent=text;
+    outEl.appendChild(span);
+    outEl.scrollTop=outEl.scrollHeight;
+  }
+  function echoLine(promptStr, code){ append(promptStr+' ', 'ps'); append(code+'\n', 'echo'); }
+
+  var SETUP = [
+    "import sys, io, code, builtins",
+    "from js import _webInput",
+    "class WebConsole(code.InteractiveConsole):",
+    "    def write(self, data):",
+    "        sys.stdout.write(data)",
+    "_ns = {'__name__': '__main__'}",
+    "_console = WebConsole(locals=_ns)",
+    "def _web_input(prompt=''):",
+    "    sys.stdout.write(str(prompt))",
+    "    val = _webInput(str(prompt))",
+    "    sys.stdout.write(str(val) + chr(10))",
+    "    return val",
+    "builtins.input = _web_input",
+    "def push_line(line):",
+    "    buf = io.StringIO()",
+    "    old = sys.stdout",
+    "    sys.stdout = buf",
+    "    try:",
+    "        more = _console.push(line)",
+    "    finally:",
+    "        sys.stdout = old",
+    "    return [bool(more), buf.getvalue()]",
+    "def reset_console():",
+    "    global _console",
+    "    _console = WebConsole(locals={'__name__': '__main__'})"
+  ].join("\n");
+
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s=document.createElement('script'); s.src=src;
+      s.onload=res; s.onerror=function(){ rej(new Error('Could not load '+src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function start(){
+    if(loading || pyodide) return;
+    loading=true; startBtn.disabled=true;
+    statusEl.textContent='Downloading the Python runtime…';
+    try{
+      await loadScript(PYODIDE_URL+'pyodide.js');
+      statusEl.textContent='Starting Python…';
+      pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
+      pyodide.runPython(SETUP);
+      pushLine = pyodide.globals.get('push_line');
+      resetConsole = pyodide.globals.get('reset_console');
+      var ver = pyodide.runPython("sys.version.split()[0]");
+      startBox.style.display='none';
+      screenEl.style.display='block';
+      resetBtn.style.display='inline-block';
+      append('Python '+ver+' (Pyodide) — type a statement and press Enter.\n', 'res');
+      inputEl.focus();
+    }catch(err){
+      statusEl.textContent='Could not start: '+err.message+'  (check your connection and try again)';
+      startBtn.disabled=false; loading=false;
+    }
+  }
+
+  function process(line){
+    var shownPrompt = contMode ? '...' : '>>>';
+    echoLine(shownPrompt, line);
+    var res = pushLine(line);
+    var arr = res.toJs(); res.destroy();
+    var more = arr[0], output = arr[1];
+    if(output){
+      var cls = /(^|\n)\s*(Traceback|[A-Za-z]*Error|[A-Za-z]*Warning)/.test(output) ? 'err' : 'res';
+      append(output, cls);
+    }
+    contMode = more;
+    promptEl.textContent = contMode ? '...' : '>>>';
+  }
+
+  function runChip(code){
+    if(!pyodide){ return; }
+    var lines = code.split('\n');
+    for(var i=0;i<lines.length;i++){ process(lines[i]); }
+    if(contMode){ process(''); }
+    inputEl.focus();
+  }
+
+  inputEl && inputEl.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      var line = inputEl.value;
+      if(line.trim()!=='') { history.push(line); }
+      hIdx = history.length;
+      inputEl.value='';
+      process(line);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      if(hIdx>0){ hIdx--; inputEl.value=history[hIdx]||''; }
+    } else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(hIdx<history.length-1){ hIdx++; inputEl.value=history[hIdx]||''; }
+      else { hIdx=history.length; inputEl.value=''; }
+    }
+  });
+
+  startBtn && startBtn.addEventListener('click', start);
+  resetBtn && resetBtn.addEventListener('click', function(){
+    if(resetConsole){ resetConsole(); }
+    outEl.innerHTML=''; contMode=false; promptEl.textContent='>>>';
+    append('Session reset.\n', 'res'); inputEl.focus();
+  });
+
+  document.querySelectorAll('.chips button[data-code]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var code = b.getAttribute('data-code');
+      if(pyodide){ runChip(code); }
+      else { if(code.indexOf('\n')===-1){ inputEl.value=code; } start(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 13 — GUI Programming</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;--py-blue-dark:#306998;--py-blue-deep:#1f4d72;
+    --py-yellow:#FFD43B;--py-yellow-deep:#f0b400;
+    --slate-900:#0f172a;--slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;
+    --slate-500:#64748b;--slate-400:#94a3b8;--slate-300:#cbd5e1;--slate-200:#e2e8f0;
+    --slate-100:#f1f5f9;--slate-50:#f8fafc;
+    --good:#15803d;--good-bg:#dcfce7;--bad:#b91c1c;--bad-bg:#fee2e2;
+    --display:'Sora',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'Fira Code',ui-monospace,monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:var(--body);color:var(--slate-800);background:var(--slate-50);line-height:1.65;-webkit-font-smoothing:antialiased;}
+  a{color:var(--py-blue-dark);}
+  code{font-family:var(--mono);font-size:.92em;}
+  .hero{background:linear-gradient(150deg,var(--py-blue-deep) 0%,var(--py-blue-dark) 55%,var(--py-blue) 100%);color:#fff;padding:64px 24px 0;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;background:radial-gradient(circle,rgba(255,212,59,.22),transparent 70%);}
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{font-family:var(--mono);letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:var(--py-yellow);font-weight:600;margin-bottom:14px;}
+  .hero h1{font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:0 0 18px;letter-spacing:-.02em;}
+  .hero h1 .accent{background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p.lede{font-size:1.12rem;max-width:60ch;color:#e0ecf5;margin:0 0 26px;}
+  .hero-bar{display:flex;flex-wrap:wrap;gap:8px;padding:18px 0 22px;}
+  .hero-bar a{font-size:.82rem;font-weight:600;color:#fff;text-decoration:none;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);padding:7px 13px;border-radius:999px;transition:.18s;}
+  .hero-bar a:hover{background:var(--py-yellow);color:var(--slate-900);border-color:var(--py-yellow);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:grid;grid-template-columns:232px 1fr;gap:42px;align-items:start;}
+  .toc{position:sticky;top:18px;padding:28px 0;align-self:start;}
+  .toc h2{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-500);margin:0 0 12px;}
+  .toc ol{list-style:none;margin:0;padding:0;counter-reset:t;}
+  .toc li{counter-increment:t;}
+  .toc a{display:block;text-decoration:none;color:var(--slate-600);font-size:.9rem;font-weight:500;padding:6px 10px 6px 34px;border-left:2px solid var(--slate-200);position:relative;transition:.16s;}
+  .toc a::before{content:counter(t,decimal-leading-zero);position:absolute;left:8px;top:6px;font-family:var(--mono);font-size:.68rem;color:var(--slate-400);}
+  .toc a:hover{color:var(--py-blue-dark);border-left-color:var(--py-blue);}
+  .toc a.active{color:var(--py-blue-deep);border-left-color:var(--py-yellow-deep);background:#fff;font-weight:600;}
+  main{padding:34px 0 60px;min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:18px;}
+  .sec-tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--py-blue);font-weight:600;margin-bottom:6px;}
+  h2.title{font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.12;margin:0 0 6px;color:var(--slate-900);letter-spacing:-.015em;}
+  h2.title .bar{display:block;width:54px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));margin-top:12px;}
+  h3{font-family:var(--display);font-weight:600;font-size:1.18rem;color:var(--slate-900);margin:30px 0 10px;}
+  p{margin:0 0 14px;}
+  .lead{font-size:1.06rem;color:var(--slate-700);}
+  .code{background:var(--slate-900);border-radius:12px;margin:16px 0;overflow:hidden;border:1px solid #0b1220;box-shadow:0 10px 30px -16px rgba(15,23,42,.5);}
+  .code-top{display:flex;align-items:center;gap:7px;padding:11px 15px;background:#0b1220;border-bottom:1px solid #1e293b;}
+  .code-top .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+  .code-top .dot.r{background:#f87171;}.code-top .dot.y{background:#fbbf24;}.code-top .dot.g{background:#34d399;}
+  .code-top .fn{margin-left:8px;font-family:var(--mono);font-size:.74rem;color:var(--slate-400);}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.7;color:#e2e8f0;}
+  .kw{color:#ff9d6f;}.bif{color:#7cc3ff;}.str{color:#ffd87a;}.num{color:#a5f3a0;}.com{color:#64748b;font-style:italic;}.op{color:#f0abfc;}.out{color:#94a3b8;}
+  .cards{display:grid;gap:12px;margin:18px 0;}
+  details.card{background:#fff;border:1px solid var(--slate-200);border-radius:12px;box-shadow:0 1px 2px rgba(15,23,42,.04);overflow:hidden;}
+  details.card>summary{cursor:pointer;list-style:none;padding:15px 18px;font-weight:600;color:var(--slate-900);display:flex;align-items:center;gap:12px;font-family:var(--display);}
+  details.card>summary::-webkit-details-marker{display:none;}
+  details.card>summary .ix{font-family:var(--mono);font-size:.72rem;color:var(--py-blue-dark);background:#e8f1f8;border-radius:6px;padding:3px 7px;font-weight:600;flex:none;}
+  details.card>summary .chev{margin-left:auto;color:var(--slate-400);transition:.2s;flex:none;}
+  details.card[open]>summary .chev{transform:rotate(90deg);color:var(--py-blue);}
+  details.card .body{padding:0 18px 17px;color:var(--slate-700);}
+  details.card .body>*:first-child{margin-top:0;}
+  .call{border-radius:11px;padding:14px 16px;margin:16px 0;border:1px solid;font-size:.95rem;}
+  .call .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:5px;}
+  .call.good{background:var(--good-bg);border-color:#86efac;color:#14532d;}
+  .call.good .lbl{background:var(--good);color:#fff;}
+  .call.bad{background:var(--bad-bg);border-color:#fca5a5;color:#7f1d1d;}
+  .call.bad .lbl{background:var(--bad);color:#fff;}
+  .call.note{background:#fff8e1;border-color:#fde68a;color:#713f12;}
+  .call.note .lbl{background:var(--py-yellow-deep);color:var(--slate-900);}
+  .call p:last-child{margin-bottom:0;}
+  .call code{background:rgba(15,23,42,.07);padding:1px 5px;border-radius:4px;}
+  .tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--slate-200);}
+  .tbl th{background:var(--py-blue-dark);color:#fff;text-align:left;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:.88rem;}
+  .tbl td{padding:9px 14px;border-top:1px solid var(--slate-200);vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:var(--slate-50);}
+  .tbl td code{color:var(--py-blue-deep);font-weight:600;}
+  figure{margin:22px 0;background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px 16px 8px;text-align:center;}
+  figure svg{max-width:100%;height:auto;}
+  figcaption{font-size:.84rem;color:var(--slate-500);margin-top:8px;padding-bottom:8px;}
+  figcaption b{color:var(--slate-700);font-family:var(--display);}
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.reveal{opacity:1;transform:none;transition:none;}}
+  @media (max-width:880px){.wrap{grid-template-columns:1fr;gap:0;}.toc{display:none;}main{padding-top:24px;}}
+  :focus-visible{outline:3px solid var(--py-yellow-deep);outline-offset:2px;border-radius:4px;}
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Starting Out with Python &middot; Chapter 13</div>
+    <h1><span class="accent">GUI Programming</span></h1>
+    <p class="lede">Until now your programs have run in a console, asking for input in a fixed order. A <b>graphical user interface</b> turns that around: the program lays out windows, buttons, and text fields, then waits &mdash; the <em>user</em> decides what happens next by clicking and typing. This chapter uses Python's built-in <b>tkinter</b> module to build real windows: labels, buttons, entry fields, radio and check buttons, and a canvas you can draw shapes on.</p>
+    <nav class="hero-bar" aria-label="Chapter topics">
+      <a href="#intro">Graphical User Interfaces</a>
+      <a href="#tkinter">Using tkinter</a>
+      <a href="#labels">Label Widgets</a>
+      <a href="#frames">Frames</a>
+      <a href="#buttons">Buttons &amp; Dialogs</a>
+      <a href="#entry">The Entry Widget</a>
+      <a href="#output">Labels as Output</a>
+      <a href="#choices">Radio &amp; Check Buttons</a>
+      <a href="#canvas">The Canvas Widget</a>
+      <a href="#console">Practice Console</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="toc">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#intro">Graphical user interfaces</a></li>
+      <li><a href="#tkinter">Using the tkinter module</a></li>
+      <li><a href="#labels">Label widgets and pack</a></li>
+      <li><a href="#frames">Organizing widgets with frames</a></li>
+      <li><a href="#buttons">Buttons and info dialogs</a></li>
+      <li><a href="#entry">Getting input with Entry</a></li>
+      <li><a href="#output">Labels as output fields</a></li>
+      <li><a href="#choices">Radio buttons and check buttons</a></li>
+      <li><a href="#canvas">Drawing with the Canvas widget</a></li>
+      <li><a href="#console">Practice console</a></li>
+      <li><a href="#check">Check yourself</a></li>
+      <li><a href="#glossary">Key terms</a></li>
+    </ol>
+  </aside>
+
+  <main>
+    <!-- 1. GRAPHICAL USER INTERFACES -->
+    <section id="intro" class="reveal">
+      <div class="sec-tag">How the user meets the program</div>
+      <h2 class="title">Graphical user interfaces<span class="bar"></span></h2>
+      <p class="lead">A <b>user interface</b> is the part of a program the user interacts with. Two broad styles exist. A <b>command line interface</b> shows a prompt and waits for the user to type a command. A <b>graphical user interface</b> (GUI) lets the user interact through graphical elements on the screen &mdash; windows, buttons, text fields, menus, and dialog boxes.</p>
+
+      <p>The deeper difference is about <em>who is in control</em>. A console program decides the order things happen in: it asks for the first input, then the second, and the user can only answer in that order. A GUI is <b>event-driven</b> &mdash; the program builds the interface and then waits. The user causes <b>events</b> (a click, a keystroke), and the program responds to each event as it arrives, in whatever order the user chooses.</p>
+
+      <figure>
+        <svg viewBox="0 0 568 196" role="img" aria-label="An event-driven loop: a user action enters an event queue, which triggers one of the program's callback handlers, which updates the window; the program then waits for the next event.">
+          <rect x="12" y="54" width="118" height="58" rx="9" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="1.6"/>
+          <text x="71" y="78" text-anchor="middle" fill="#1f4d72" font-family="Inter,sans-serif" font-size="11.5" font-weight="600">User action</text>
+          <text x="71" y="95" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="9.5">click, keystroke</text>
+          <line x1="130" y1="83" x2="158" y2="83" stroke="#334155" stroke-width="1.5"/>
+          <polygon points="160,83 152,78 152,88" fill="#334155"/>
+          <rect x="160" y="54" width="110" height="58" rx="9" fill="#fff" stroke="#306998" stroke-width="1.6"/>
+          <text x="215" y="87" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="11.5">Event queue</text>
+          <line x1="270" y1="83" x2="298" y2="83" stroke="#334155" stroke-width="1.5"/>
+          <polygon points="300,83 292,78 292,88" fill="#334155"/>
+          <rect x="300" y="54" width="126" height="58" rx="9" fill="#fff8e1" stroke="#f0b400" stroke-width="1.7"/>
+          <text x="363" y="78" text-anchor="middle" fill="#713f12" font-family="Inter,sans-serif" font-size="11.5" font-weight="600">Your callback</text>
+          <text x="363" y="95" text-anchor="middle" fill="#92670c" font-family="Inter,sans-serif" font-size="9.5">(event handler)</text>
+          <line x1="426" y1="83" x2="454" y2="83" stroke="#334155" stroke-width="1.5"/>
+          <polygon points="456,83 448,78 448,88" fill="#334155"/>
+          <rect x="456" y="54" width="100" height="58" rx="9" fill="#dcfce7" stroke="#15803d" stroke-width="1.6"/>
+          <text x="506" y="87" text-anchor="middle" fill="#14532d" font-family="Inter,sans-serif" font-size="11.5">Window updates</text>
+          <!-- wait loop back -->
+          <line x1="506" y1="112" x2="506" y2="150" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <line x1="506" y1="150" x2="71" y2="150" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <line x1="71" y1="150" x2="71" y2="114" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <polygon points="71,112 66,122 76,122" fill="#94a3b8"/>
+          <text x="288" y="168" text-anchor="middle" fill="#64748b" font-family="Inter,sans-serif" font-size="10">the program waits, then responds to the next event</text>
+        </svg>
+        <figcaption><b>Figure 13-1.</b> The event-driven cycle. The program spends most of its time waiting; each user action is an event that triggers one of your callback functions.</figcaption>
+      </figure>
+
+      <p><b>Dialog boxes</b> &mdash; small windows that present information or ask the user to make a choice &mdash; handle much of this interaction, alongside icons, buttons, and other controls.</p>
+    </section>
+
+    <!-- 2. USING THE TKINTER MODULE -->
+    <section id="tkinter" class="reveal">
+      <div class="sec-tag">Python's built-in toolkit</div>
+      <h2 class="title">Using the tkinter module<span class="bar"></span></h2>
+      <p class="lead">Python has no GUI features built into the language itself, but the standard library ships with <b>tkinter</b>, a module for building simple GUIs. A <b>widget</b> is any graphical element a program presents &mdash; a label, a button, a text field, and so on.</p>
+
+      <p>Most programmers build GUIs with an object-oriented approach: write a class whose <code>__init__</code> method constructs the window and all its widgets. Creating an instance of the class then makes the window appear. The call to <code>mainloop</code> hands control to tkinter, which waits for and dispatches events.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">window_skeleton.py</span></div>
+<pre><span class="kw">import</span> tkinter
+
+<span class="kw">class</span> HelloWindow<span class="op">:</span>
+    <span class="kw">def</span> __init__(self)<span class="op">:</span>
+        <span class="com"># Create the main window.</span>
+        self.window <span class="op">=</span> tkinter.Tk()
+        <span class="com"># ... build and pack widgets here ...</span>
+        <span class="com"># Hand control to tkinter's event loop.</span>
+        tkinter.mainloop()
+
+<span class="com"># Creating the object makes the window appear.</span>
+app <span class="op">=</span> HelloWindow()</pre>
+      </div>
+
+      <p>tkinter offers many widget types. The ones in this chapter:</p>
+      <table class="tbl">
+        <tr><th>Widget</th><th>What it does</th></tr>
+        <tr><td><code>Label</code></td><td>Displays one line of text (or an image).</td></tr>
+        <tr><td><code>Button</code></td><td>Runs a function when the user clicks it.</td></tr>
+        <tr><td><code>Entry</code></td><td>A box where the user types a single line of input.</td></tr>
+        <tr><td><code>Frame</code></td><td>A container that groups and arranges other widgets.</td></tr>
+        <tr><td><code>Radiobutton</code></td><td>One choice in a mutually exclusive group.</td></tr>
+        <tr><td><code>Checkbutton</code></td><td>An independent on/off toggle.</td></tr>
+        <tr><td><code>Canvas</code></td><td>A rectangular area for drawing 2-D shapes.</td></tr>
+      </table>
+
+      <div class="call note">
+        <span class="lbl">Run GUI programs from the command line</span>
+        <p>tkinter programs don't always behave under IDLE. Run them from your operating system's command prompt for reliable results. (This is also why the practice console near the bottom of this page runs the <em>logic</em> behind a GUI, not the windows themselves &mdash; a browser sandbox has no desktop to draw on.)</p>
+      </div>
+    </section>
+
+    <!-- 3. LABEL WIDGETS AND PACK -->
+    <section id="labels" class="reveal">
+      <div class="sec-tag">Putting text on the screen</div>
+      <h2 class="title">Label widgets and pack<span class="bar"></span></h2>
+      <p class="lead">A <b>Label</b> widget displays a single line of text. You create one as an instance of <code>tkinter.Label</code>: the first argument is the container it belongs to (here the main window), and the <code>text</code> argument is what it shows.</p>
+
+      <p>Creating a widget isn't enough to make it visible &mdash; you must also call its <code>pack</code> method, which positions the widget and displays it. The <code>side</code> argument controls placement: <code>side='top'</code> (the default) stacks widgets vertically, while <code>side='left'</code> and <code>side='right'</code> arrange them horizontally, in the order they were packed.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">greeting.py</span></div>
+<pre><span class="kw">import</span> tkinter
+
+<span class="kw">class</span> GreetingWindow<span class="op">:</span>
+    <span class="kw">def</span> __init__(self)<span class="op">:</span>
+        self.window <span class="op">=</span> tkinter.Tk()
+        self.line1 <span class="op">=</span> tkinter.Label(self.window, text<span class="op">=</span><span class="str">'Welcome aboard.'</span>)
+        self.line2 <span class="op">=</span> tkinter.Label(self.window, text<span class="op">=</span><span class="str">'All systems ready.'</span>)
+        self.line1.pack()        <span class="com"># stacked top-to-bottom (the default)</span>
+        self.line2.pack()
+        tkinter.mainloop()
+
+app <span class="op">=</span> GreetingWindow()</pre>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 520 210" role="img" aria-label="Two small windows. In the left window three labels are stacked vertically using pack with side top. In the right window the same three labels sit side by side using pack with side left.">
+          <!-- left window: side='top' -->
+          <rect x="20" y="24" width="200" height="120" rx="4" fill="#fff" stroke="#94a3b8" stroke-width="1.4"/>
+          <rect x="20" y="24" width="200" height="22" rx="4" fill="#e2e8f0"/>
+          <text x="30" y="39" fill="#64748b" font-family="Fira Code,monospace" font-size="10">tk</text>
+          <rect x="40" y="58" width="160" height="22" rx="3" fill="#e8f1f8" stroke="#cbd5e1"/>
+          <text x="120" y="73" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="11">First</text>
+          <rect x="40" y="84" width="160" height="22" rx="3" fill="#e8f1f8" stroke="#cbd5e1"/>
+          <text x="120" y="99" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="11">Second</text>
+          <rect x="40" y="110" width="160" height="22" rx="3" fill="#e8f1f8" stroke="#cbd5e1"/>
+          <text x="120" y="125" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="11">Third</text>
+          <text x="120" y="166" text-anchor="middle" fill="#475569" font-family="Fira Code,monospace" font-size="10">pack()  &mdash; side='top'</text>
+          <!-- right window: side='left' -->
+          <rect x="300" y="24" width="200" height="120" rx="4" fill="#fff" stroke="#94a3b8" stroke-width="1.4"/>
+          <rect x="300" y="24" width="200" height="22" rx="4" fill="#e2e8f0"/>
+          <text x="310" y="39" fill="#64748b" font-family="Fira Code,monospace" font-size="10">tk</text>
+          <rect x="312" y="72" width="56" height="22" rx="3" fill="#e8f1f8" stroke="#cbd5e1"/>
+          <text x="340" y="87" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="10">First</text>
+          <rect x="372" y="72" width="56" height="22" rx="3" fill="#e8f1f8" stroke="#cbd5e1"/>
+          <text x="400" y="87" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="10">Second</text>
+          <rect x="432" y="72" width="56" height="22" rx="3" fill="#e8f1f8" stroke="#cbd5e1"/>
+          <text x="460" y="87" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="10">Third</text>
+          <text x="400" y="166" text-anchor="middle" fill="#475569" font-family="Fira Code,monospace" font-size="10">pack(side='left')</text>
+        </svg>
+        <figcaption><b>Figure 13-2.</b> The same three labels, packed two ways. The <code>side</code> argument decides whether widgets stack vertically or line up horizontally.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 4. FRAMES -->
+    <section id="frames" class="reveal">
+      <div class="sec-tag">Grouping widgets</div>
+      <h2 class="title">Organizing widgets with frames<span class="bar"></span></h2>
+      <p class="lead">A <b>Frame</b> is a container that holds other widgets. Frames are how you arrange groups of widgets independently: pack some labels into one frame and they follow that frame's layout, separate from widgets in another frame. To place a widget in a frame, pass the frame &mdash; not the main window &mdash; as the widget's container.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">panels.py</span></div>
+<pre><span class="kw">class</span> PanelWindow<span class="op">:</span>
+    <span class="kw">def</span> __init__(self)<span class="op">:</span>
+        self.window <span class="op">=</span> tkinter.Tk()
+        self.top <span class="op">=</span> tkinter.Frame(self.window)
+        self.bottom <span class="op">=</span> tkinter.Frame(self.window)
+
+        <span class="com"># In the top frame, labels stack vertically.</span>
+        tkinter.Label(self.top, text<span class="op">=</span><span class="str">'Engine'</span>).pack()
+        tkinter.Label(self.top, text<span class="op">=</span><span class="str">'Hydraulics'</span>).pack()
+        tkinter.Label(self.top, text<span class="op">=</span><span class="str">'Avionics'</span>).pack()
+
+        <span class="com"># In the bottom frame, the same labels sit side by side.</span>
+        tkinter.Label(self.bottom, text<span class="op">=</span><span class="str">'Engine'</span>).pack(side<span class="op">=</span><span class="str">'left'</span>)
+        tkinter.Label(self.bottom, text<span class="op">=</span><span class="str">'Hydraulics'</span>).pack(side<span class="op">=</span><span class="str">'left'</span>)
+        tkinter.Label(self.bottom, text<span class="op">=</span><span class="str">'Avionics'</span>).pack(side<span class="op">=</span><span class="str">'left'</span>)
+
+        self.top.pack()
+        self.bottom.pack()
+        tkinter.mainloop()</pre>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 360 290" role="img" aria-label="A window containing two frames. The top frame holds three labels stacked vertically; the bottom frame holds the same three labels arranged side by side. Dashed outlines mark each frame.">
+          <rect x="40" y="20" width="280" height="240" rx="4" fill="#fff" stroke="#94a3b8" stroke-width="1.4"/>
+          <rect x="40" y="20" width="280" height="24" rx="4" fill="#e2e8f0"/>
+          <text x="52" y="37" fill="#64748b" font-family="Fira Code,monospace" font-size="11">tk</text>
+          <!-- top frame -->
+          <rect x="60" y="56" width="240" height="116" rx="4" fill="#f8fafc" stroke="#4B8BBE" stroke-width="1.4" stroke-dasharray="5 4"/>
+          <text x="180" y="74" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="12">Engine</text>
+          <text x="180" y="96" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="12">Hydraulics</text>
+          <text x="180" y="118" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="12">Avionics</text>
+          <text x="290" y="150" text-anchor="end" fill="#306998" font-family="Fira Code,monospace" font-size="10">self.top</text>
+          <!-- bottom frame -->
+          <rect x="60" y="186" width="240" height="56" rx="4" fill="#f8fafc" stroke="#15803d" stroke-width="1.4" stroke-dasharray="5 4"/>
+          <text x="105" y="216" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="11">Engine</text>
+          <text x="180" y="216" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="11">Hydraulics</text>
+          <text x="255" y="216" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="11">Avionics</text>
+          <text x="290" y="234" text-anchor="end" fill="#166534" font-family="Fira Code,monospace" font-size="10">self.bottom</text>
+        </svg>
+        <figcaption><b>Figure 13-3.</b> Two frames in one window. Each frame lays out its own widgets, so the top labels stack while the bottom labels line up &mdash; even though the labels are identical.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 5. BUTTONS AND INFO DIALOGS -->
+    <section id="buttons" class="reveal">
+      <div class="sec-tag">Making things happen</div>
+      <h2 class="title">Buttons and info dialogs<span class="bar"></span></h2>
+      <p class="lead">A <b>Button</b> is a widget the user clicks to make something happen. When you create one you give it the <code>text</code> to show on its face and a <code>command</code> &mdash; the function or method to run when it is clicked. That function is called a <b>callback function</b>, or <b>event handler</b>.</p>
+
+      <p>An <b>info dialog box</b> is a small pop-up window that shows the user a message. You display one with <code>tkinter.messagebox.showinfo(title, message)</code> &mdash; <code>title</code> appears in the dialog's title bar, <code>message</code> in its body.</p>
+
+      <p>A <b>quit button</b> closes the program. Rather than writing your own handler, you can set the window's own <code>destroy</code> method as the button's command: clicking the button destroys the window and the program ends.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">buttons.py</span></div>
+<pre><span class="kw">import</span> tkinter
+<span class="kw">import</span> tkinter.messagebox
+
+<span class="kw">class</span> ButtonWindow<span class="op">:</span>
+    <span class="kw">def</span> __init__(self)<span class="op">:</span>
+        self.window <span class="op">=</span> tkinter.Tk()
+        self.run_button <span class="op">=</span> tkinter.Button(self.window, text<span class="op">=</span><span class="str">'Run check'</span>,
+                                         command<span class="op">=</span>self.show_status)
+        self.quit_button <span class="op">=</span> tkinter.Button(self.window, text<span class="op">=</span><span class="str">'Quit'</span>,
+                                          command<span class="op">=</span>self.window.destroy)
+        self.run_button.pack()
+        self.quit_button.pack()
+        tkinter.mainloop()
+
+    <span class="com"># A callback (event handler): runs when the button is clicked.</span>
+    <span class="kw">def</span> show_status(self)<span class="op">:</span>
+        tkinter.messagebox.showinfo(<span class="str">'Status'</span>, <span class="str">'All systems nominal.'</span>)
+
+app <span class="op">=</span> ButtonWindow()</pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Pass the function, don't call it</span>
+        <p>Notice <code>command=self.show_status</code> with <em>no</em> parentheses. You're handing tkinter the function itself, to call later when the click happens. Writing <code>command=self.show_status()</code> would call it immediately, at build time, and pass its return value instead &mdash; a very common beginner mistake.</p>
+      </div>
+    </section>
+    <!-- 6. ENTRY WIDGET -->
+    <section id="entry" class="reveal">
+      <div class="sec-tag">Reading what the user types</div>
+      <h2 class="title">Getting input with the Entry widget<span class="bar"></span></h2>
+      <p class="lead">An <b>Entry</b> widget is a rectangular box the user can type one line of text into. It is the usual way to gather input in a GUI. Typically a button sits nearby; the button's callback reads the entry, processes the value, and shows a result.</p>
+
+      <p>To read what the user typed, call the Entry widget's <code>get</code> method. It always returns a <b>string</b>, so if you need a number you must convert it &mdash; here with <code>float</code>.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">converter.py</span></div>
+<pre><span class="kw">class</span> WeightConverter<span class="op">:</span>
+    <span class="kw">def</span> __init__(self)<span class="op">:</span>
+        self.window <span class="op">=</span> tkinter.Tk()
+        self.prompt <span class="op">=</span> tkinter.Label(self.window, text<span class="op">=</span><span class="str">'Weight in pounds:'</span>)
+        self.entry <span class="op">=</span> tkinter.Entry(self.window, width<span class="op">=</span><span class="num">10</span>)
+        self.button <span class="op">=</span> tkinter.Button(self.window, text<span class="op">=</span><span class="str">'Convert'</span>,
+                                     command<span class="op">=</span>self.convert)
+        self.prompt.pack(side<span class="op">=</span><span class="str">'left'</span>)
+        self.entry.pack(side<span class="op">=</span><span class="str">'left'</span>)
+        self.button.pack(side<span class="op">=</span><span class="str">'left'</span>)
+        tkinter.mainloop()
+
+    <span class="kw">def</span> convert(self)<span class="op">:</span>
+        pounds <span class="op">=</span> <span class="bif">float</span>(self.entry.get())     <span class="com"># get() always returns a string</span>
+        kilos <span class="op">=</span> pounds <span class="op">*</span> <span class="num">0.453592</span>
+        tkinter.messagebox.showinfo(<span class="str">'Result'</span>, <span class="str">f'{pounds} lb = {kilos:.2f} kg'</span>)</pre>
+      </div>
+      <p>When the user types a weight and clicks <b>Convert</b>, the callback reads the entry, computes the result, and pops up an info dialog with the answer.</p>
+    </section>
+
+    <!-- 7. LABELS AS OUTPUT FIELDS -->
+    <section id="output" class="reveal">
+      <div class="sec-tag">Output without a pop-up</div>
+      <h2 class="title">Using labels as output fields<span class="bar"></span></h2>
+      <p class="lead">Instead of interrupting the user with a dialog box, you can show results right in the window by updating a Label. The clean way to do this uses tkinter's <b>StringVar</b> class.</p>
+
+      <p>Create a <code>StringVar</code> object and attach it to a Label with the <code>textvariable</code> argument. After that, whatever value you store in the StringVar with its <code>set</code> method appears in the Label automatically &mdash; no need to rebuild the widget.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">live_converter.py</span></div>
+<pre><span class="kw">class</span> LiveConverter<span class="op">:</span>
+    <span class="kw">def</span> __init__(self)<span class="op">:</span>
+        self.window <span class="op">=</span> tkinter.Tk()
+        self.prompt <span class="op">=</span> tkinter.Label(self.window, text<span class="op">=</span><span class="str">'Weight in pounds:'</span>)
+        self.entry <span class="op">=</span> tkinter.Entry(self.window, width<span class="op">=</span><span class="num">10</span>)
+
+        <span class="com"># A StringVar drives the output label.</span>
+        self.result <span class="op">=</span> tkinter.StringVar()
+        self.output <span class="op">=</span> tkinter.Label(self.window, textvariable<span class="op">=</span>self.result)
+
+        self.button <span class="op">=</span> tkinter.Button(self.window, text<span class="op">=</span><span class="str">'Convert'</span>,
+                                     command<span class="op">=</span>self.convert)
+        self.prompt.pack()
+        self.entry.pack()
+        self.output.pack()
+        self.button.pack()
+        tkinter.mainloop()
+
+    <span class="kw">def</span> convert(self)<span class="op">:</span>
+        pounds <span class="op">=</span> <span class="bif">float</span>(self.entry.get())
+        kilos <span class="op">=</span> pounds <span class="op">*</span> <span class="num">0.453592</span>
+        self.result.set(<span class="str">f'{kilos:.2f} kg'</span>)   <span class="com"># the label updates automatically</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">StringVar vs. a plain string</span>
+        <p>A plain string can't notify the Label that it changed. A <code>StringVar</code> is a tkinter object the Label <em>watches</em>: calling <code>set</code> on it pushes the new text into the Label on screen. The same pattern with <code>IntVar</code> backs the radio and check buttons in the next section.</p>
+      </div>
+    </section>
+
+    <!-- 8. RADIO AND CHECK BUTTONS -->
+    <section id="choices" class="reveal">
+      <div class="sec-tag">Letting the user choose</div>
+      <h2 class="title">Radio buttons and check buttons<span class="bar"></span></h2>
+      <p class="lead">A <b>radio button</b> is a small circle, filled when selected and empty when not. Radio buttons are for choosing <em>one</em> option from several: they are <b>mutually exclusive</b>, so within a group only one can be selected at a time. You create them with <code>tkinter.Radiobutton</code>.</p>
+
+      <p>The trick that makes a group mutually exclusive is sharing a single <b>IntVar</b> object. Associate every radio button in the group with the same IntVar, and give each one a unique <code>value</code>. When the user selects a button, its value is stored in the shared IntVar &mdash; which automatically deselects the others. Setting the IntVar yourself chooses a default.</p>
+
+      <p>A <b>check button</b> is a small box with a label; a check mark shows when it is selected. Check buttons are <em>not</em> mutually exclusive &mdash; the user may turn on any combination. So each Checkbutton gets its <em>own</em> IntVar.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">choices.py</span></div>
+<pre><span class="kw">class</span> CabinWindow<span class="op">:</span>
+    <span class="kw">def</span> __init__(self)<span class="op">:</span>
+        self.window <span class="op">=</span> tkinter.Tk()
+
+        <span class="com"># One IntVar shared by the group -&gt; mutually exclusive.</span>
+        self.cabin <span class="op">=</span> tkinter.IntVar()
+        self.cabin.set(<span class="num">1</span>)                     <span class="com"># a default selection</span>
+        tkinter.Radiobutton(self.window, text<span class="op">=</span><span class="str">'Economy'</span>,
+                            variable<span class="op">=</span>self.cabin, value<span class="op">=</span><span class="num">1</span>).pack(anchor<span class="op">=</span><span class="str">'w'</span>)
+        tkinter.Radiobutton(self.window, text<span class="op">=</span><span class="str">'Business'</span>,
+                            variable<span class="op">=</span>self.cabin, value<span class="op">=</span><span class="num">2</span>).pack(anchor<span class="op">=</span><span class="str">'w'</span>)
+        tkinter.Radiobutton(self.window, text<span class="op">=</span><span class="str">'First'</span>,
+                            variable<span class="op">=</span>self.cabin, value<span class="op">=</span><span class="num">3</span>).pack(anchor<span class="op">=</span><span class="str">'w'</span>)
+
+        <span class="com"># Each check button gets its own IntVar -&gt; independent toggles.</span>
+        self.wifi <span class="op">=</span> tkinter.IntVar()
+        self.meal <span class="op">=</span> tkinter.IntVar()
+        tkinter.Checkbutton(self.window, text<span class="op">=</span><span class="str">'Add Wi-Fi'</span>,
+                           variable<span class="op">=</span>self.wifi).pack(anchor<span class="op">=</span><span class="str">'w'</span>)
+        tkinter.Checkbutton(self.window, text<span class="op">=</span><span class="str">'Add meal'</span>,
+                           variable<span class="op">=</span>self.meal).pack(anchor<span class="op">=</span><span class="str">'w'</span>)
+
+        tkinter.mainloop()</pre>
+      </div>
+
+      <p>You can also give a radio or check button a <code>command</code> argument. That callback runs the instant the button's state changes, so the program can react immediately instead of waiting for the user to click a separate "OK."</p>
+    </section>
+
+    <!-- 9. CANVAS WIDGET -->
+    <section id="canvas" class="reveal">
+      <div class="sec-tag">A surface to draw on</div>
+      <h2 class="title">Drawing with the Canvas widget<span class="bar"></span></h2>
+      <p class="lead">The <b>Canvas</b> widget is a blank rectangular area for drawing simple 2-D shapes. You place shapes using its <b>screen coordinate system</b>: the pixel in the upper-left corner is <code>(0, 0)</code>, X increases to the right, and Y increases <em>downward</em> &mdash; the opposite of the y-axis in math class.</p>
+
+      <figure>
+        <svg viewBox="0 0 420 300" role="img" aria-label="A canvas with its origin (0,0) in the upper-left corner. An arrow along the top shows X increasing to the right; an arrow down the left side shows Y increasing downward. A sample point is marked at coordinates 280 by 120.">
+          <rect x="40" y="40" width="340" height="230" rx="3" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.4"/>
+          <!-- origin -->
+          <circle cx="40" cy="40" r="4.5" fill="#1f4d72"/>
+          <text x="50" y="34" fill="#1f4d72" font-family="Fira Code,monospace" font-size="11" font-weight="600">(0, 0)</text>
+          <!-- x axis arrow -->
+          <line x1="40" y1="26" x2="250" y2="26" stroke="#306998" stroke-width="1.5"/>
+          <polygon points="252,26 244,21 244,31" fill="#306998"/>
+          <text x="145" y="18" text-anchor="middle" fill="#306998" font-family="Inter,sans-serif" font-size="10">X increases &rarr;</text>
+          <!-- y axis arrow -->
+          <line x1="26" y1="40" x2="26" y2="220" stroke="#306998" stroke-width="1.5"/>
+          <polygon points="26,222 21,214 31,214" fill="#306998"/>
+          <text x="20" y="135" text-anchor="middle" fill="#306998" font-family="Inter,sans-serif" font-size="10" transform="rotate(-90 20 135)">Y increases &darr;</text>
+          <!-- sample point -->
+          <line x1="40" y1="160" x2="280" y2="160" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="280" y1="40" x2="280" y2="160" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/>
+          <circle cx="280" cy="160" r="4.5" fill="#f0b400"/>
+          <text x="290" y="178" fill="#92670c" font-family="Fira Code,monospace" font-size="11">(240, 120)</text>
+        </svg>
+        <figcaption><b>Figure 13-4.</b> The canvas coordinate system. The origin sits at the top-left corner and Y grows downward, so larger Y values are lower on the screen.</figcaption>
+      </figure>
+
+      <p>You create a Canvas like any widget, giving it a width and height, then call its drawing methods. The common ones:</p>
+      <table class="tbl">
+        <tr><th>Method</th><th>Draws</th></tr>
+        <tr><td><code>create_line(x1, y1, x2, y2)</code></td><td>A line from a start point to an end point.</td></tr>
+        <tr><td><code>create_rectangle(x1, y1, x2, y2)</code></td><td>A rectangle from its upper-left to its lower-right corner.</td></tr>
+        <tr><td><code>create_oval(x1, y1, x2, y2)</code></td><td>An oval that fills the given bounding box.</td></tr>
+        <tr><td><code>create_arc(x1, y1, x2, y2, start=, extent=)</code></td><td>A slice of an oval, from a starting angle through an extent.</td></tr>
+        <tr><td><code>create_polygon(x1, y1, x2, y2, ...)</code></td><td>A many-sided shape; it closes back to the first point automatically.</td></tr>
+        <tr><td><code>create_text(x, y, text=)</code></td><td>A string centered at the given point.</td></tr>
+      </table>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">shapes.py</span></div>
+<pre><span class="kw">class</span> ShapeWindow<span class="op">:</span>
+    <span class="kw">def</span> __init__(self)<span class="op">:</span>
+        self.window <span class="op">=</span> tkinter.Tk()
+        self.canvas <span class="op">=</span> tkinter.Canvas(self.window, width<span class="op">=</span><span class="num">240</span>, height<span class="op">=</span><span class="num">240</span>)
+
+        self.canvas.create_line(<span class="num">0</span>, <span class="num">0</span>, <span class="num">240</span>, <span class="num">240</span>)        <span class="com"># corner to corner</span>
+        self.canvas.create_rectangle(<span class="num">40</span>, <span class="num">40</span>, <span class="num">200</span>, <span class="num">200</span>)
+        self.canvas.create_oval(<span class="num">60</span>, <span class="num">60</span>, <span class="num">180</span>, <span class="num">180</span>)
+        self.canvas.create_text(<span class="num">120</span>, <span class="num">120</span>, text<span class="op">=</span><span class="str">'Center'</span>)
+
+        self.canvas.pack()
+        tkinter.mainloop()</pre>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 240 240" role="img" aria-label="A 240 by 240 canvas showing the result of the sample code: a diagonal line from the top-left to the bottom-right corner, a rectangle from (40,40) to (200,200), an oval inside it from (60,60) to (180,180), and the word Center at the middle point (120,120).">
+          <rect x="0.5" y="0.5" width="239" height="239" fill="#fff" stroke="#94a3b8" stroke-width="1"/>
+          <!-- faint grid every 40 -->
+          <g stroke="#eef2f7" stroke-width="1">
+            <line x1="40" y1="0" x2="40" y2="240"/><line x1="80" y1="0" x2="80" y2="240"/>
+            <line x1="120" y1="0" x2="120" y2="240"/><line x1="160" y1="0" x2="160" y2="240"/>
+            <line x1="200" y1="0" x2="200" y2="240"/>
+            <line x1="0" y1="40" x2="240" y2="40"/><line x1="0" y1="80" x2="240" y2="80"/>
+            <line x1="0" y1="120" x2="240" y2="120"/><line x1="0" y1="160" x2="240" y2="160"/>
+            <line x1="0" y1="200" x2="240" y2="200"/>
+          </g>
+          <line x1="0" y1="0" x2="240" y2="240" stroke="#306998" stroke-width="1.4"/>
+          <rect x="40" y="40" width="160" height="160" fill="none" stroke="#1f4d72" stroke-width="1.6"/>
+          <ellipse cx="120" cy="120" rx="60" ry="60" fill="none" stroke="#4B8BBE" stroke-width="1.6"/>
+          <text x="120" y="124" text-anchor="middle" fill="#0f172a" font-family="Inter,sans-serif" font-size="12">Center</text>
+        </svg>
+        <figcaption><b>Figure 13-5.</b> What the sample code draws on a 240&times;240 canvas. Every shape is placed by the coordinates passed to its <code>create_</code> method.</figcaption>
+      </figure>
+    </section>
+    <style>
+      .repl{background:#0b1220;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 14px 40px -20px rgba(15,23,42,.6);margin:18px 0;}
+      .repl-head{display:flex;align-items:center;gap:8px;padding:11px 15px;background:#111c30;border-bottom:1px solid #1e293b;}
+      .repl-head .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+      .repl-head .r{background:#f87171;}.repl-head .y{background:#fbbf24;}.repl-head .g{background:#34d399;}
+      .repl-head .ttl{margin-left:6px;font-family:var(--mono);font-size:.76rem;color:#94a3b8;}
+      .repl-head .rst{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:4px 10px;cursor:pointer;}
+      .repl-head .rst:hover{background:#334155;color:#fff;}
+      .repl-start{padding:40px 24px;text-align:center;}
+      .repl-start p{color:#94a3b8;font-size:.92rem;max-width:48ch;margin:0 auto 18px;}
+      .repl-start button{font-family:var(--display);font-weight:600;font-size:.95rem;cursor:pointer;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));color:#1f2937;border:none;border-radius:10px;padding:12px 22px;transition:.18s;}
+      .repl-start button:hover{filter:brightness(1.05);transform:translateY(-1px);}
+      .repl-start button:disabled{opacity:.6;cursor:wait;transform:none;}
+      .repl-status{font-family:var(--mono);font-size:.78rem;color:var(--py-yellow);margin-top:14px;min-height:1em;}
+      .repl-screen{display:none;}
+      .repl-out{font-family:var(--mono);font-size:.85rem;line-height:1.55;color:#e2e8f0;padding:14px 16px 4px;max-height:340px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}
+      .repl-out .echo{color:#cbd5e1;}.repl-out .ps{color:#7cc3ff;}.repl-out .res{color:#a5f3a0;}.repl-out .err{color:#fca5a5;}
+      .repl-line{display:flex;align-items:flex-start;gap:8px;padding:4px 16px 14px;}
+      .repl-line .ps{font-family:var(--mono);font-size:.85rem;color:#7cc3ff;padding-top:2px;flex:none;}
+      .repl-line input{flex:1;background:transparent;border:none;outline:none;color:#e2e8f0;font-family:var(--mono);font-size:.85rem;padding:2px 0;}
+      .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px;}
+      .chips button{font-family:var(--mono);font-size:.76rem;cursor:pointer;background:#fff;border:1px solid var(--slate-300);border-radius:7px;padding:6px 10px;transition:.15s;color:var(--slate-700);}
+      .chips button:hover{border-color:var(--py-blue);background:#eff6fc;color:var(--py-blue-deep);}
+      .chips .lbl-mini{width:100%;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-400);margin-bottom:2px;}
+    </style>    <!-- PRACTICE CONSOLE -->
+    <!-- PRACTICE CONSOLE -->
+    <section id="console" class="reveal">
+      <div class="sec-tag">Hands-on</div>
+      <h2 class="title">Practice in the console<span class="bar"></span></h2>
+      <p class="lead">A real Python interpreter, running entirely in your browser. tkinter needs a desktop display, so the <em>windows</em> from this chapter can't open here &mdash; but the <b>logic behind them</b> runs perfectly. Use the chips to exercise a conversion callback, the "pass a function, call it later" idea at the heart of event handlers, and a little canvas coordinate math. Click <b>Start</b> to load the interpreter (about a 10&nbsp;MB one-time download), then run the GUI programs themselves from your operating system's command prompt.</p>
+
+      <div class="chips">
+        <span class="lbl-mini">Tap these in order, then experiment:</span>
+        <button data-code="def to_kilograms(pounds):&#10;    return pounds * 0.453592">1. define to_kilograms</button>
+        <button data-code="to_kilograms(150)">to_kilograms(150)</button>
+        <button data-code="f'{to_kilograms(150):.2f} kg'">format the result</button>
+        <button data-code="def on_click():&#10;    print('Button was clicked!')">2. define a callback</button>
+        <button data-code="def run_handler(callback):&#10;    callback()">3. define run_handler</button>
+        <button data-code="run_handler(on_click)">run_handler(on_click)</button>
+        <button data-code="on_click">on_click  (the function itself)</button>
+        <button data-code="width, height = 240, 240">4. set canvas size</button>
+        <button data-code="(width // 2, height // 2)">(width // 2, height // 2)</button>
+      </div>
+      <div class="repl" id="repl">
+        <div class="repl-head">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="ttl">Python &mdash; interactive mode</span>
+          <button class="rst" id="replReset" style="display:none;">Reset session</button>
+        </div>
+        <div class="repl-start" id="replStart">
+          <p>A genuine CPython interpreter (via Pyodide) loads on demand, so pages you're only reading stay light.</p>
+          <button id="replStartBtn">&#9654;&nbsp; Start the Python interpreter</button>
+          <div class="repl-status" id="replStatus"></div>
+        </div>
+        <div class="repl-screen" id="replScreen">
+          <div class="repl-out" id="replOut"></div>
+          <div class="repl-line">
+            <span class="ps" id="replPrompt">&gt;&gt;&gt;</span>
+            <input id="replInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Python prompt">
+          </div>
+        </div>
+      </div>
+      <div class="call note">
+        <span class="lbl">Heads up</span>
+        <p>Watch the difference between <code>on_click</code> (a function object, the thing you hand to <code>command=</code>) and <code>on_click()</code> (its result, after it runs). That distinction is exactly why a button's <code>command</code> takes the name without parentheses. To see the actual windows, save the chapter's programs to a <code>.py</code> file and run them from your command prompt.</p>
+      </div>
+    </section>
+
+    <!-- CHECK YOURSELF -->
+    <section id="check" class="reveal">
+      <div class="sec-tag">Review</div>
+      <h2 class="title">Check yourself<span class="bar"></span></h2>
+      <p class="lead">Predict each answer, then open the card. Even better, try the logic in the console above.</p>
+      <div class="cards">
+        <details class="card">
+          <summary><span class="ix">Q1</span>What does it mean that a GUI program is "event-driven"?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>The program builds the interface and then waits. The user decides the order of things by causing events &mdash; clicks, keystrokes &mdash; and the program responds to each event as it happens, rather than dictating a fixed input sequence the way a console program does.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q2</span>How does a command line interface differ from a graphical user interface?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>A command line interface shows a prompt and the user types commands. A GUI lets the user interact through on-screen graphical elements &mdash; windows, buttons, text fields, dialog boxes &mdash; usually with a mouse as well as the keyboard.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q3</span>You create a Label but it never appears. What did you most likely forget?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>The call to <code>pack</code>. Creating a widget isn't enough &mdash; <code>pack</code> (called on the widget) positions it and makes it visible. The <code>side</code> argument then controls whether widgets stack vertically or line up horizontally.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q4</span>What is a callback function, and why is it written <code>command=self.handler</code> with no parentheses?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>A callback (event handler) is the function that runs when the user acts on a widget. You pass the function <em>object</em> so tkinter can call it later, at click time. Adding parentheses would call it immediately during setup and pass its return value instead.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q5</span>What type does an Entry widget's <code>get</code> method return, and what must you do to do math with it?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>It always returns a <b>string</b>. To treat the input as a number you must convert it first &mdash; for example <code>float(self.entry.get())</code> or <code>int(...)</code> &mdash; before doing arithmetic.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q6</span>How do a group of radio buttons become mutually exclusive?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>They all share one <code>IntVar</code> object, and each is given a unique <code>value</code>. Selecting one stores its value in the shared IntVar, which automatically deselects the rest. Setting the IntVar in code chooses a default.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q7</span>How do check buttons differ from radio buttons, and how does that change the code?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Check buttons are independent &mdash; the user can select any combination, so they are not mutually exclusive. Because of that, each <code>Checkbutton</code> gets its <em>own</em> <code>IntVar</code>, rather than sharing one as a radio group does.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q8</span>On a Canvas, where is the point <code>(0, 0)</code>, and which direction does the Y coordinate increase?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>(0, 0)</code> is the upper-left corner. X increases to the right and Y increases <em>downward</em>, so a larger Y value is lower on the screen &mdash; the reverse of a math-class graph.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- GLOSSARY -->
+    <section id="glossary" class="reveal">
+      <div class="sec-tag">Reference</div>
+      <h2 class="title">Key terms<span class="bar"></span></h2>
+      <dl class="gloss">
+        <div><dt>user interface</dt><dd>The part of a program through which the user interacts with it.</dd></div>
+        <div><dt>command line interface</dt><dd>A text interface that shows a prompt and runs commands the user types.</dd></div>
+        <div><dt>graphical user interface (GUI)</dt><dd>An interface built from on-screen graphical elements the user clicks and types into.</dd></div>
+        <div><dt>event-driven</dt><dd>A program style in which the user's actions, not the code, determine the order of events.</dd></div>
+        <div><dt>event</dt><dd>An action such as a click or keystroke that the program can respond to.</dd></div>
+        <div><dt>widget</dt><dd>A graphical element of a GUI, such as a label, button, or text field.</dd></div>
+        <div><dt>tkinter</dt><dd>Python's standard-library module for building GUIs.</dd></div>
+        <div><dt>Label</dt><dd>A widget that displays a single line of text or an image.</dd></div>
+        <div><dt>pack</dt><dd>The method that positions a widget and makes it visible; <code>side</code> sets the direction.</dd></div>
+        <div><dt>Frame</dt><dd>A container widget that holds and arranges a group of other widgets.</dd></div>
+        <div><dt>Button</dt><dd>A widget that runs a callback function when clicked.</dd></div>
+        <div><dt>callback function (event handler)</dt><dd>The function that runs in response to an event such as a button click.</dd></div>
+        <div><dt>info dialog box</dt><dd>A pop-up window that shows a message, created with <code>showinfo(title, message)</code>.</dd></div>
+        <div><dt>Entry</dt><dd>A widget for a single line of typed input; its <code>get</code> method returns a string.</dd></div>
+        <div><dt>StringVar</dt><dd>A tkinter object whose value, set with <code>set</code>, is shown automatically in a linked Label.</dd></div>
+        <div><dt>Radiobutton</dt><dd>A widget for selecting one option from a mutually exclusive group sharing an <code>IntVar</code>.</dd></div>
+        <div><dt>Checkbutton</dt><dd>An independent on/off widget; each uses its own <code>IntVar</code>.</dd></div>
+        <div><dt>Canvas</dt><dd>A rectangular widget for drawing 2-D shapes by screen coordinates.</dd></div>
+        <div><dt>screen coordinate system</dt><dd>The canvas grid with <code>(0,0)</code> at the top-left, X growing right and Y growing down.</dd></div>
+      </dl>
+    </section>
+
+  </main>
+</div>
+
+<footer style="background:var(--slate-900);color:#94a3b8;padding:30px 24px;text-align:center;font-size:.85rem;">
+  <div style="max-width:var(--maxw);margin:0 auto;">
+    <span style="font-family:var(--mono);color:var(--py-yellow);">Chapter 13</span> &middot; GUI Programming &middot; original course materials, concepts only
+  </div>
+</footer>
+<style>
+  dl.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;background:#fff;border:1px solid var(--slate-200);border-radius:12px;overflow:hidden;}
+  dl.gloss>div{padding:13px 16px;border-bottom:1px solid var(--slate-100);border-right:1px solid var(--slate-100);}
+  dl.gloss dt{font-family:var(--mono);font-weight:600;color:var(--py-blue-deep);font-size:.86rem;margin-bottom:3px;}
+  dl.gloss dd{margin:0;color:var(--slate-600);font-size:.9rem;line-height:1.5;}
+  dl.gloss code{background:rgba(15,23,42,.06);padding:1px 4px;border-radius:4px;}
+</style><script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var spy = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map[e.target.id]; if(a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin:'-10% 0px -75% 0px', threshold:0 });
+  document.querySelectorAll('main section[id]').forEach(function(s){ spy.observe(s); });
+
+  var rev = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } });
+  }, { threshold:0.08 });
+  document.querySelectorAll('.reveal').forEach(function(s){ rev.observe(s); });
+
+  var PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.4/full/";
+  var startBtn = document.getElementById('replStartBtn');
+  var startBox = document.getElementById('replStart');
+  var statusEl = document.getElementById('replStatus');
+  var screenEl = document.getElementById('replScreen');
+  var outEl    = document.getElementById('replOut');
+  var inputEl  = document.getElementById('replInput');
+  var promptEl = document.getElementById('replPrompt');
+  var resetBtn = document.getElementById('replReset');
+
+  var pyodide=null, pushLine=null, resetConsole=null, loading=false;
+  var history=[], hIdx=0, contMode=false;
+
+  window._webInput = function(p){ var v = window.prompt(p || ""); return v===null ? "" : v; };
+
+  function append(text, cls){
+    if(text===undefined || text===null || text==="") return;
+    var span=document.createElement('span');
+    if(cls) span.className=cls;
+    span.textContent=text;
+    outEl.appendChild(span);
+    outEl.scrollTop=outEl.scrollHeight;
+  }
+  function echoLine(promptStr, code){ append(promptStr+' ', 'ps'); append(code+'\n', 'echo'); }
+
+  var SETUP = [
+    "import sys, io, code, builtins",
+    "from js import _webInput",
+    "class WebConsole(code.InteractiveConsole):",
+    "    def write(self, data):",
+    "        sys.stdout.write(data)",
+    "_ns = {'__name__': '__main__'}",
+    "_console = WebConsole(locals=_ns)",
+    "def _web_input(prompt=''):",
+    "    sys.stdout.write(str(prompt))",
+    "    val = _webInput(str(prompt))",
+    "    sys.stdout.write(str(val) + chr(10))",
+    "    return val",
+    "builtins.input = _web_input",
+    "def push_line(line):",
+    "    buf = io.StringIO()",
+    "    old = sys.stdout",
+    "    sys.stdout = buf",
+    "    try:",
+    "        more = _console.push(line)",
+    "    finally:",
+    "        sys.stdout = old",
+    "    return [bool(more), buf.getvalue()]",
+    "def reset_console():",
+    "    global _console",
+    "    _console = WebConsole(locals={'__name__': '__main__'})"
+  ].join("\n");
+
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s=document.createElement('script'); s.src=src;
+      s.onload=res; s.onerror=function(){ rej(new Error('Could not load '+src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function start(){
+    if(loading || pyodide) return;
+    loading=true; startBtn.disabled=true;
+    statusEl.textContent='Downloading the Python runtime…';
+    try{
+      await loadScript(PYODIDE_URL+'pyodide.js');
+      statusEl.textContent='Starting Python…';
+      pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
+      pyodide.runPython(SETUP);
+      pushLine = pyodide.globals.get('push_line');
+      resetConsole = pyodide.globals.get('reset_console');
+      var ver = pyodide.runPython("sys.version.split()[0]");
+      startBox.style.display='none';
+      screenEl.style.display='block';
+      resetBtn.style.display='inline-block';
+      append('Python '+ver+' (Pyodide) — type a statement and press Enter.\n', 'res');
+      inputEl.focus();
+    }catch(err){
+      statusEl.textContent='Could not start: '+err.message+'  (check your connection and try again)';
+      startBtn.disabled=false; loading=false;
+    }
+  }
+
+  function process(line){
+    var shownPrompt = contMode ? '...' : '>>>';
+    echoLine(shownPrompt, line);
+    var res = pushLine(line);
+    var arr = res.toJs(); res.destroy();
+    var more = arr[0], output = arr[1];
+    if(output){
+      var cls = /(^|\n)\s*(Traceback|[A-Za-z]*Error|[A-Za-z]*Warning)/.test(output) ? 'err' : 'res';
+      append(output, cls);
+    }
+    contMode = more;
+    promptEl.textContent = contMode ? '...' : '>>>';
+  }
+
+  function runChip(code){
+    if(!pyodide){ return; }
+    var lines = code.split('\n');
+    for(var i=0;i<lines.length;i++){ process(lines[i]); }
+    if(contMode){ process(''); }
+    inputEl.focus();
+  }
+
+  inputEl && inputEl.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      var line = inputEl.value;
+      if(line.trim()!=='') { history.push(line); }
+      hIdx = history.length;
+      inputEl.value='';
+      process(line);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      if(hIdx>0){ hIdx--; inputEl.value=history[hIdx]||''; }
+    } else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(hIdx<history.length-1){ hIdx++; inputEl.value=history[hIdx]||''; }
+      else { hIdx=history.length; inputEl.value=''; }
+    }
+  });
+
+  startBtn && startBtn.addEventListener('click', start);
+  resetBtn && resetBtn.addEventListener('click', function(){
+    if(resetConsole){ resetConsole(); }
+    outEl.innerHTML=''; contMode=false; promptEl.textContent='>>>';
+    append('Session reset.\n', 'res'); inputEl.focus();
+  });
+
+  document.querySelectorAll('.chips button[data-code]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var code = b.getAttribute('data-code');
+      if(pyodide){ runChip(code); }
+      else { if(code.indexOf('\n')===-1){ inputEl.value=code; } start(); }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
