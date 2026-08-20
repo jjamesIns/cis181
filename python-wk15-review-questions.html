@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 15 · Review Questions — Recursion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;
+    --py-blue-dk:#306998;
+    --py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;
+    --py-yellow-dk:#E5A800;
+    --ink:#2b303b;
+    --ink-soft:#5b6470;
+    --ink-faint:#8a929d;
+    --page:#f6f8fa;
+    --surface:#ffffff;
+    --border:#e1e4e8;
+    --border-strong:#cfd6dd;
+    --code-bg:#1e2530;
+    --code-bg2:#262f3d;
+    --code-text:#e6edf3;
+    --code-comment:#7d8893;
+    --shadow:0 1px 2px rgba(27,40,55,.06),0 6px 22px rgba(27,40,55,.07);
+    --shadow-lift:0 8px 30px rgba(27,40,55,.13);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:88px;}
+  body{
+    margin:0;background:var(--page);color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:"Space Grotesk","Inter",sans-serif;line-height:1.18;margin:0;}
+  code,kbd,pre,.mono{font-family:"Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;}
+  a{color:var(--py-blue-dk);}
+
+  /* ---------- scroll progress ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:4px;width:0%;z-index:60;
+    background:linear-gradient(90deg,var(--py-blue) 0%,var(--py-blue) 55%,var(--py-yellow) 100%);
+    transition:width .08s linear;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:
+      radial-gradient(1100px 380px at 82% -40%,rgba(255,212,59,.20),transparent 60%),
+      linear-gradient(160deg,var(--py-blue-deep) 0%,var(--py-blue-dk) 52%,var(--py-blue) 120%);
+    color:#fff;padding:64px 24px 54px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"?";position:absolute;right:5%;bottom:-58px;
+    font-family:"Fira Code",monospace;font-size:210px;font-weight:600;
+    color:rgba(255,255,255,.07);pointer-events:none;
+  }
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:2;}
+  .brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .brand .mark{
+    font-family:"Fira Code",monospace;font-weight:600;font-size:15px;
+    color:var(--py-blue-deep);background:var(--py-yellow);
+    padding:4px 10px;border-radius:7px;letter-spacing:1px;
+  }
+  .brand .brand-txt{font-family:"Space Grotesk";font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.82);}
+  .eyebrow{font-family:"Fira Code",monospace;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--py-yellow);margin-bottom:14px;}
+  .hero h1{font-size:clamp(30px,5vw,52px);font-weight:700;letter-spacing:-.5px;max-width:20ch;}
+  .hero .sub{margin-top:18px;font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.9);max-width:64ch;}
+  .topics{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px;}
+  .topics a{
+    text-decoration:none;color:#fff;font-size:14.5px;font-weight:500;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);
+    padding:8px 14px;border-radius:999px;transition:.18s;backdrop-filter:blur(2px);
+  }
+  .topics a:hover{background:var(--py-yellow);color:var(--py-blue-deep);border-color:var(--py-yellow);transform:translateY(-1px);}
+  .topics a .n{font-family:"Fira Code";color:var(--py-yellow);margin-right:7px;font-size:13px;}
+  .topics a:hover .n{color:var(--py-blue-deep);}
+  .topics a.topic-out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  .grid{display:grid;grid-template-columns:232px minmax(0,1fr);gap:40px;align-items:start;padding:40px 24px 80px;max-width:var(--maxw);margin:0 auto;}
+
+  /* ---------- side nav ---------- */
+  nav.toc{position:sticky;top:24px;align-self:start;}
+  nav.toc .toc-title{font-family:"Fira Code";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);margin:0 0 12px 14px;}
+  nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border);}
+  nav.toc a{
+    display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink-soft);
+    font-size:14.5px;font-weight:500;padding:8px 14px;margin-left:-2px;
+    border-left:2px solid transparent;transition:.16s;line-height:1.35;
+  }
+  nav.toc a .num{font-family:"Fira Code";font-size:12px;color:var(--py-blue);opacity:.8;}
+  nav.toc a:hover{color:var(--ink);background:#eef2f6;}
+  nav.toc a.active{color:var(--py-blue-dk);border-left-color:var(--py-blue);background:#eaf2f9;font-weight:600;}
+  nav.toc a.active .num{opacity:1;}
+  nav.toc .toc-out{
+    display:flex;gap:9px;align-items:baseline;margin:14px 0 0;padding:9px 14px;
+    text-decoration:none;font-size:14.5px;font-weight:600;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:9px;transition:.16s;
+  }
+  nav.toc .toc-out:hover{background:var(--py-blue-dk);color:#fff;border-color:var(--py-blue-dk);}
+  nav.toc .toc-out .num{font-family:"Fira Code";font-size:12px;color:inherit;opacity:1;}
+
+  /* ---------- sections ---------- */
+  main{min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:84px;}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;flex-wrap:wrap;}
+  .sec-num{
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:#fff;
+    background:var(--py-blue-dk);min-width:34px;height:34px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  section h2{font-size:clamp(23px,3vw,31px);font-weight:700;letter-spacing:-.3px;}
+  .pts{
+    font-family:"Fira Code";font-size:12.5px;letter-spacing:.5px;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:999px;padding:3px 11px;white-space:nowrap;
+  }
+  .lead{color:var(--ink-soft);font-size:18px;margin:6px 0 22px;}
+  section h3{font-size:20px;font-weight:600;margin:30px 0 10px;color:var(--py-blue-deep);}
+  p{margin:0 0 15px;}
+  .wrap-note{max-width:74ch;}
+  strong{font-weight:600;}
+  .term{font-weight:600;color:var(--py-blue-deep);}
+
+  /* ---------- callouts ---------- */
+  .note{
+    border:1px solid var(--border);border-left:4px solid var(--py-yellow);
+    background:#fffdf3;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .note b{color:var(--py-yellow-dk);}
+  .keypt{
+    border:1px solid var(--border);border-left:4px solid var(--py-blue);
+    background:#f3f8fc;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .keypt b{color:var(--py-blue-dk);}
+
+  /* ---------- question lists ---------- */
+  .qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:8px 26px;}
+  ol.qs{list-style:none;counter-reset:q;margin:0;padding:0;}
+  ol.qs > li{
+    counter-increment:q;position:relative;padding:18px 0 18px 46px;
+    border-bottom:1px solid var(--border);break-inside:avoid;
+  }
+  ol.qs > li:last-child{border-bottom:none;}
+  ol.qs > li::before{
+    content:counter(q) ".";position:absolute;left:0;top:17px;
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);
+  }
+  ol.qs > li .stem{margin:0;font-size:16.5px;}
+  .opts{list-style:none;margin:11px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:5px 22px;}
+  .opts li{font-size:16px;color:var(--ink-soft);}
+  .opts .lbl{font-family:"Fira Code";font-weight:600;color:var(--py-blue);margin-right:9px;}
+  .blank{display:inline-block;min-width:70px;border-bottom:1.5px solid var(--border-strong);}
+  ol.qs.tf > li{padding-left:78px;}
+  ol.qs.tf > li::before{top:18px;}
+  .tfbox{
+    position:absolute;left:32px;top:18px;font-family:"Fira Code";font-size:14px;
+    color:var(--ink-faint);letter-spacing:1px;
+  }
+  ol.qs.sa > li{padding-bottom:22px;}
+  ol.qs.sa .hint{display:block;margin-top:6px;font-size:14.5px;color:var(--ink-faint);font-style:italic;}
+
+  /* ---------- code blocks ---------- */
+  .code{
+    background:var(--code-bg);border-radius:11px;margin:16px 0;overflow:hidden;
+    border:1px solid #2c3645;box-shadow:var(--shadow);
+  }
+  .code .bar{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--code-bg2);border-bottom:1px solid #313c4c;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .d1{background:#ff5f56;}.code .bar .d2{background:#ffbd2e;}.code .bar .d3{background:#27c93f;}
+  .code .bar .fname{margin-left:8px;font-family:"Fira Code";font-size:12.5px;color:#9aa6b2;}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;}
+  .code code{font-size:14.5px;color:var(--code-text);line-height:1.65;display:block;white-space:pre;}
+  .c-kw{color:#ff9d6b;}
+  .c-fn{color:#7cc4ff;}
+  .c-str{color:#9ae26b;}
+  .c-num{color:#f7c873;}
+  .c-com{color:var(--code-comment);font-style:italic;}
+  .c-prompt{color:#6fae4f;}
+  .c-out{color:#cbd3dc;}
+  .c-err{color:#ff7b72;}
+  kbd{font-size:13px;background:#eef2f6;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;padding:1px 7px;color:var(--ink);}
+
+  /* ---------- exercise cards ---------- */
+  .ex{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    box-shadow:var(--shadow);padding:24px 26px;margin:22px 0;break-inside:avoid;
+  }
+  .ex-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .ex-tag{
+    font-family:"Fira Code";font-size:12.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+    color:var(--py-blue-deep);background:var(--py-yellow);padding:3px 10px;border-radius:6px;
+  }
+  .ex h3{margin:0;font-size:21px;color:var(--ink);}
+  .ex .why{color:var(--ink-soft);font-size:15.5px;margin:6px 0 14px;}
+  .ex ol.steps{margin:0 0 4px;padding-left:22px;}
+  .ex ol.steps > li{margin-bottom:11px;padding-left:4px;}
+  .ex ol.steps code{
+    background:#eef2f6;border:1px solid var(--border);border-radius:5px;
+    padding:1px 7px;font-size:14.5px;color:var(--py-blue-deep);white-space:nowrap;
+  }
+  .console-btn{
+    display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+    background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;font-size:15px;
+    padding:10px 20px;border-radius:999px;margin:6px 0 2px;transition:.18s;box-shadow:var(--shadow);
+  }
+  .console-btn:hover{background:var(--py-blue-deep);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+  .console-btn .arrow{font-family:"Fira Code";color:var(--py-yellow);}
+
+  /* ---------- answer key ---------- */
+  .keybreak{
+    border-top:2px dashed var(--border-strong);margin:0 0 40px;padding-top:26px;
+    text-align:center;color:var(--ink-faint);font-family:"Fira Code";font-size:13px;letter-spacing:2px;text-transform:uppercase;
+  }
+  #answers{break-before:page;}
+  .akey{background:linear-gradient(160deg,#f3f8fc,#fffdf3);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin-bottom:26px;}
+  .akey h3{margin-top:0;}
+  .agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:8px 26px;margin:0;padding:0;list-style:none;}
+  .agrid li{font-size:16px;padding:5px 0;border-bottom:1px dotted var(--border-strong);}
+  .agrid .n{font-family:"Fira Code";color:var(--py-blue-dk);font-weight:600;margin-right:10px;}
+  .agrid .v{font-weight:600;color:var(--py-blue-deep);}
+  ol.akeys{list-style:none;counter-reset:ak;margin:0;padding:0;}
+  ol.akeys > li{counter-increment:ak;position:relative;padding:14px 0 14px 46px;border-bottom:1px solid var(--border);break-inside:avoid;}
+  ol.akeys > li:last-child{border-bottom:none;}
+  ol.akeys > li::before{content:counter(ak) ".";position:absolute;left:0;top:14px;font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);}
+  ol.akeys .qtext{display:block;font-weight:600;color:var(--ink);margin-bottom:5px;}
+  ol.akeys .atext{color:var(--ink-soft);font-size:16px;}
+
+  /* ---------- rubric table ---------- */
+  .ctable{width:100%;border-collapse:collapse;margin:20px 0;font-size:15.5px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .ctable th,.ctable td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .ctable thead th{background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td:first-child{font-weight:600;color:var(--py-blue-deep);}
+  .ctable tbody tr:nth-child(even){background:#f9fbfc;}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:26px 24px;color:var(--ink-faint);font-size:13.5px;}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:880px){
+    .grid{grid-template-columns:1fr;gap:0;padding-top:0;}
+    nav.toc{position:sticky;top:0;z-index:40;background:var(--page);margin:0 -24px 24px;padding:10px 0;border-bottom:1px solid var(--border);}
+    nav.toc .toc-title{display:none;}
+    nav.toc ol{display:flex;overflow-x:auto;border-left:none;padding:0 18px;gap:4px;}
+    nav.toc a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent;border-radius:8px 8px 0 0;}
+    nav.toc a.active{border-left:none;border-bottom-color:var(--py-blue);}
+    nav.toc .toc-out{display:none;}
+    .hero::after{font-size:120px;bottom:-30px;}
+    .qcard{padding:6px 16px;}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none!important;}}
+  :focus-visible{outline:3px solid var(--py-yellow);outline-offset:2px;border-radius:4px;}
+
+  /* ---------- print: answer key starts on its own page ---------- */
+  @media print{
+    body{background:#fff;font-size:11.5pt;line-height:1.5;}
+    #progress,nav.toc,.home-link,.topics,.console-btn{display:none!important;}
+    .hero{background:none;color:var(--ink);padding:0 0 14px;border-bottom:2px solid var(--py-blue-dk);}
+    .hero::after{display:none;}
+    .hero .brand .mark{background:none;color:var(--ink);padding:0;}
+    .hero .brand .brand-txt,.hero .sub{color:var(--ink-soft);}
+    .eyebrow{color:var(--py-blue-dk);}
+    .grid{display:block;padding:14px 0 0;max-width:100%;}
+    .qcard,.ex,.akey,.keypt,.note{box-shadow:none;}
+    section{margin-bottom:26px;}
+    #answers{page-break-before:always;break-before:page;}
+    .keybreak{display:none;}
+    footer{page-break-before:avoid;}
+    a{color:var(--ink);text-decoration:none;}
+  }
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:880px){ nav.toc{ top:48px; } }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+<div id="progress"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand">
+      <span class="mark">&gt;&gt;&gt;</span>
+      <span class="brand-txt">CIS181 · Python Programming</span>
+    </div>
+    <div class="eyebrow">Week 15 · Review Questions</div>
+    <h1>Recursion</h1>
+    <p class="sub">Five sections: Multiple Choice, True or False, Short Answer, Algorithm Workbench, and Programming Exercises. The workbench and exercise items are all done in the browser-based Interactive Python Console. Total: 100 points.</p>
+    <div class="topics">
+      <a href="#mc"><span class="n">01</span>Multiple Choice</a>
+      <a href="#tf"><span class="n">02</span>True or False</a>
+      <a href="#sa"><span class="n">03</span>Short Answer</a>
+      <a href="#aw"><span class="n">04</span>Algorithm Workbench</a>
+      <a href="#pe"><span class="n">05</span>Programming Exercises</a>
+      <a href="#answers"><span class="n">✓</span>Answer Key</a>
+      <a href="python-wk15-recursion.html" class="topic-out"><span class="n">&larr;</span>Week 15 Concepts</a>
+    </div>
+  </div>
+</header>
+
+<div class="grid">
+  <nav class="toc" aria-label="Section navigation">
+    <p class="toc-title">On this page</p>
+    <ol>
+      <li><a href="#mc"><span class="num">1</span>Multiple Choice</a></li>
+      <li><a href="#tf"><span class="num">2</span>True or False</a></li>
+      <li><a href="#sa"><span class="num">3</span>Short Answer</a></li>
+      <li><a href="#aw"><span class="num">4</span>Algorithm Workbench</a></li>
+      <li><a href="#pe"><span class="num">5</span>Programming Exercises</a></li>
+      <li><a href="#answers"><span class="num">✓</span>Answer Key</a></li>
+    </ol>
+    <a class="toc-out" href="python-wk15-recursion.html">
+      <span class="num">&larr;</span>Week 15 Concepts
+    </a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 1 · MULTIPLE CHOICE ============ -->
+  <section id="mc">
+    <div class="sec-head"><span class="sec-num">1</span><h2>Multiple Choice</h2><span class="pts">24 × 1 pt = 24</span></div>
+    <p class="lead">Choose the one best answer for each question.</p>
+
+    <div class="qcard">
+    <ol class="qs">
+      <li>
+        <p class="stem">A recursive function is one that <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>contains a loop</li>
+          <li><span class="lbl">b.</span>calls itself</li>
+          <li><span class="lbl">c.</span>returns no value</li>
+          <li><span class="lbl">d.</span>accepts no arguments</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The part of a recursive function that solves the problem directly, without further recursion, is the <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>recursive case</li>
+          <li><span class="lbl">b.</span>base case</li>
+          <li><span class="lbl">c.</span>driver</li>
+          <li><span class="lbl">d.</span>accumulator</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The part that reduces the problem and calls the function again is the <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>base case</li>
+          <li><span class="lbl">b.</span>recursive case</li>
+          <li><span class="lbl">c.</span>terminal case</li>
+          <li><span class="lbl">d.</span>sentinel</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The number of times a function calls itself is called the <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>depth of recursion</li>
+          <li><span class="lbl">b.</span>width of recursion</li>
+          <li><span class="lbl">c.</span>iteration count</li>
+          <li><span class="lbl">d.</span>call frequency</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What happens if a recursive function has no reachable base case?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>it returns <span class="mono">None</span></li>
+          <li><span class="lbl">b.</span>it recurses until Python raises <span class="mono">RecursionError</span></li>
+          <li><span class="lbl">c.</span>it runs exactly once</li>
+          <li><span class="lbl">d.</span>Python inserts one automatically</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">In the recursive case, the recursive call must be made on <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>the same problem</li>
+          <li><span class="lbl">b.</span>a smaller version of the same problem</li>
+          <li><span class="lbl">c.</span>a larger version of the problem</li>
+          <li><span class="lbl">d.</span>an unrelated problem</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">After a recursive call finishes, control returns to <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>the first line of the function</li>
+          <li><span class="lbl">b.</span>the statement following the call</li>
+          <li><span class="lbl">c.</span>the base case</li>
+          <li><span class="lbl">d.</span>the main program, always</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Any problem that can be solved recursively <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>can also be solved with a loop</li>
+          <li><span class="lbl">b.</span>can only be solved recursively</li>
+          <li><span class="lbl">c.</span>requires two base cases</li>
+          <li><span class="lbl">d.</span>runs faster than a loop</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Compared with an equivalent loop, a recursive solution is usually <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>more efficient</li>
+          <li><span class="lbl">b.</span>less efficient, because of call overhead</li>
+          <li><span class="lbl">c.</span>identical in every respect</li>
+          <li><span class="lbl">d.</span>impossible to write</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The main reason to choose recursion is that it <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>uses less memory</li>
+          <li><span class="lbl">b.</span>expresses certain problems far more clearly</li>
+          <li><span class="lbl">c.</span>avoids the need for functions</li>
+          <li><span class="lbl">d.</span>is always shorter</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What is the base case in the factorial function?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">n == 1</span>, returning 0</li>
+          <li><span class="lbl">b.</span><span class="mono">n == 0</span>, returning 1</li>
+          <li><span class="lbl">c.</span><span class="mono">n &lt; 0</span>, returning -1</li>
+          <li><span class="lbl">d.</span>there is none</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What does <span class="mono">factorial(4)</span> return?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>10</li>
+          <li><span class="lbl">b.</span>16</li>
+          <li><span class="lbl">c.</span>24</li>
+          <li><span class="lbl">d.</span>120</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A function that calls itself is using <span class="blank"></span> recursion.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>direct</li>
+          <li><span class="lbl">b.</span>indirect</li>
+          <li><span class="lbl">c.</span>mutual</li>
+          <li><span class="lbl">d.</span>nested</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">When function A calls function B, which then calls function A, the program is using <span class="blank"></span> recursion.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>direct</li>
+          <li><span class="lbl">b.</span>indirect</li>
+          <li><span class="lbl">c.</span>infinite</li>
+          <li><span class="lbl">d.</span>tail</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">In the recursive <span class="mono">sum_all</span> function, what is the base case?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>a list of one item, returning that item</li>
+          <li><span class="lbl">b.</span>an empty list, returning 0</li>
+          <li><span class="lbl">c.</span>a list of two items</li>
+          <li><span class="lbl">d.</span>a list of negative numbers</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">In <span class="mono">sum_all</span>, what makes the problem smaller on each call?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>the list is sorted</li>
+          <li><span class="lbl">b.</span>the slice <span class="mono">numbers[1:]</span> removes the first element</li>
+          <li><span class="lbl">c.</span>the numbers get smaller</li>
+          <li><span class="lbl">d.</span>nothing does</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">How many base cases does the recursive Fibonacci function need?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>none</li>
+          <li><span class="lbl">b.</span>one</li>
+          <li><span class="lbl">c.</span>two</li>
+          <li><span class="lbl">d.</span>three</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The recursive case of the Fibonacci function makes <span class="blank"></span> recursive call(s).</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>one</li>
+          <li><span class="lbl">b.</span>two</li>
+          <li><span class="lbl">c.</span>three</li>
+          <li><span class="lbl">d.</span>none</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The recursive Fibonacci function is inefficient because it <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>uses too many variables</li>
+          <li><span class="lbl">b.</span>recomputes the same values many times</li>
+          <li><span class="lbl">c.</span>has no base case</li>
+          <li><span class="lbl">d.</span>uses slicing</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Euclid's algorithm for the GCD reaches its base case when <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">a == b</span></li>
+          <li><span class="lbl">b.</span><span class="mono">a % b == 0</span></li>
+          <li><span class="lbl">c.</span><span class="mono">a &lt; b</span></li>
+          <li><span class="lbl">d.</span><span class="mono">b == 1</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">In the Towers of Hanoi, what is the base case?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>no disks remain</li>
+          <li><span class="lbl">b.</span>only one disk needs moving</li>
+          <li><span class="lbl">c.</span>all disks are on the spare peg</li>
+          <li><span class="lbl">d.</span>the pegs are empty</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">How many moves does the Towers of Hanoi solution require for 3 disks?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>3</li>
+          <li><span class="lbl">b.</span>6</li>
+          <li><span class="lbl">c.</span>7</li>
+          <li><span class="lbl">d.</span>9</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">In the Towers of Hanoi function, the peg arguments are passed in different orders on each recursive call in order to <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>save memory</li>
+          <li><span class="lbl">b.</span>swap the roles of the target and spare pegs</li>
+          <li><span class="lbl">c.</span>avoid a syntax error</li>
+          <li><span class="lbl">d.</span>count the disks</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A loop is generally the better choice when <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>the problem is naturally defined in terms of itself</li>
+          <li><span class="lbl">b.</span>a simple repetition will do and efficiency matters</li>
+          <li><span class="lbl">c.</span>the data is a tree</li>
+          <li><span class="lbl">d.</span>recursion is never worse</li>
+        </ul>
+      </li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 2 · TRUE OR FALSE ============ -->
+  <section id="tf">
+    <div class="sec-head"><span class="sec-num">2</span><h2>True or False</h2><span class="pts">10 × 1 pt = 10</span></div>
+
+    <div class="qcard">
+    <ol class="qs tf">
+      <li><span class="tfbox">T / F</span><p class="stem">Every recursive function must have at least one base case.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A recursive function may have more than one base case.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Some problems can be solved with recursion but not with a loop.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Each recursive call creates a fresh execution of the function with its own parameter values.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Recursion is usually faster than an equivalent loop.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A recursive function that never reaches its base case will run forever without any error.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">In indirect recursion, no function ever calls itself directly.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The factorial of 0 is defined as 1.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The recursive Fibonacci function computes each value exactly once.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Recursion is a good fit for problems whose definition refers to a smaller version of themselves.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 3 · SHORT ANSWER ============ -->
+  <section id="sa">
+    <div class="sec-head"><span class="sec-num">3</span><h2>Short Answer</h2><span class="pts">11 × 2 pts = 22</span></div>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li><p class="stem">What is a recursive function? Why must it contain more than just the recursive call?</p></li>
+      <li><p class="stem">Describe the two parts every well-formed recursive function has, and state what each one is responsible for.</p></li>
+      <li><p class="stem">What is the depth of recursion? Explain what determines it for a given call.</p></li>
+      <li><p class="stem">Explain what happens when a recursive function's base case is never reached, and name the exception Python raises.</p></li>
+      <li><p class="stem">Explain what "reduce the problem to a smaller version of itself" means. Give an example using either a number or a list.</p></li>
+      <li><p class="stem">Describe what happens to the chain of calls in <span class="mono">factorial(4)</span>, using the words <em>wind down</em> and <em>unwind</em>.</p></li>
+      <li><p class="stem">Explain the difference between direct and indirect recursion, and give an example of each in one sentence.</p></li>
+      <li><p class="stem">Why is the recursive Fibonacci function inefficient even though it is correct? What is it about the recursive case that causes this?</p></li>
+      <li><p class="stem">State the base case and recursive case of Euclid's algorithm for the greatest common divisor, and explain why the recursion always terminates.</p></li>
+      <li><p class="stem">Describe the recursive strategy for the Towers of Hanoi in your own words, including the base case.</p></li>
+      <li><p class="stem">Give two criteria you would use to decide between recursion and a loop for a given problem.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 4 · ALGORITHM WORKBENCH ============ -->
+  <section id="aw">
+    <div class="sec-head"><span class="sec-num">4</span><h2>Algorithm Workbench</h2><span class="pts">16 × 1 pt = 16</span></div>
+    <p class="lead">Short code-writing and code-tracing items. Write your answer first, <em>then</em> check it in the console — the prediction is the part that teaches.</p>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li>
+        <p class="stem">What does the following display?</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">trace_1.py</span></div>
+<pre><code><span class="c-kw">def</span> <span class="c-fn">count_down</span>(n):
+    <span class="c-kw">if</span> n &gt; <span class="c-num">0</span>:
+        <span class="c-fn">print</span>(n)
+        <span class="c-fn">count_down</span>(n - <span class="c-num">1</span>)
+    <span class="c-kw">else</span>:
+        <span class="c-fn">print</span>(<span class="c-str">'Liftoff!'</span>)
+
+<span class="c-fn">count_down</span>(<span class="c-num">3</span>)</code></pre>
+        </div>
+      </li>
+      <li>
+        <p class="stem">What does the following display, and how does it differ from question 1?</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">trace_2.py</span></div>
+<pre><code><span class="c-kw">def</span> <span class="c-fn">mystery</span>(n):
+    <span class="c-kw">if</span> n &gt; <span class="c-num">0</span>:
+        <span class="c-fn">mystery</span>(n - <span class="c-num">1</span>)
+        <span class="c-fn">print</span>(n)
+
+<span class="c-fn">mystery</span>(<span class="c-num">3</span>)</code></pre>
+        </div>
+      </li>
+      <li><p class="stem">Identify the base case and the recursive case in the <span class="mono">factorial</span> function, and state the value each returns.</p></li>
+      <li>
+        <p class="stem">Give the value of each call.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">factorial(0)</span></li>
+          <li><span class="lbl">b.</span><span class="mono">factorial(1)</span></li>
+          <li><span class="lbl">c.</span><span class="mono">factorial(5)</span></li>
+          <li><span class="lbl">d.</span><span class="mono">factorial(6)</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The following function is meant to sum the integers from 1 to <span class="mono">n</span>, but it never finishes. Identify the bug and fix it.</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">bug_1.py</span></div>
+<pre><code><span class="c-kw">def</span> <span class="c-fn">total_to</span>(n):
+    <span class="c-kw">return</span> n + <span class="c-fn">total_to</span>(n - <span class="c-num">1</span>)</code></pre>
+        </div>
+      </li>
+      <li>
+        <p class="stem">This version has a base case but still fails. Identify the bug.</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">bug_2.py</span></div>
+<pre><code><span class="c-kw">def</span> <span class="c-fn">total_to</span>(n):
+    <span class="c-kw">if</span> n == <span class="c-num">0</span>:
+        <span class="c-kw">return</span> <span class="c-num">0</span>
+    <span class="c-kw">return</span> n + <span class="c-fn">total_to</span>(n + <span class="c-num">1</span>)</code></pre>
+        </div>
+      </li>
+      <li><p class="stem">Write a recursive function named <span class="mono">total_to</span> that correctly returns the sum of the integers from 1 to <span class="mono">n</span>, with <span class="mono">total_to(0)</span> returning 0.</p></li>
+      <li><p class="stem">Write a recursive function named <span class="mono">count_down_by</span> that accepts <span class="mono">n</span> and <span class="mono">step</span>, and displays <span class="mono">n</span>, then <span class="mono">n - step</span>, and so on while the value is positive.</p></li>
+      <li>
+        <p class="stem">Given the recursive <span class="mono">sum_all</span> function, give the value of each call.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">sum_all([])</span></li>
+          <li><span class="lbl">b.</span><span class="mono">sum_all([7])</span></li>
+          <li><span class="lbl">c.</span><span class="mono">sum_all([4, 9, 2, 7])</span></li>
+        </ul>
+      </li>
+      <li><p class="stem">Write a recursive function named <span class="mono">count_items</span> that returns the number of elements in a list, without using <span class="mono">len</span> on the whole list at once.</p></li>
+      <li>
+        <p class="stem">Give the first eight values of the Fibonacci series as the recursive function defines them, starting at <span class="mono">fibonacci(0)</span>.</p>
+      </li>
+      <li>
+        <p class="stem">Give the value of each call to Euclid's <span class="mono">gcd</span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">gcd(48, 18)</span></li>
+          <li><span class="lbl">b.</span><span class="mono">gcd(60, 24)</span></li>
+          <li><span class="lbl">c.</span><span class="mono">gcd(17, 5)</span></li>
+          <li><span class="lbl">d.</span><span class="mono">gcd(24, 60)</span></li>
+        </ul>
+      </li>
+      <li><p class="stem">Trace <span class="mono">gcd(48, 18)</span>, listing the arguments of every call in order until the base case returns.</p></li>
+      <li><p class="stem">Write a recursive function named <span class="mono">reverse</span> that returns a string reversed. State the base case first.</p></li>
+      <li><p class="stem">Using the Towers of Hanoi function, state how many moves are printed for 1, 2, 3, and 4 disks. What pattern do the counts follow?</p></li>
+      <li><p class="stem">Rewrite the recursive <span class="mono">factorial</span> function as a loop. Then state one advantage each version has over the other.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 5 · PROGRAMMING EXERCISES ============ -->
+  <section id="pe">
+    <div class="sec-head"><span class="sec-num">5</span><h2>Programming Exercises</h2><span class="pts">2 × 14 pts = 28</span></div>
+    <p class="lead">Build each function one statement at a time at the <span class="mono">&gt;&gt;&gt;</span> prompt.</p>
+
+    <a class="console-btn" href="python-interactive-console.html"><span class="arrow">&gt;&gt;&gt;</span> Open the Interactive Python Console</a>
+
+    <div class="note"><b>How to submit.</b> Paste your full console session into the Canvas submission box, followed by your written answers to the items marked <strong>Explain</strong>. Your transcript must show every line you typed and every line Python printed back — including any tracebacks.</div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 1</span><h3>Recursive String Tools</h3></div>
+      <p class="why">Strings are sequences, so they shrink the same way lists do. Build three recursive functions and watch the base case do the real work.</p>
+      <ol class="steps">
+        <li>Write a recursive function <code>reverse(s)</code> that returns the string reversed. Test it on <strong>"recursion"</strong>, <strong>"abc"</strong>, and the empty string. <strong>Explain:</strong> state your base case and why the empty string is the right place to stop.</li>
+        <li>Write a recursive <code>count_char(s, c)</code> that returns how many times character <code>c</code> appears in <code>s</code>. Test it with <code>count_char("banana", "a")</code>. <strong>Explain:</strong> your recursive case has to decide whether to add 1 or 0 before recursing. Describe how you handled that.</li>
+        <li>Write a recursive <code>is_palindrome(s)</code> that returns <code>True</code> when a string reads the same forward and backward. Compare the first and last characters, then recurse on what remains between them.</li>
+        <li>Test it on <strong>"level"</strong>, <strong>"racecar"</strong>, <strong>"python"</strong>, <strong>"a"</strong>, and the empty string, recording each result. <strong>Explain:</strong> this function needs <em>two</em> stopping conditions. Name both and say what each one means.</li>
+        <li>Now deliberately break it: remove the base case and call <code>is_palindrome("level")</code>. Record the exception exactly. <strong>Explain:</strong> name the exception and say in one sentence what it tells you about how Python runs recursive calls.</li>
+        <li>Restore the base case. Then write a <strong>loop</strong> version of <code>reverse</code> and confirm it gives the same answer for "recursion".</li>
+        <li><strong>Explain:</strong> compare your two <code>reverse</code> functions. Which reads more clearly to you, and which would you expect to run faster on a very long string? Justify the speed answer using something from this module.</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–6, plus your written answers for steps 1, 2, 4, 5, and 7.</div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 2</span><h3>Counting the Cost of Recursion</h3></div>
+      <p class="why">Build the classic recursive functions, then instrument one to prove why "correct" and "efficient" are different claims.</p>
+      <ol class="steps">
+        <li>Write the recursive <code>factorial(n)</code>. Display <code>factorial(0)</code> through <code>factorial(6)</code> on one line using a comprehension.</li>
+        <li>Write the recursive <code>gcd(a, b)</code> using Euclid's algorithm. Test it on <code>(48, 18)</code>, <code>(60, 24)</code>, and <code>(17, 5)</code>. Then try <code>gcd(24, 60)</code> — the smaller number first. <strong>Explain:</strong> it still gives the right answer. Trace the first call and explain why the order fixes itself.</li>
+        <li>Try <code>gcd(10, 0)</code> and record the exception. <strong>Explain:</strong> name it and say which line of the function caused it.</li>
+        <li>Write the recursive <code>fibonacci(n)</code> with both base cases. Display the first eleven values using a comprehension.</li>
+        <li>Now count the work. Add a global counter that increments on every entry to the function, and record the number of calls for <code>fibonacci(5)</code>, <code>fibonacci(10)</code>, and <code>fibonacci(20)</code>, resetting the counter before each. <strong>Explain:</strong> the input grew by 15 and the call count exploded. What is the function doing repeatedly that causes this?</li>
+        <li>Write a <strong>loop</strong> version of <code>fibonacci</code> that keeps the two previous values in variables, and confirm it produces the same eleven numbers. <strong>Explain:</strong> roughly how many steps does the loop version take for <code>fibonacci(20)</code>? Compare that with your counted number.</li>
+        <li>Write the Towers of Hanoi <code>move_disks</code> function and run it for 3 disks, displaying every move. Then run it for 1, 2, and 4 disks and count the moves each time. <strong>Explain:</strong> give the move counts and describe the pattern. Is Hanoi a case where recursion is worth it? Defend your answer.</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–7, plus your written answers for steps 2, 3, 5, 6, and 7.</div>
+    </div>
+
+    <div class="note"><b>Tip.</b> If a recursive function seems to hang, you almost certainly have a base case that is never reached — check that every recursive call moves the argument <em>toward</em> the stopping condition.</div>
+  </section>
+
+  <div class="keybreak">Answer key begins on the next page</div>
+
+  <!-- ============ ANSWER KEY ============ -->
+  <section id="answers">
+    <div class="sec-head"><span class="sec-num">✓</span><h2>Week 15 Answer Key</h2><span class="pts">Instructor copy</span></div>
+    <p class="lead">Recursion — 100 points total.</p>
+
+    <div class="note"><b>Do not distribute with the question set.</b> When printed, this key starts on its own page. To post the questions to students without the key, delete everything from this section to the end of the page.</div>
+
+    <div class="akey">
+      <h3>Multiple Choice · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">b</span> — calls itself</li>
+        <li><span class="n">2.</span><span class="v">b</span> — base case</li>
+        <li><span class="n">3.</span><span class="v">b</span> — recursive case</li>
+        <li><span class="n">4.</span><span class="v">a</span> — depth of recursion</li>
+        <li><span class="n">5.</span><span class="v">b</span> — RecursionError</li>
+        <li><span class="n">6.</span><span class="v">b</span> — a smaller version</li>
+        <li><span class="n">7.</span><span class="v">b</span> — the statement after the call</li>
+        <li><span class="n">8.</span><span class="v">a</span> — also solvable with a loop</li>
+        <li><span class="n">9.</span><span class="v">b</span> — less efficient</li>
+        <li><span class="n">10.</span><span class="v">b</span> — clearer expression</li>
+        <li><span class="n">11.</span><span class="v">b</span> — n == 0, returns 1</li>
+        <li><span class="n">12.</span><span class="v">c</span> — 24</li>
+        <li><span class="n">13.</span><span class="v">a</span> — direct</li>
+        <li><span class="n">14.</span><span class="v">b</span> — indirect</li>
+        <li><span class="n">15.</span><span class="v">b</span> — empty list, returns 0</li>
+        <li><span class="n">16.</span><span class="v">b</span> — the slice</li>
+        <li><span class="n">17.</span><span class="v">c</span> — two</li>
+        <li><span class="n">18.</span><span class="v">b</span> — two</li>
+        <li><span class="n">19.</span><span class="v">b</span> — recomputes values</li>
+        <li><span class="n">20.</span><span class="v">b</span> — a % b == 0</li>
+        <li><span class="n">21.</span><span class="v">b</span> — one disk</li>
+        <li><span class="n">22.</span><span class="v">c</span> — 7</li>
+        <li><span class="n">23.</span><span class="v">b</span> — swap target and spare</li>
+        <li><span class="n">24.</span><span class="v">b</span> — simple repetition</li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>True or False · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">True</span></li>
+        <li><span class="n">2.</span><span class="v">True</span> — Fibonacci has two</li>
+        <li><span class="n">3.</span><span class="v">False</span> — a loop can always do it</li>
+        <li><span class="n">4.</span><span class="v">True</span></li>
+        <li><span class="n">5.</span><span class="v">False</span> — call overhead</li>
+        <li><span class="n">6.</span><span class="v">False</span> — RecursionError</li>
+        <li><span class="n">7.</span><span class="v">True</span></li>
+        <li><span class="n">8.</span><span class="v">True</span></li>
+        <li><span class="n">9.</span><span class="v">False</span> — many values repeat</li>
+        <li><span class="n">10.</span><span class="v">True</span></li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>Short Answer · 2 points each</h3>
+      <ol class="akeys">
+        <li><span class="qtext">Recursive functions.</span><span class="atext">A function that calls itself. It needs more than the recursive call because a call with no way to stop would repeat forever — so it must also contain a decision, normally an <span class="mono">if</span>, that determines on each call whether to recurse again or stop and return a value.</span></li>
+        <li><span class="qtext">The two parts.</span><span class="atext">The <strong>base case</strong> handles a problem small enough to solve directly, with no further recursion, and returns the answer. The <strong>recursive case</strong> reduces the problem to a smaller problem of the same structure, calls the function on it, and uses the returned result to build this call's answer.</span></li>
+        <li><span class="qtext">Depth of recursion.</span><span class="atext">The number of times the function calls itself for a given starting call. It is determined by how far the starting argument is from the base case and how much each call reduces it — <span class="mono">count_down(3)</span> has a depth of 3.</span></li>
+        <li><span class="qtext">No reachable base case.</span><span class="atext">The function keeps calling itself, each call consuming memory for its own execution, until Python stops it with a <strong><span class="mono">RecursionError</span></strong> — the message reads "maximum recursion depth exceeded." It does not run forever; Python enforces a limit.</span></li>
+        <li><span class="qtext">Smaller version of itself.</span><span class="atext">Each recursive call must receive an argument closer to the base case. With a number, subtract from it — <span class="mono">factorial(n)</span> calls <span class="mono">factorial(n - 1)</span>. With a list, remove an element — <span class="mono">sum_all(numbers)</span> calls <span class="mono">sum_all(numbers[1:])</span>, a list one shorter. Without this shrinking, the base case is never reached.</span></li>
+        <li><span class="qtext">Winding and unwinding.</span><span class="atext">The calls <strong>wind down</strong>: <span class="mono">factorial(4)</span> calls <span class="mono">factorial(3)</span>, which calls <span class="mono">factorial(2)</span>, and so on to <span class="mono">factorial(0)</span> — each waiting, unable to finish until the call below returns. The base case returns 1, and the results <strong>unwind</strong> back up as each waiting call multiplies by its own <span class="mono">n</span>: 1, then 2, then 6, then 24.</span></li>
+        <li><span class="qtext">Direct vs. indirect.</span><span class="atext"><strong>Direct</strong> recursion is a function calling itself — <span class="mono">factorial</span> calls <span class="mono">factorial</span>. <strong>Indirect</strong> recursion is a cycle through other functions — <span class="mono">is_even</span> calls <span class="mono">is_odd</span>, which calls <span class="mono">is_even</span> again; neither calls itself, yet the pair recurs.</span></li>
+        <li><span class="qtext">Fibonacci's inefficiency.</span><span class="atext">Its recursive case makes <em>two</em> calls, and the two branches overlap — computing <span class="mono">fibonacci(5)</span> requires <span class="mono">fibonacci(3)</span> twice, <span class="mono">fibonacci(2)</span> three times, and so on. Nothing is remembered between calls, so the same values are recomputed from scratch and the call count grows explosively with <span class="mono">n</span>.</span></li>
+        <li><span class="qtext">Euclid's algorithm.</span><span class="atext"><strong>Base case:</strong> when <span class="mono">a % b == 0</span>, return <span class="mono">b</span>. <strong>Recursive case:</strong> return <span class="mono">gcd(b, a % b)</span>. It always terminates because each call replaces the pair with a strictly smaller remainder, so the second argument marches down toward 0 and the base case is reached.</span></li>
+        <li><span class="qtext">Towers of Hanoi.</span><span class="atext">To move <span class="mono">count</span> disks from the source peg to the target: if there is only one disk, move it directly — that is the <strong>base case</strong>. Otherwise move the top <span class="mono">count - 1</span> disks to the spare peg, move the single largest disk to the target, then move those <span class="mono">count - 1</span> disks from the spare peg onto the target.</span></li>
+        <li><span class="qtext">Choosing between them.</span><span class="atext">Any two of: whether the problem's own definition refers to a smaller version of itself (favors recursion); whether efficiency matters, since recursion carries call overhead (favors a loop); whether recursion makes the code dramatically clearer or merely different; and how deep the recursion would go, since very deep recursion risks a <span class="mono">RecursionError</span>.</span></li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Algorithm Workbench · 1 point each</h3>
+      <ol class="akeys">
+        <li><span class="qtext">Trace 1.</span><span class="atext"><span class="mono">3</span> / <span class="mono">2</span> / <span class="mono">1</span> / <span class="mono">Liftoff!</span> — each on its own line. The <span class="mono">print</span> comes <em>before</em> the recursive call, so values appear on the way down.</span></li>
+        <li><span class="qtext">Trace 2.</span><span class="atext"><span class="mono">1</span> / <span class="mono">2</span> / <span class="mono">3</span> — counting <em>up</em>. The <span class="mono">print</span> comes <em>after</em> the recursive call, so nothing is displayed until the deepest call returns; the values then print as the recursion unwinds. Moving one statement reverses the output.</span></li>
+        <li><span class="qtext">Factorial's two cases.</span><span class="atext"><strong>Base case:</strong> <span class="mono">n == 0</span> returns 1. <strong>Recursive case:</strong> returns <span class="mono">n * factorial(n - 1)</span>.</span></li>
+        <li><span class="qtext">Factorial values.</span><span class="atext"><strong>a.</strong> 1 · <strong>b.</strong> 1 · <strong>c.</strong> 120 · <strong>d.</strong> 720</span></li>
+        <li><span class="qtext">Bug 1.</span><span class="atext">There is <strong>no base case</strong>, so the function recurses forever and raises <span class="mono">RecursionError</span>. Fix by adding <span class="mono">if n == 0: return 0</span> before the recursive line.</span></li>
+        <li><span class="qtext">Bug 2.</span><span class="atext">The recursive call uses <span class="mono">n + 1</span>, moving <em>away</em> from the base case — <span class="mono">n</span> grows without limit and never equals 0, so it still raises <span class="mono">RecursionError</span>. A base case only helps if every call moves toward it. Change to <span class="mono">total_to(n - 1)</span>.</span></li>
+        <li><span class="qtext">Correct total_to.</span><span class="atext"><span class="mono">def total_to(n):</span> with <span class="mono">if n == 0: return 0</span> then <span class="mono">else: return n + total_to(n - 1)</span>.</span></li>
+        <li><span class="qtext">count_down_by.</span><span class="atext"><span class="mono">def count_down_by(n, step):</span> with <span class="mono">if n &gt; 0:</span> containing <span class="mono">print(n)</span> and <span class="mono">count_down_by(n - step, step)</span>. <em>The step must be passed along on every call.</em></span></li>
+        <li><span class="qtext">sum_all values.</span><span class="atext"><strong>a.</strong> 0 · <strong>b.</strong> 7 · <strong>c.</strong> 22</span></li>
+        <li><span class="qtext">count_items.</span><span class="atext"><span class="mono">def count_items(items):</span> with <span class="mono">if len(items) == 0: return 0</span> then <span class="mono">else: return 1 + count_items(items[1:])</span>.</span></li>
+        <li><span class="qtext">Fibonacci values.</span><span class="atext">0, 1, 1, 2, 3, 5, 8, 13</span></li>
+        <li><span class="qtext">gcd values.</span><span class="atext"><strong>a.</strong> 6 · <strong>b.</strong> 12 · <strong>c.</strong> 1 · <strong>d.</strong> 12</span></li>
+        <li><span class="qtext">Tracing gcd(48, 18).</span><span class="atext"><span class="mono">gcd(48, 18)</span> → 48 % 18 is 12, not 0 → <span class="mono">gcd(18, 12)</span> → 18 % 12 is 6 → <span class="mono">gcd(12, 6)</span> → 12 % 6 is 0, base case → returns <strong>6</strong>. Three calls in total.</span></li>
+        <li><span class="qtext">reverse.</span><span class="atext"><strong>Base case:</strong> an empty string returns the empty string. <span class="mono">def reverse(s):</span> with <span class="mono">if len(s) == 0: return ""</span> then <span class="mono">else: return reverse(s[1:]) + s[0]</span>.</span></li>
+        <li><span class="qtext">Hanoi move counts.</span><span class="atext"><strong>1 disk → 1 move; 2 → 3; 3 → 7; 4 → 15.</strong> Each added disk slightly more than doubles the total: the count is 2<sup>n</sup> − 1, because solving <span class="mono">n</span> disks means solving <span class="mono">n − 1</span> twice plus one more move.</span></li>
+        <li><span class="qtext">Factorial as a loop.</span><span class="atext"><span class="mono">result = 1</span>, then <span class="mono">for i in range(1, n + 1): result = result * i</span>, then <span class="mono">return result</span>. The <strong>recursive</strong> version mirrors the mathematical definition almost exactly, making it easy to verify as correct; the <strong>loop</strong> version is more efficient, since it avoids the overhead of a function call per step and cannot hit a recursion limit.</span></li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Exercise 1 · Recursive String Tools — 14 points</h3>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">def</span> <span class="c-fn">reverse</span>(s):
+<span class="c-prompt">...</span>     <span class="c-kw">if</span> <span class="c-fn">len</span>(s) == <span class="c-num">0</span>:
+<span class="c-prompt">...</span>         <span class="c-kw">return</span> <span class="c-str">""</span>
+<span class="c-prompt">...</span>     <span class="c-kw">else</span>:
+<span class="c-prompt">...</span>         <span class="c-kw">return</span> <span class="c-fn">reverse</span>(s[<span class="c-num">1</span>:]) + s[<span class="c-num">0</span>]
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">reverse</span>(<span class="c-str">"recursion"</span>), <span class="c-fn">reverse</span>(<span class="c-str">"abc"</span>), <span class="c-fn">reverse</span>(<span class="c-str">""</span>)
+<span class="c-out">('noisrucer', 'cba', '')</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">def</span> <span class="c-fn">count_char</span>(s, c):
+<span class="c-prompt">...</span>     <span class="c-kw">if</span> <span class="c-fn">len</span>(s) == <span class="c-num">0</span>:
+<span class="c-prompt">...</span>         <span class="c-kw">return</span> <span class="c-num">0</span>
+<span class="c-prompt">...</span>     <span class="c-kw">elif</span> s[<span class="c-num">0</span>] == c:
+<span class="c-prompt">...</span>         <span class="c-kw">return</span> <span class="c-num">1</span> + <span class="c-fn">count_char</span>(s[<span class="c-num">1</span>:], c)
+<span class="c-prompt">...</span>     <span class="c-kw">else</span>:
+<span class="c-prompt">...</span>         <span class="c-kw">return</span> <span class="c-fn">count_char</span>(s[<span class="c-num">1</span>:], c)
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">count_char</span>(<span class="c-str">"banana"</span>, <span class="c-str">"a"</span>)
+<span class="c-out">3</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">def</span> <span class="c-fn">is_palindrome</span>(s):
+<span class="c-prompt">...</span>     <span class="c-kw">if</span> <span class="c-fn">len</span>(s) &lt;= <span class="c-num">1</span>:
+<span class="c-prompt">...</span>         <span class="c-kw">return</span> <span class="c-kw">True</span>
+<span class="c-prompt">...</span>     <span class="c-kw">elif</span> s[<span class="c-num">0</span>] != s[-<span class="c-num">1</span>]:
+<span class="c-prompt">...</span>         <span class="c-kw">return</span> <span class="c-kw">False</span>
+<span class="c-prompt">...</span>     <span class="c-kw">else</span>:
+<span class="c-prompt">...</span>         <span class="c-kw">return</span> <span class="c-fn">is_palindrome</span>(s[<span class="c-num">1</span>:-<span class="c-num">1</span>])
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> [<span class="c-fn">is_palindrome</span>(w) <span class="c-kw">for</span> w <span class="c-kw">in</span> [<span class="c-str">"level"</span>, <span class="c-str">"racecar"</span>, <span class="c-str">"python"</span>, <span class="c-str">"a"</span>, <span class="c-str">""</span>]]
+<span class="c-out">[True, True, False, True, True]</span>
+<span class="c-com"># with the base case removed:</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">is_palindrome</span>(<span class="c-str">"level"</span>)
+<span class="c-err">RecursionError: maximum recursion depth exceeded</span>
+<span class="c-com"># loop version</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">def</span> <span class="c-fn">reverse_loop</span>(s):
+<span class="c-prompt">...</span>     result = <span class="c-str">""</span>
+<span class="c-prompt">...</span>     <span class="c-kw">for</span> ch <span class="c-kw">in</span> s:
+<span class="c-prompt">...</span>         result = ch + result
+<span class="c-prompt">...</span>     <span class="c-kw">return</span> result
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">reverse_loop</span>(<span class="c-str">"recursion"</span>)
+<span class="c-out">'noisrucer'</span></code></pre>
+      </div>
+      <ol class="akeys">
+        <li><span class="qtext">Step 1 — the base case.</span><span class="atext">An empty string returns an empty string. It is the right stopping point because every call removes one character with <span class="mono">s[1:]</span>, so any string — of any length — eventually becomes empty. A reversed empty string is trivially itself, so no work is needed there. <em>Accept a base case of <span class="mono">len(s) &lt;= 1</span> returning <span class="mono">s</span>.</em></span></li>
+        <li><span class="qtext">Step 2 — adding 1 or 0.</span><span class="atext">Two acceptable approaches. Use an <span class="mono">elif</span> that returns <span class="mono">1 + count_char(s[1:], c)</span> when the first character matches and plain <span class="mono">count_char(s[1:], c)</span> when it does not; or compute the 1-or-0 inline and always recurse. Either way the recursive call is identical in both branches — only the amount added differs.</span></li>
+        <li><span class="qtext">Step 4 — two stopping conditions.</span><span class="atext">First, <span class="mono">len(s) &lt;= 1</span> returns <span class="mono">True</span> — a string of one character, or none, is trivially a palindrome, and this is what the recursion eventually shrinks to. Second, <span class="mono">s[0] != s[-1]</span> returns <span class="mono">False</span> — a mismatch settles the answer immediately and there is no reason to keep going. The first is the base case reached by success; the second is an early exit on failure.</span></li>
+        <li><span class="qtext">Step 5 — the exception.</span><span class="atext"><span class="mono">RecursionError: maximum recursion depth exceeded</span>. It tells you Python keeps a record of every call that has not yet returned, and that this record has a limit — recursion is not free, and a function with no reachable base case exhausts that space rather than running forever.</span></li>
+        <li><span class="qtext">Step 7 — comparing the two.</span><span class="atext">Clarity is a defensible judgment either way; credit any reasoned answer. The <strong>speed</strong> answer is not optional: the <strong>loop</strong> version should be faster, because the recursive version pays function-call overhead for every character and also builds a new sliced string on each call. Full credit requires naming call overhead or the repeated slicing.</span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>Working <span class="mono">reverse</span>, correct on all three test strings including the empty one.</td></tr>
+          <tr><td>2</td><td>Working <span class="mono">count_char</span> returning 3 for "banana".</td></tr>
+          <tr><td>3</td><td>Working <span class="mono">is_palindrome</span> with all five results correct.</td></tr>
+          <tr><td>2</td><td>Step 4 explanation — both stopping conditions named and distinguished.</td></tr>
+          <tr><td>2</td><td>Step 5 — <span class="mono">RecursionError</span> reproduced and correctly interpreted.</td></tr>
+          <tr><td>2</td><td>Step 6 loop version works; step 7 speed comparison justified by call overhead or slicing.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="akey">
+      <h3>Exercise 2 · Counting the Cost of Recursion — 14 points</h3>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> [<span class="c-fn">factorial</span>(i) <span class="c-kw">for</span> i <span class="c-kw">in</span> <span class="c-fn">range</span>(<span class="c-num">7</span>)]
+<span class="c-out">[1, 1, 2, 6, 24, 120, 720]</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">gcd</span>(<span class="c-num">48</span>, <span class="c-num">18</span>), <span class="c-fn">gcd</span>(<span class="c-num">60</span>, <span class="c-num">24</span>), <span class="c-fn">gcd</span>(<span class="c-num">17</span>, <span class="c-num">5</span>), <span class="c-fn">gcd</span>(<span class="c-num">24</span>, <span class="c-num">60</span>)
+<span class="c-out">(6, 12, 1, 12)</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">gcd</span>(<span class="c-num">10</span>, <span class="c-num">0</span>)
+<span class="c-err">ZeroDivisionError: integer modulo by zero</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> [<span class="c-fn">fibonacci</span>(i) <span class="c-kw">for</span> i <span class="c-kw">in</span> <span class="c-fn">range</span>(<span class="c-num">11</span>)]
+<span class="c-out">[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55]</span>
+<span class="c-com"># instrumented with a global counter</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">for</span> n <span class="c-kw">in</span> [<span class="c-num">5</span>, <span class="c-num">10</span>, <span class="c-num">20</span>]:
+<span class="c-prompt">...</span>     calls = <span class="c-num">0</span>
+<span class="c-prompt">...</span>     <span class="c-fn">fib_count</span>(n)
+<span class="c-prompt">...</span>     <span class="c-fn">print</span>(n, calls)
+<span class="c-prompt">...</span>
+<span class="c-out">5 15
+10 177
+20 21891</span>
+<span class="c-com"># Towers of Hanoi, 3 disks</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">move_disks</span>(<span class="c-num">3</span>, <span class="c-str">'A'</span>, <span class="c-str">'C'</span>, <span class="c-str">'B'</span>)
+<span class="c-out">Move a disk from A to C
+Move a disk from A to B
+Move a disk from C to B
+Move a disk from A to C
+Move a disk from B to A
+Move a disk from B to C
+Move a disk from A to C</span></code></pre>
+      </div>
+      <table class="ctable">
+        <thead><tr><th>Call</th><th>Result</th><th>Recursive calls made</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">fibonacci(5)</span></td><td>5</td><td>15</td></tr>
+          <tr><td><span class="mono">fibonacci(10)</span></td><td>55</td><td>177</td></tr>
+          <tr><td><span class="mono">fibonacci(20)</span></td><td>6765</td><td>21,891</td></tr>
+        </tbody>
+      </table>
+      <ol class="akeys">
+        <li><span class="qtext">Step 2 — why gcd(24, 60) still works.</span><span class="atext">On the first call <span class="mono">24 % 60</span> is <strong>24</strong> — a remainder equal to the smaller number, and not 0 — so the function recurses as <span class="mono">gcd(60, 24)</span>, which is the arguments in the order you expected. One wasted call puts them right, and the answer is 12. The algorithm is self-correcting, so no size check is needed.</span></li>
+        <li><span class="qtext">Step 3 — gcd(10, 0).</span><span class="atext"><span class="mono">ZeroDivisionError: integer modulo by zero</span>, raised by the base-case test <span class="mono">a % b == 0</span> — the <span class="mono">%</span> operator cannot take 0 as its right operand. A robust version would guard against <span class="mono">b == 0</span> before testing, or return <span class="mono">a</span> in that case.</span></li>
+        <li><span class="qtext">Step 5 — why the calls explode.</span><span class="atext">The recursive case makes <em>two</em> calls, and their subtrees overlap heavily — <span class="mono">fibonacci(20)</span> recomputes <span class="mono">fibonacci(18)</span>, <span class="mono">fibonacci(17)</span>, and everything below them enormous numbers of times, because nothing is remembered between calls. The call count grows roughly exponentially: 15 calls at <span class="mono">n</span>=5, 177 at 10, and 21,891 at 20.</span></li>
+        <li><span class="qtext">Step 6 — the loop's cost.</span><span class="atext">The loop version takes about <strong>20 steps</strong> for <span class="mono">fibonacci(20)</span> — one per value — against 21,891 recursive calls for the identical answer. It is faster because it keeps the two previous values in variables and never recomputes anything. Same result, same eleven numbers, vastly different work.</span></li>
+        <li><span class="qtext">Step 7 — Hanoi.</span><span class="atext">Move counts: <strong>1, 3, 7, 15</strong> for 1 through 4 disks — the pattern is 2<sup>n</sup> − 1, each disk slightly more than doubling the total. Hanoi <em>is</em> a case where recursion is worth it: the recursive solution is four lines and reads like the strategy itself, while an iterative solution is far harder to write and to verify. The move count is dictated by the puzzle, not by the recursion — unlike Fibonacci, recursion here costs nothing extra in work. <em>Accept a well-argued opposing view that notes the exponential growth, provided the student distinguishes the puzzle's inherent cost from recursion's overhead.</em></span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>2</td><td>Step 1: working <span class="mono">factorial</span> with all seven values correct.</td></tr>
+          <tr><td>3</td><td>Step 2: working <span class="mono">gcd</span> with all four results, and the reversed-argument trace explained.</td></tr>
+          <tr><td>1</td><td>Step 3: <span class="mono">ZeroDivisionError</span> recorded and traced to the <span class="mono">%</span> in the base-case test.</td></tr>
+          <tr><td>3</td><td>Steps 4–5: <span class="mono">fibonacci</span> correct, counter instrumented, all three call counts recorded.</td></tr>
+          <tr><td>2</td><td>Steps 5–6 explanations — overlapping recomputation, and the loop's roughly linear cost.</td></tr>
+          <tr><td>3</td><td>Step 7: Hanoi runs for 3 disks with all 7 moves, counts given for 1–4, and a defended judgment.</td></tr>
+        </tbody>
+      </table>
+      <div class="keypt"><b>Common error to watch for.</b> In step 5, students often increment the counter <em>inside</em> the recursive case rather than at the top of the function, which undercounts by skipping every base-case call. If a student reports 7 instead of 15 for <span class="mono">fibonacci(5)</span>, that is the cause — a good opportunity to point out that base-case calls are real calls too.</div>
+    </div>
+
+    <div class="akey">
+      <h3>Point Summary</h3>
+      <table class="ctable">
+        <thead><tr><th>Section</th><th>Items</th><th>Points</th></tr></thead>
+        <tbody>
+          <tr><td>Multiple Choice</td><td>24 × 1 pt</td><td>24</td></tr>
+          <tr><td>True or False</td><td>10 × 1 pt</td><td>10</td></tr>
+          <tr><td>Short Answer</td><td>11 × 2 pts</td><td>22</td></tr>
+          <tr><td>Algorithm Workbench</td><td>16 × 1 pt</td><td>16</td></tr>
+          <tr><td>Programming Exercises</td><td>2 × 14 pts</td><td>28</td></tr>
+          <tr><td>Total</td><td>—</td><td>100</td></tr>
+        </tbody>
+      </table>
+      <div class="keypt"><b>Canvas note.</b> Multiple Choice and True/False convert directly into an auto-graded Canvas quiz. Short Answer and Algorithm Workbench work well as essay questions; the two Programming Exercises are best set up as a text-entry assignment so students can paste their console transcripts.</div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>CIS181 · Python Programming · Week 15 — Review Questions &amp; Answer Key</span>
+    <span>Original questions &amp; exercises · for classroom use</span>
+  </div>
+</footer>
+
+<script>
+  // scroll progress bar
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
+    bar.style.width = Math.min(100, Math.max(0, scrolled * 100)) + '%';
+  };
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // scrollspy active section
+  const links = Array.from(document.querySelectorAll('nav.toc a'));
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('main section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

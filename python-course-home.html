@@ -106,6 +106,18 @@
   .week-card .tag::after{content:"→";transition:.16s;}
   .week-card:hover .tag::after{transform:translateX(3px);}
 
+
+  /* week card + review badge */
+  .card-wrap{position:relative;display:flex;}
+  .card-wrap > .week-card{flex:1;padding-right:74px;}
+  .rev-badge{
+    position:absolute;top:14px;right:14px;z-index:2;
+    font-family:"Fira Code";font-size:10.5px;font-weight:600;letter-spacing:.6px;
+    text-transform:uppercase;text-decoration:none;
+    color:var(--py-blue-dk);background:#eaf2f9;border:1px solid #cfe0ee;
+    padding:4px 9px;border-radius:999px;transition:.16s;white-space:nowrap;
+  }
+  .rev-badge:hover{background:var(--py-blue-dk);color:#fff;border-color:var(--py-blue-dk);}
   .week-card.pending{
     background:#f2f4f7;border-style:dashed;color:var(--ink-faint);cursor:default;
     pointer-events:none;
@@ -200,101 +212,101 @@
 
   <div class="grid">
 
-    <a class="week-card" href="python-ch01-intro-to-computers-and-programming.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk01-intro-to-computers-and-programming.html">
       <span class="wk">Week 01</span>
       <h3>Weekly Concepts 1 — Introduction to Computers and Programming</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk01-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch02-input-processing-and-output.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk02-input-processing-and-output.html">
       <span class="wk">Week 02</span>
       <h3>Weekly Concepts 2 — Input, Processing, and Output</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk02-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch03-decision-structures-and-boolean-logic.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk03-decision-structures-and-boolean-logic.html">
       <span class="wk">Week 03</span>
       <h3>Weekly Concepts 3 — Decision Structures and Boolean Logic</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk03-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch04-repetition-structures.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk04-repetition-structures.html">
       <span class="wk">Week 04</span>
       <h3>Weekly Concepts 4 — Repetition Structures</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk04-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch05-functions.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk05-functions.html">
       <span class="wk">Week 05</span>
       <h3>Weekly Concepts 5 — Functions</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk05-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch06a-functions-and-exceptions.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk06-functions-and-exceptions.html">
       <span class="wk">Week 06</span>
       <h3>Weekly Concepts 6a — Functions That Raise Exceptions</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk06-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch06-files-and-exceptions.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk07-files-and-exceptions.html">
       <span class="wk">Week 07</span>
       <h3>Weekly Concepts 6 — Files and Exceptions</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk07-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch07-lists-and-tuples.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk08-lists-and-tuples.html">
       <span class="wk">Week 08</span>
       <h3>Weekly Concepts 7 — Lists and Tuples</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk08-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch08-more-about-strings.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk09-more-about-strings.html">
       <span class="wk">Week 09</span>
       <h3>Weekly Concepts 8 — More About Strings</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk09-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch09-dictionaries-sets.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk10-dictionaries-sets.html">
       <span class="wk">Week 10</span>
       <h3>Weekly Concepts 9 — Dictionaries and Sets</h3>
       <span class="tag">View page</span>
+    </a><a class="rev-badge" href="python-wk10-review-questions.html" aria-label="Review questions">Review</a></div>
+
+    <a class="week-card" href="python-wk11-review.html">
+      <span class="wk">Week 11</span>
+      <h3>Review — Weeks 1 through 10</h3>
+      <span class="tag">View page</span>
     </a>
 
-    <div class="week-card pending">
-      <span class="wk">Week 11</span>
-      <h3>Review</h3>
-      <span class="tag">Page not yet created</span>
-    </div>
-
-    <a class="week-card" href="python-ch10-classes-oop.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk12-classes-oop.html">
       <span class="wk">Week 12</span>
       <h3>Weekly Concepts 10 — Classes and Object-Oriented Programming</h3>
       <span class="tag">View page</span>
+    </a><a class="rev-badge" href="python-wk12-review-questions.html" aria-label="Review questions">Review</a></div>
+
+    <a class="week-card" href="python-wk13-object-serialization.html">
+      <span class="wk">Week 13</span>
+      <h3>Weekly Concepts 13 — Object Serialization</h3>
+      <span class="tag">View page</span>
     </a>
 
-    <div class="week-card pending">
-      <span class="wk">Week 13</span>
-      <h3>Weekly Concepts — TBD</h3>
-      <span class="tag">Page not yet created</span>
-    </div>
-
-    <a class="week-card" href="python-ch11-inheritance.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk14-inheritance.html">
       <span class="wk">Week 14</span>
       <h3>Weekly Concepts 11 — Inheritance</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk14-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch12-recursion.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk15-recursion.html">
       <span class="wk">Week 15</span>
       <h3>Weekly Concepts 12 — Recursion</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk15-review-questions.html" aria-label="Review questions">Review</a></div>
 
-    <a class="week-card" href="python-ch13-gui-programming.html">
+    <div class="card-wrap"><a class="week-card" href="python-wk16-gui-programming.html">
       <span class="wk">Week 16</span>
       <h3>Weekly Concepts 13 — GUI Programming</h3>
       <span class="tag">View page</span>
-    </a>
+    </a><a class="rev-badge" href="python-wk16-review-questions.html" aria-label="Review questions">Review</a></div>
 
     <div class="week-card pending">
       <span class="wk">Week 17</span>

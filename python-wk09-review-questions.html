@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 09 · Review Questions — More About Strings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;
+    --py-blue-dk:#306998;
+    --py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;
+    --py-yellow-dk:#E5A800;
+    --ink:#2b303b;
+    --ink-soft:#5b6470;
+    --ink-faint:#8a929d;
+    --page:#f6f8fa;
+    --surface:#ffffff;
+    --border:#e1e4e8;
+    --border-strong:#cfd6dd;
+    --code-bg:#1e2530;
+    --code-bg2:#262f3d;
+    --code-text:#e6edf3;
+    --code-comment:#7d8893;
+    --shadow:0 1px 2px rgba(27,40,55,.06),0 6px 22px rgba(27,40,55,.07);
+    --shadow-lift:0 8px 30px rgba(27,40,55,.13);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:88px;}
+  body{
+    margin:0;background:var(--page);color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:"Space Grotesk","Inter",sans-serif;line-height:1.18;margin:0;}
+  code,kbd,pre,.mono{font-family:"Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;}
+  a{color:var(--py-blue-dk);}
+
+  /* ---------- scroll progress ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:4px;width:0%;z-index:60;
+    background:linear-gradient(90deg,var(--py-blue) 0%,var(--py-blue) 55%,var(--py-yellow) 100%);
+    transition:width .08s linear;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:
+      radial-gradient(1100px 380px at 82% -40%,rgba(255,212,59,.20),transparent 60%),
+      linear-gradient(160deg,var(--py-blue-deep) 0%,var(--py-blue-dk) 52%,var(--py-blue) 120%);
+    color:#fff;padding:64px 24px 54px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"?";position:absolute;right:5%;bottom:-58px;
+    font-family:"Fira Code",monospace;font-size:210px;font-weight:600;
+    color:rgba(255,255,255,.07);pointer-events:none;
+  }
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:2;}
+  .brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .brand .mark{
+    font-family:"Fira Code",monospace;font-weight:600;font-size:15px;
+    color:var(--py-blue-deep);background:var(--py-yellow);
+    padding:4px 10px;border-radius:7px;letter-spacing:1px;
+  }
+  .brand .brand-txt{font-family:"Space Grotesk";font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.82);}
+  .eyebrow{font-family:"Fira Code",monospace;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--py-yellow);margin-bottom:14px;}
+  .hero h1{font-size:clamp(30px,5vw,52px);font-weight:700;letter-spacing:-.5px;max-width:20ch;}
+  .hero .sub{margin-top:18px;font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.9);max-width:64ch;}
+  .topics{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px;}
+  .topics a{
+    text-decoration:none;color:#fff;font-size:14.5px;font-weight:500;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);
+    padding:8px 14px;border-radius:999px;transition:.18s;backdrop-filter:blur(2px);
+  }
+  .topics a:hover{background:var(--py-yellow);color:var(--py-blue-deep);border-color:var(--py-yellow);transform:translateY(-1px);}
+  .topics a .n{font-family:"Fira Code";color:var(--py-yellow);margin-right:7px;font-size:13px;}
+  .topics a:hover .n{color:var(--py-blue-deep);}
+  .topics a.topic-out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  .grid{display:grid;grid-template-columns:232px minmax(0,1fr);gap:40px;align-items:start;padding:40px 24px 80px;max-width:var(--maxw);margin:0 auto;}
+
+  /* ---------- side nav ---------- */
+  nav.toc{position:sticky;top:24px;align-self:start;}
+  nav.toc .toc-title{font-family:"Fira Code";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);margin:0 0 12px 14px;}
+  nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border);}
+  nav.toc a{
+    display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink-soft);
+    font-size:14.5px;font-weight:500;padding:8px 14px;margin-left:-2px;
+    border-left:2px solid transparent;transition:.16s;line-height:1.35;
+  }
+  nav.toc a .num{font-family:"Fira Code";font-size:12px;color:var(--py-blue);opacity:.8;}
+  nav.toc a:hover{color:var(--ink);background:#eef2f6;}
+  nav.toc a.active{color:var(--py-blue-dk);border-left-color:var(--py-blue);background:#eaf2f9;font-weight:600;}
+  nav.toc a.active .num{opacity:1;}
+  nav.toc .toc-out{
+    display:flex;gap:9px;align-items:baseline;margin:14px 0 0;padding:9px 14px;
+    text-decoration:none;font-size:14.5px;font-weight:600;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:9px;transition:.16s;
+  }
+  nav.toc .toc-out:hover{background:var(--py-blue-dk);color:#fff;border-color:var(--py-blue-dk);}
+  nav.toc .toc-out .num{font-family:"Fira Code";font-size:12px;color:inherit;opacity:1;}
+
+  /* ---------- sections ---------- */
+  main{min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:84px;}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;flex-wrap:wrap;}
+  .sec-num{
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:#fff;
+    background:var(--py-blue-dk);min-width:34px;height:34px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  section h2{font-size:clamp(23px,3vw,31px);font-weight:700;letter-spacing:-.3px;}
+  .pts{
+    font-family:"Fira Code";font-size:12.5px;letter-spacing:.5px;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:999px;padding:3px 11px;white-space:nowrap;
+  }
+  .lead{color:var(--ink-soft);font-size:18px;margin:6px 0 22px;}
+  section h3{font-size:20px;font-weight:600;margin:30px 0 10px;color:var(--py-blue-deep);}
+  p{margin:0 0 15px;}
+  .wrap-note{max-width:74ch;}
+  strong{font-weight:600;}
+  .term{font-weight:600;color:var(--py-blue-deep);}
+
+  /* ---------- callouts ---------- */
+  .note{
+    border:1px solid var(--border);border-left:4px solid var(--py-yellow);
+    background:#fffdf3;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .note b{color:var(--py-yellow-dk);}
+  .keypt{
+    border:1px solid var(--border);border-left:4px solid var(--py-blue);
+    background:#f3f8fc;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .keypt b{color:var(--py-blue-dk);}
+
+  /* ---------- question lists ---------- */
+  .qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:8px 26px;}
+  ol.qs{list-style:none;counter-reset:q;margin:0;padding:0;}
+  ol.qs > li{
+    counter-increment:q;position:relative;padding:18px 0 18px 46px;
+    border-bottom:1px solid var(--border);break-inside:avoid;
+  }
+  ol.qs > li:last-child{border-bottom:none;}
+  ol.qs > li::before{
+    content:counter(q) ".";position:absolute;left:0;top:17px;
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);
+  }
+  ol.qs > li .stem{margin:0;font-size:16.5px;}
+  .opts{list-style:none;margin:11px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:5px 22px;}
+  .opts li{font-size:16px;color:var(--ink-soft);}
+  .opts .lbl{font-family:"Fira Code";font-weight:600;color:var(--py-blue);margin-right:9px;}
+  .blank{display:inline-block;min-width:70px;border-bottom:1.5px solid var(--border-strong);}
+  ol.qs.tf > li{padding-left:78px;}
+  ol.qs.tf > li::before{top:18px;}
+  .tfbox{
+    position:absolute;left:32px;top:18px;font-family:"Fira Code";font-size:14px;
+    color:var(--ink-faint);letter-spacing:1px;
+  }
+  ol.qs.sa > li{padding-bottom:22px;}
+  ol.qs.sa .hint{display:block;margin-top:6px;font-size:14.5px;color:var(--ink-faint);font-style:italic;}
+
+  /* ---------- code blocks ---------- */
+  .code{
+    background:var(--code-bg);border-radius:11px;margin:16px 0;overflow:hidden;
+    border:1px solid #2c3645;box-shadow:var(--shadow);
+  }
+  .code .bar{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--code-bg2);border-bottom:1px solid #313c4c;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .d1{background:#ff5f56;}.code .bar .d2{background:#ffbd2e;}.code .bar .d3{background:#27c93f;}
+  .code .bar .fname{margin-left:8px;font-family:"Fira Code";font-size:12.5px;color:#9aa6b2;}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;}
+  .code code{font-size:14.5px;color:var(--code-text);line-height:1.65;display:block;white-space:pre;}
+  .c-kw{color:#ff9d6b;}
+  .c-fn{color:#7cc4ff;}
+  .c-str{color:#9ae26b;}
+  .c-num{color:#f7c873;}
+  .c-com{color:var(--code-comment);font-style:italic;}
+  .c-prompt{color:#6fae4f;}
+  .c-out{color:#cbd3dc;}
+  .c-err{color:#ff7b72;}
+  kbd{font-size:13px;background:#eef2f6;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;padding:1px 7px;color:var(--ink);}
+
+  /* ---------- exercise cards ---------- */
+  .ex{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    box-shadow:var(--shadow);padding:24px 26px;margin:22px 0;break-inside:avoid;
+  }
+  .ex-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .ex-tag{
+    font-family:"Fira Code";font-size:12.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+    color:var(--py-blue-deep);background:var(--py-yellow);padding:3px 10px;border-radius:6px;
+  }
+  .ex h3{margin:0;font-size:21px;color:var(--ink);}
+  .ex .why{color:var(--ink-soft);font-size:15.5px;margin:6px 0 14px;}
+  .ex ol.steps{margin:0 0 4px;padding-left:22px;}
+  .ex ol.steps > li{margin-bottom:11px;padding-left:4px;}
+  .ex ol.steps code{
+    background:#eef2f6;border:1px solid var(--border);border-radius:5px;
+    padding:1px 7px;font-size:14.5px;color:var(--py-blue-deep);white-space:nowrap;
+  }
+  .console-btn{
+    display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+    background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;font-size:15px;
+    padding:10px 20px;border-radius:999px;margin:6px 0 2px;transition:.18s;box-shadow:var(--shadow);
+  }
+  .console-btn:hover{background:var(--py-blue-deep);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+  .console-btn .arrow{font-family:"Fira Code";color:var(--py-yellow);}
+
+  /* ---------- answer key ---------- */
+  .keybreak{
+    border-top:2px dashed var(--border-strong);margin:0 0 40px;padding-top:26px;
+    text-align:center;color:var(--ink-faint);font-family:"Fira Code";font-size:13px;letter-spacing:2px;text-transform:uppercase;
+  }
+  #answers{break-before:page;}
+  .akey{background:linear-gradient(160deg,#f3f8fc,#fffdf3);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin-bottom:26px;}
+  .akey h3{margin-top:0;}
+  .agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:8px 26px;margin:0;padding:0;list-style:none;}
+  .agrid li{font-size:16px;padding:5px 0;border-bottom:1px dotted var(--border-strong);}
+  .agrid .n{font-family:"Fira Code";color:var(--py-blue-dk);font-weight:600;margin-right:10px;}
+  .agrid .v{font-weight:600;color:var(--py-blue-deep);}
+  ol.akeys{list-style:none;counter-reset:ak;margin:0;padding:0;}
+  ol.akeys > li{counter-increment:ak;position:relative;padding:14px 0 14px 46px;border-bottom:1px solid var(--border);break-inside:avoid;}
+  ol.akeys > li:last-child{border-bottom:none;}
+  ol.akeys > li::before{content:counter(ak) ".";position:absolute;left:0;top:14px;font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);}
+  ol.akeys .qtext{display:block;font-weight:600;color:var(--ink);margin-bottom:5px;}
+  ol.akeys .atext{color:var(--ink-soft);font-size:16px;}
+
+  /* ---------- rubric table ---------- */
+  .ctable{width:100%;border-collapse:collapse;margin:20px 0;font-size:15.5px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .ctable th,.ctable td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .ctable thead th{background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td:first-child{font-weight:600;color:var(--py-blue-deep);}
+  .ctable tbody tr:nth-child(even){background:#f9fbfc;}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:26px 24px;color:var(--ink-faint);font-size:13.5px;}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:880px){
+    .grid{grid-template-columns:1fr;gap:0;padding-top:0;}
+    nav.toc{position:sticky;top:0;z-index:40;background:var(--page);margin:0 -24px 24px;padding:10px 0;border-bottom:1px solid var(--border);}
+    nav.toc .toc-title{display:none;}
+    nav.toc ol{display:flex;overflow-x:auto;border-left:none;padding:0 18px;gap:4px;}
+    nav.toc a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent;border-radius:8px 8px 0 0;}
+    nav.toc a.active{border-left:none;border-bottom-color:var(--py-blue);}
+    nav.toc .toc-out{display:none;}
+    .hero::after{font-size:120px;bottom:-30px;}
+    .qcard{padding:6px 16px;}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none!important;}}
+  :focus-visible{outline:3px solid var(--py-yellow);outline-offset:2px;border-radius:4px;}
+
+  /* ---------- print: answer key starts on its own page ---------- */
+  @media print{
+    body{background:#fff;font-size:11.5pt;line-height:1.5;}
+    #progress,nav.toc,.home-link,.topics,.console-btn{display:none!important;}
+    .hero{background:none;color:var(--ink);padding:0 0 14px;border-bottom:2px solid var(--py-blue-dk);}
+    .hero::after{display:none;}
+    .hero .brand .mark{background:none;color:var(--ink);padding:0;}
+    .hero .brand .brand-txt,.hero .sub{color:var(--ink-soft);}
+    .eyebrow{color:var(--py-blue-dk);}
+    .grid{display:block;padding:14px 0 0;max-width:100%;}
+    .qcard,.ex,.akey,.keypt,.note{box-shadow:none;}
+    section{margin-bottom:26px;}
+    #answers{page-break-before:always;break-before:page;}
+    .keybreak{display:none;}
+    footer{page-break-before:avoid;}
+    a{color:var(--ink);text-decoration:none;}
+  }
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:880px){ nav.toc{ top:48px; } }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+<div id="progress"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand">
+      <span class="mark">&gt;&gt;&gt;</span>
+      <span class="brand-txt">CIS181 · Python Programming</span>
+    </div>
+    <div class="eyebrow">Week 09 · Review Questions</div>
+    <h1>More About Strings</h1>
+    <p class="sub">Five sections: Multiple Choice, True or False, Short Answer, Algorithm Workbench, and Programming Exercises. The workbench and exercise items are all done in the browser-based Interactive Python Console. Total: 100 points.</p>
+    <div class="topics">
+      <a href="#mc"><span class="n">01</span>Multiple Choice</a>
+      <a href="#tf"><span class="n">02</span>True or False</a>
+      <a href="#sa"><span class="n">03</span>Short Answer</a>
+      <a href="#aw"><span class="n">04</span>Algorithm Workbench</a>
+      <a href="#pe"><span class="n">05</span>Programming Exercises</a>
+      <a href="#answers"><span class="n">✓</span>Answer Key</a>
+      <a href="python-wk09-more-about-strings.html" class="topic-out"><span class="n">&larr;</span>Week 09 Concepts</a>
+    </div>
+  </div>
+</header>
+
+<div class="grid">
+  <nav class="toc" aria-label="Section navigation">
+    <p class="toc-title">On this page</p>
+    <ol>
+      <li><a href="#mc"><span class="num">1</span>Multiple Choice</a></li>
+      <li><a href="#tf"><span class="num">2</span>True or False</a></li>
+      <li><a href="#sa"><span class="num">3</span>Short Answer</a></li>
+      <li><a href="#aw"><span class="num">4</span>Algorithm Workbench</a></li>
+      <li><a href="#pe"><span class="num">5</span>Programming Exercises</a></li>
+      <li><a href="#answers"><span class="num">✓</span>Answer Key</a></li>
+    </ol>
+    <a class="toc-out" href="python-wk09-more-about-strings.html">
+      <span class="num">&larr;</span>Week 09 Concepts
+    </a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 1 · MULTIPLE CHOICE ============ -->
+  <section id="mc">
+    <div class="sec-head"><span class="sec-num">1</span><h2>Multiple Choice</h2><span class="pts">24 × 1 pt = 24</span></div>
+    <p class="lead">Choose the one best answer for each question.</p>
+
+    <div class="qcard">
+    <ol class="qs">
+      <li>
+        <p class="stem">A string is best described as a <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>sequence of characters</li>
+          <li><span class="lbl">b.</span>mutable list</li>
+          <li><span class="lbl">c.</span>numeric value</li>
+          <li><span class="lbl">d.</span>method</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What is the index of the first character of a string?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>1</li>
+          <li><span class="lbl">b.</span>0</li>
+          <li><span class="lbl">c.</span>-1</li>
+          <li><span class="lbl">d.</span>the string's length</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Given <span class="mono">motto = "Stay curious"</span>, what does <span class="mono">motto[-1]</span> return?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">"S"</span></li>
+          <li><span class="lbl">b.</span><span class="mono">"s"</span></li>
+          <li><span class="lbl">c.</span><span class="mono">"u"</span></li>
+          <li><span class="lbl">d.</span>an <span class="mono">IndexError</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Using an index beyond the end of a string raises <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">ValueError</span></li>
+          <li><span class="lbl">b.</span><span class="mono">IndexError</span></li>
+          <li><span class="lbl">c.</span><span class="mono">TypeError</span></li>
+          <li><span class="lbl">d.</span><span class="mono">KeyError</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The last valid index of a string is always <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">len(string)</span></li>
+          <li><span class="lbl">b.</span><span class="mono">len(string) - 1</span></li>
+          <li><span class="lbl">c.</span><span class="mono">len(string) + 1</span></li>
+          <li><span class="lbl">d.</span>always 10</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A <span class="mono">for</span> loop over a string hands you one <span class="blank"></span> per iteration.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>word</li>
+          <li><span class="lbl">b.</span>line</li>
+          <li><span class="lbl">c.</span>character</li>
+          <li><span class="lbl">d.</span>index number</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Joining one string to the end of another is called <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>slicing</li>
+          <li><span class="lbl">b.</span>concatenation</li>
+          <li><span class="lbl">c.</span>repetition</li>
+          <li><span class="lbl">d.</span>splitting</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The expression <span class="mono">"Age: " + 25</span> raises <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">ValueError</span></li>
+          <li><span class="lbl">b.</span><span class="mono">TypeError</span></li>
+          <li><span class="lbl">c.</span><span class="mono">NameError</span></li>
+          <li><span class="lbl">d.</span>no error — it works</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">To say that strings are <span class="blank"></span> means they cannot be changed once created.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>mutable</li>
+          <li><span class="lbl">b.</span>immutable</li>
+          <li><span class="lbl">c.</span>sequential</li>
+          <li><span class="lbl">d.</span>indexed</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The statement <span class="mono">tag[0] = "H"</span> raises <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">IndexError</span></li>
+          <li><span class="lbl">b.</span><span class="mono">ValueError</span></li>
+          <li><span class="lbl">c.</span><span class="mono">TypeError</span></li>
+          <li><span class="lbl">d.</span>no error</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A span of characters taken from a string is called a <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>substring</li>
+          <li><span class="lbl">b.</span>token</li>
+          <li><span class="lbl">c.</span>literal</li>
+          <li><span class="lbl">d.</span>delimiter</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Given <span class="mono">code = "ORD-48715"</span>, what does <span class="mono">code[0:3]</span> return?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">"ORD-"</span></li>
+          <li><span class="lbl">b.</span><span class="mono">"ORD"</span></li>
+          <li><span class="lbl">c.</span><span class="mono">"OR"</span></li>
+          <li><span class="lbl">d.</span><span class="mono">"RD-"</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">In a slice expression, omitting the <span class="mono">end</span> value means Python uses <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>0</li>
+          <li><span class="lbl">b.</span>-1</li>
+          <li><span class="lbl">c.</span><span class="mono">len(string)</span></li>
+          <li><span class="lbl">d.</span>the step value</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which operator tests whether one string appears inside another?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">has</span></li>
+          <li><span class="lbl">b.</span><span class="mono">in</span></li>
+          <li><span class="lbl">c.</span><span class="mono">find</span></li>
+          <li><span class="lbl">d.</span><span class="mono">==</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which method returns <span class="mono">True</span> when every character in a non-empty string is a digit?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">isalpha()</span></li>
+          <li><span class="lbl">b.</span><span class="mono">isdigit()</span></li>
+          <li><span class="lbl">c.</span><span class="mono">isalnum()</span></li>
+          <li><span class="lbl">d.</span><span class="mono">isnumericvalue()</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What does <span class="mono">"Bay12".isalnum()</span> return?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">True</span></li>
+          <li><span class="lbl">b.</span><span class="mono">False</span></li>
+          <li><span class="lbl">c.</span><span class="mono">"Bay12"</span></li>
+          <li><span class="lbl">d.</span>an error</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which method returns a copy of the string with leading <em>and</em> trailing whitespace removed?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">lstrip()</span></li>
+          <li><span class="lbl">b.</span><span class="mono">rstrip()</span></li>
+          <li><span class="lbl">c.</span><span class="mono">strip()</span></li>
+          <li><span class="lbl">d.</span><span class="mono">trim()</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The modification methods such as <span class="mono">upper()</span> and <span class="mono">strip()</span> <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>change the original string in place</li>
+          <li><span class="lbl">b.</span>return a new copy and leave the original unchanged</li>
+          <li><span class="lbl">c.</span>return <span class="mono">None</span></li>
+          <li><span class="lbl">d.</span>raise an exception on immutable strings</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">To compare two strings while ignoring case, you should <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>use <span class="mono">is</span> instead of <span class="mono">==</span></li>
+          <li><span class="lbl">b.</span>convert both with <span class="mono">lower()</span> before comparing</li>
+          <li><span class="lbl">c.</span>use the <span class="mono">find</span> method</li>
+          <li><span class="lbl">d.</span>slice off the first character</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What does the <span class="mono">find</span> method return when the substring is not present?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">None</span></li>
+          <li><span class="lbl">b.</span><span class="mono">False</span></li>
+          <li><span class="lbl">c.</span><span class="mono">-1</span></li>
+          <li><span class="lbl">d.</span>it raises <span class="mono">ValueError</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which method returns a copy of the string with every occurrence of one substring exchanged for another?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">swap()</span></li>
+          <li><span class="lbl">b.</span><span class="mono">replace()</span></li>
+          <li><span class="lbl">c.</span><span class="mono">substitute()</span></li>
+          <li><span class="lbl">d.</span><span class="mono">find()</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which method returns <span class="mono">True</span> if a string begins with a given substring?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">startswith()</span></li>
+          <li><span class="lbl">b.</span><span class="mono">endswith()</span></li>
+          <li><span class="lbl">c.</span><span class="mono">find()</span></li>
+          <li><span class="lbl">d.</span><span class="mono">isalpha()</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What does the expression <span class="mono">"ab" * 3</span> produce?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">"ab3"</span></li>
+          <li><span class="lbl">b.</span><span class="mono">"ababab"</span></li>
+          <li><span class="lbl">c.</span><span class="mono">"abababab"</span></li>
+          <li><span class="lbl">d.</span>a <span class="mono">TypeError</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Called with no argument, the <span class="mono">split</span> method breaks a string apart at <span class="blank"></span> and returns <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>commas; a string</li>
+          <li><span class="lbl">b.</span>whitespace; a list</li>
+          <li><span class="lbl">c.</span>whitespace; a tuple</li>
+          <li><span class="lbl">d.</span>every character; a list</li>
+        </ul>
+      </li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 2 · TRUE OR FALSE ============ -->
+  <section id="tf">
+    <div class="sec-head"><span class="sec-num">2</span><h2>True or False</h2><span class="pts">10 × 1 pt = 10</span></div>
+
+    <div class="qcard">
+    <ol class="qs tf">
+      <li><span class="tfbox">T / F</span><p class="stem">Indexing, slicing, the <span class="mono">in</span> operator, and <span class="mono">len</span> all work on strings just as they do on lists.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A string can be changed in place by assigning to one of its indexes.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Concatenating onto a string variable with <span class="mono">+=</span> edits the original string object.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A slice of a string produces a new string.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The expression <span class="mono">"12.5".isdigit()</span> returns <span class="mono">True</span>.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The expression <span class="mono">"Bay 12".isalnum()</span> returns <span class="mono">False</span>.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The <span class="mono">upper</span> method changes the string it is called on.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">String comparisons with <span class="mono">==</span> are case-sensitive.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The <span class="mono">find</span> method raises an exception when the substring is missing.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The <span class="mono">split</span> method returns a list.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 3 · SHORT ANSWER ============ -->
+  <section id="sa">
+    <div class="sec-head"><span class="sec-num">3</span><h2>Short Answer</h2><span class="pts">11 × 2 pts = 22</span></div>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li><p class="stem">Explain what it means to say a string is a sequence, and name three operations that work on both strings and lists because of it.</p></li>
+      <li><p class="stem">Describe the two everyday ways to reach the characters of a string, and give a situation suited to each.</p></li>
+      <li><p class="stem">What does it mean that strings are <em>immutable</em>? Explain what actually happens when you write <span class="mono">greeting += " there"</span>.</p></li>
+      <li><p class="stem">Why can't you write <span class="mono">tag[0] = "H"</span>? What must you do instead to get a version of the string with a different first character?</p></li>
+      <li><p class="stem">Describe what a slice expression produces, and state what Python uses when <span class="mono">start</span> or <span class="mono">end</span> is omitted.</p></li>
+      <li><p class="stem">Explain the difference between using the <span class="mono">in</span> operator and using the <span class="mono">find</span> method to search a string. When would you choose each?</p></li>
+      <li><p class="stem">What do the string testing methods have in common, and how do they make input validation tidier?</p></li>
+      <li><p class="stem">A program validates typed input with <span class="mono">user_text.isdigit()</span>. Name two kinds of legitimate numeric entry this test would reject, and explain why.</p></li>
+      <li><p class="stem">Why do the modification methods return a copy rather than changing the string? What must you do with the value they return?</p></li>
+      <li><p class="stem">Explain how to compare two strings without regard to case, and why the comparison fails without that step.</p></li>
+      <li><p class="stem">Describe what the <span class="mono">split</span> method does with and without an argument, and what data type it returns.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 4 · ALGORITHM WORKBENCH ============ -->
+  <section id="aw">
+    <div class="sec-head"><span class="sec-num">4</span><h2>Algorithm Workbench</h2><span class="pts">16 × 1 pt = 16</span></div>
+    <p class="lead">Short code-writing and code-tracing items. Write your answer first, <em>then</em> check it in the console — the prediction is the part that teaches.</p>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li><p class="stem">Write a loop that displays each character of the string <span class="mono">word</span> on its own line.</p></li>
+      <li>
+        <p class="stem">Assume <span class="mono">motto = "Stay curious"</span>. Give the value of each expression.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">motto[0]</span></li>
+          <li><span class="lbl">b.</span><span class="mono">motto[-1]</span></li>
+          <li><span class="lbl">c.</span><span class="mono">len(motto)</span></li>
+          <li><span class="lbl">d.</span><span class="mono">motto[5]</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Assume <span class="mono">code = "ORD-48715"</span>. Give the value of each expression.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">code[0:3]</span></li>
+          <li><span class="lbl">b.</span><span class="mono">code[4:]</span></li>
+          <li><span class="lbl">c.</span><span class="mono">code[-2:]</span></li>
+          <li><span class="lbl">d.</span><span class="mono">code[::2]</span></li>
+        </ul>
+      </li>
+      <li><p class="stem">Write a statement that joins the variables <span class="mono">first</span> and <span class="mono">last</span> into <span class="mono">full</span>, with a single space between them.</p></li>
+      <li><p class="stem">Write an <span class="mono">if</span> statement that displays <span class="mono">'found it'</span> when the substring <span class="mono">'quick'</span> appears in the string <span class="mono">sentence</span>.</p></li>
+      <li>
+        <p class="stem">Give the value each expression returns.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">"2026".isdigit()</span></li>
+          <li><span class="lbl">b.</span><span class="mono">"Falcon".isalpha()</span></li>
+          <li><span class="lbl">c.</span><span class="mono">"Bay 12".isalnum()</span></li>
+          <li><span class="lbl">d.</span><span class="mono">"falcon".islower()</span></li>
+          <li><span class="lbl">e.</span><span class="mono">"12.5".isdigit()</span></li>
+        </ul>
+      </li>
+      <li><p class="stem">Write an <span class="mono">if</span> statement that displays <span class="mono">'confirmed'</span> when the variable <span class="mono">answer</span> equals <span class="mono">'yes'</span> regardless of how the user capitalized it.</p></li>
+      <li>
+        <p class="stem">Assume <span class="mono">label = "   Falcon Ridge   "</span>. Give the value of each, showing spaces clearly.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">label.strip()</span></li>
+          <li><span class="lbl">b.</span><span class="mono">label.lstrip()</span></li>
+          <li><span class="lbl">c.</span><span class="mono">label.rstrip()</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What does the following display, and why?</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">trace_1.py</span></div>
+<pre><code>label = <span class="c-str">"  Falcon  "</span>
+label.<span class="c-fn">strip</span>()
+<span class="c-fn">print</span>(<span class="c-fn">repr</span>(label))</code></pre>
+        </div>
+      </li>
+      <li>
+        <p class="stem">Assume <span class="mono">sentence = "the quick brown fox"</span>. Give the value of each.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">sentence.find("brown")</span></li>
+          <li><span class="lbl">b.</span><span class="mono">sentence.find("cat")</span></li>
+          <li><span class="lbl">c.</span><span class="mono">sentence.replace("fox", "cat")</span></li>
+          <li><span class="lbl">d.</span><span class="mono">sentence.split()</span></li>
+        </ul>
+      </li>
+      <li><p class="stem">Write a statement that creates a divider line of 30 dash characters using the repetition operator.</p></li>
+      <li><p class="stem">Write a statement that splits the string <span class="mono">"Rey,7,2480"</span> on commas and assigns the result to a variable named <span class="mono">fields</span>. What are the contents of <span class="mono">fields</span>?</p></li>
+      <li><p class="stem">Write a loop that counts how many times the character <span class="mono">'a'</span> appears in the string <span class="mono">word</span>, storing the result in a variable named <span class="mono">count</span>.</p></li>
+      <li><p class="stem">Write an <span class="mono">if</span> statement that displays <span class="mono">'Valid code'</span> when the string <span class="mono">sku</span> starts with <span class="mono">'BOLT'</span> and ends with <span class="mono">'MM'</span>.</p></li>
+      <li>
+        <p class="stem">The following code is meant to remove the whitespace from <span class="mono">entry</span> before using it, but it does not work. Identify the bug and fix it.</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">bug.py</span></div>
+<pre><code>entry = <span class="c-fn">input</span>(<span class="c-str">"Enter a code: "</span>)
+entry.<span class="c-fn">strip</span>()
+<span class="c-kw">if</span> entry.<span class="c-fn">isdigit</span>():
+    <span class="c-fn">print</span>(<span class="c-str">"Numeric"</span>)</code></pre>
+        </div>
+      </li>
+      <li><p class="stem">Write a list comprehension that builds a list of the uppercase version of every string in a list named <span class="mono">names</span>.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 5 · PROGRAMMING EXERCISES ============ -->
+  <section id="pe">
+    <div class="sec-head"><span class="sec-num">5</span><h2>Programming Exercises</h2><span class="pts">2 × 14 pts = 28</span></div>
+    <p class="lead">Build each program one statement at a time at the <span class="mono">&gt;&gt;&gt;</span> prompt.</p>
+
+    <a class="console-btn" href="python-interactive-console.html"><span class="arrow">&gt;&gt;&gt;</span> Open the Interactive Python Console</a>
+
+    <div class="note"><b>How to submit.</b> Paste your full console session into the Canvas submission box, followed by your written answers to the items marked <strong>Explain</strong>. Your transcript must show every line you typed and every line Python printed back — including any tracebacks.</div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 1</span><h3>The Password Strength Checker</h3></div>
+      <p class="why">Walk a string character by character, classify each one with the testing methods, and turn the counts into a decision.</p>
+      <ol class="steps">
+        <li>Write a function <code>analyze(password)</code> that walks the string with a <code>for</code> loop, counting uppercase letters, lowercase letters, and digits into three variables, and returns all three.</li>
+        <li>Test it on <strong>"Falcon2026"</strong> and display the three counts. <strong>Explain:</strong> your loop tested each character with <code>isupper()</code>, <code>islower()</code>, and <code>isdigit()</code>. Why does using <code>elif</code> rather than three separate <code>if</code> statements matter here?</li>
+        <li>Write a function <code>is_strong(password)</code> that returns <code>True</code> only when the password is at least 8 characters long <em>and</em> has at least one of each of the three kinds. Use your <code>analyze</code> function inside it.</li>
+        <li>Test <code>is_strong</code> on all four of these and record each result: <strong>"Falcon2026"</strong>, <strong>"hikeon"</strong>, <strong>"PASSWORD1"</strong>, <strong>"Ab3"</strong>. <strong>Explain:</strong> each of the three rejections fails for a different reason. Name the reason for each.</li>
+        <li>Now display a report line for a password using an f-string and the repetition operator — a divider of 30 dashes above and below the counts.</li>
+        <li>Add a check that rejects any password containing a space. <strong>Explain:</strong> name two different ways you could test for this, using material from this module.</li>
+        <li><strong>Explain:</strong> the string is never modified anywhere in your program — only examined. Explain what would have happened if you had tried to "clean up" the password with <code>password.strip()</code> as a statement on its own line.</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–6, plus your written answers for steps 2, 4, 6, and 7.</div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 2</span><h3>The Trail Record Parser</h3></div>
+      <p class="why">Take one messy line of text and pull structured data out of it — the everyday work of splitting, stripping, slicing, and searching.</p>
+      <ol class="steps">
+        <li>Create this record exactly, spaces included:<br><code>line = "  ORD-48715 , Falcon Ridge , 1520 , OPEN  "</code></li>
+        <li>Split it on commas into a variable named <code>parts</code> and display the result. <strong>Explain:</strong> look closely at the strings in the list. What problem do you see, and what caused it?</li>
+        <li>Build a cleaned list using a <strong>list comprehension</strong> that strips the whitespace from every piece. Display it. <strong>Explain:</strong> why does this need a comprehension or a loop, rather than calling <code>strip()</code> once on <code>parts</code>?</li>
+        <li>Unpack the four cleaned values into variables named <code>code</code>, <code>name</code>, <code>elev</code>, and <code>status</code>.</li>
+        <li>Working with <code>code</code>: display its first three characters using a slice, display everything after the dash using a slice, and confirm that portion is numeric with <code>isdigit()</code>. Then use <code>find</code> to report the position of the dash. <strong>Explain:</strong> you sliced with a fixed number. What would break if a code had a four-letter prefix, and how could <code>find</code> make the slice reliable?</li>
+        <li>Convert <code>elev</code> to an integer and display it plus 100. <strong>Explain:</strong> why was this conversion necessary when <code>elev</code> already looked like a number?</li>
+        <li>Test whether the trail is open, matching regardless of how the status was capitalized. Then use <code>replace</code> to produce a copy of <code>name</code> with <code>"Ridge"</code> changed to <code>"Peak"</code>, and display both the copy and the original <code>name</code>. <strong>Explain:</strong> what does displaying both prove about string methods?</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–7, plus your written answers for steps 2, 3, 5, 6, and 7.</div>
+    </div>
+
+    <div class="note"><b>Tip.</b> Use <code>repr()</code> when you want to see exactly what a string contains — it makes leading and trailing spaces visible, which plain <code>print</code> hides.</div>
+  </section>
+
+  <div class="keybreak">Answer key begins on the next page</div>
+
+  <!-- ============ ANSWER KEY ============ -->
+  <section id="answers">
+    <div class="sec-head"><span class="sec-num">✓</span><h2>Week 09 Answer Key</h2><span class="pts">Instructor copy</span></div>
+    <p class="lead">More About Strings — 100 points total.</p>
+
+    <div class="note"><b>Do not distribute with the question set.</b> When printed, this key starts on its own page. To post the questions to students without the key, delete everything from this section to the end of the page.</div>
+
+    <div class="akey">
+      <h3>Multiple Choice · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">a</span> — sequence of characters</li>
+        <li><span class="n">2.</span><span class="v">b</span> — 0</li>
+        <li><span class="n">3.</span><span class="v">b</span> — "s"</li>
+        <li><span class="n">4.</span><span class="v">b</span> — IndexError</li>
+        <li><span class="n">5.</span><span class="v">b</span> — len - 1</li>
+        <li><span class="n">6.</span><span class="v">c</span> — character</li>
+        <li><span class="n">7.</span><span class="v">b</span> — concatenation</li>
+        <li><span class="n">8.</span><span class="v">b</span> — TypeError</li>
+        <li><span class="n">9.</span><span class="v">b</span> — immutable</li>
+        <li><span class="n">10.</span><span class="v">c</span> — TypeError</li>
+        <li><span class="n">11.</span><span class="v">a</span> — substring</li>
+        <li><span class="n">12.</span><span class="v">b</span> — "ORD"</li>
+        <li><span class="n">13.</span><span class="v">c</span> — len(string)</li>
+        <li><span class="n">14.</span><span class="v">b</span> — in</li>
+        <li><span class="n">15.</span><span class="v">b</span> — isdigit()</li>
+        <li><span class="n">16.</span><span class="v">a</span> — True</li>
+        <li><span class="n">17.</span><span class="v">c</span> — strip()</li>
+        <li><span class="n">18.</span><span class="v">b</span> — return a new copy</li>
+        <li><span class="n">19.</span><span class="v">b</span> — lower() both sides</li>
+        <li><span class="n">20.</span><span class="v">c</span> — -1</li>
+        <li><span class="n">21.</span><span class="v">b</span> — replace()</li>
+        <li><span class="n">22.</span><span class="v">a</span> — startswith()</li>
+        <li><span class="n">23.</span><span class="v">b</span> — "ababab"</li>
+        <li><span class="n">24.</span><span class="v">b</span> — whitespace; a list</li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>True or False · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">True</span></li>
+        <li><span class="n">2.</span><span class="v">False</span> — immutable</li>
+        <li><span class="n">3.</span><span class="v">False</span> — it rebinds to a new string</li>
+        <li><span class="n">4.</span><span class="v">True</span></li>
+        <li><span class="n">5.</span><span class="v">False</span> — the period isn't a digit</li>
+        <li><span class="n">6.</span><span class="v">True</span> — the space isn't alphanumeric</li>
+        <li><span class="n">7.</span><span class="v">False</span> — it returns a copy</li>
+        <li><span class="n">8.</span><span class="v">True</span></li>
+        <li><span class="n">9.</span><span class="v">False</span> — it returns -1</li>
+        <li><span class="n">10.</span><span class="v">True</span></li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>Short Answer · 2 points each</h3>
+      <ol class="akeys">
+        <li><span class="qtext">Strings as sequences.</span><span class="atext">A string is a sequence of characters stored in a definite order, so each character has a numbered position. Because of that, the operations that work on lists work on strings too: indexing, slicing, the <span class="mono">in</span> operator, <span class="mono">len</span>, iteration with a <span class="mono">for</span> loop, and the repetition operator. <em>Any three.</em></span></li>
+        <li><span class="qtext">Two ways to reach characters.</span><span class="atext">Iterate with a <span class="mono">for</span> loop, which hands you one character per pass — best when every character must be examined, such as counting occurrences. Or index directly with <span class="mono">word[i]</span>, which returns a one-character string — best when you want one specific position, such as the first or last character.</span></li>
+        <li><span class="qtext">Immutability.</span><span class="atext">Once created, a string cannot be changed. <span class="mono">greeting += " there"</span> does not edit the original: Python builds a brand-new string containing the combined text and rebinds the variable to it. The original object is left untouched and, with nothing referencing it, is simply discarded.</span></li>
+        <li><span class="qtext">Why tag[0] = "H" fails.</span><span class="atext">Assigning to an index would change the string in place, which immutability forbids — it raises <span class="mono">TypeError: 'str' object does not support item assignment</span>. Instead you build a new string, for example by concatenating <span class="mono">"H" + tag[1:]</span> or by calling a method that returns a modified copy.</span></li>
+        <li><span class="qtext">Slices.</span><span class="atext">A slice returns a new string containing copies of the characters from <span class="mono">start</span> up to but not including <span class="mono">end</span> — a substring. Omitting <span class="mono">start</span> makes Python use 0; omitting <span class="mono">end</span> makes it use <span class="mono">len(string)</span>.</span></li>
+        <li><span class="qtext">in versus find.</span><span class="atext"><span class="mono">in</span> returns a Boolean — use it when a yes-or-no answer is all you need. <span class="mono">find</span> returns the index where the substring begins, so use it when the position matters. The catch with <span class="mono">find</span> is that a missing substring returns <span class="mono">-1</span> rather than raising an exception, so the result must be checked.</span></li>
+        <li><span class="qtext">Testing methods.</span><span class="atext">They all examine the string for some characteristic and return a Boolean rather than changing anything. They tidy validation because the check can happen <em>before</em> a risky operation — testing <span class="mono">user_text.isdigit()</span> first lets the program re-prompt rather than letting <span class="mono">int()</span> raise an exception.</span></li>
+        <li><span class="qtext">What isdigit() rejects.</span><span class="atext">Any two of: a decimal number such as <span class="mono">"12.5"</span>, because the period is not a digit; a negative number such as <span class="mono">"-7"</span>, because the minus sign is not a digit; a value with surrounding spaces such as <span class="mono">" 42"</span>; and the empty string, which returns <span class="mono">False</span> because the method requires at least one character. <em>This is why <span class="mono">isdigit</span> alone is not sufficient validation for a float.</em></span></li>
+        <li><span class="qtext">Why methods return copies.</span><span class="atext">Because strings are immutable, no method can alter the original — so each returns a brand-new string with the change applied. That means you must <em>use</em> the return value: assign it to a variable or pass it onward. Calling the method as a bare statement accomplishes nothing.</span></li>
+        <li><span class="qtext">Case-insensitive comparison.</span><span class="atext">Convert both sides to the same case first — <span class="mono">answer.lower() == "yes"</span>. Without it the comparison fails because <span class="mono">==</span> is case-sensitive: <span class="mono">"YES"</span> and <span class="mono">"yes"</span> are different strings, since uppercase and lowercase letters are different characters.</span></li>
+        <li><span class="qtext">split.</span><span class="atext">With no argument it breaks the string at whitespace, giving the individual words. With a separator argument it breaks at that character instead, such as a comma. Either way it returns a <strong>list</strong> of strings.</span></li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Algorithm Workbench · 1 point each</h3>
+      <ol class="akeys">
+        <li><span class="qtext">Loop over characters.</span><span class="atext"><span class="mono">for ch in word:</span> then indented <span class="mono">print(ch)</span></span></li>
+        <li><span class="qtext">"Stay curious".</span><span class="atext"><strong>a.</strong> <span class="mono">'S'</span> · <strong>b.</strong> <span class="mono">'s'</span> · <strong>c.</strong> 12 · <strong>d.</strong> <span class="mono">'c'</span> <em>(index 5 is the c of "curious" — the space at index 4 is counted)</em></span></li>
+        <li><span class="qtext">"ORD-48715".</span><span class="atext"><strong>a.</strong> <span class="mono">'ORD'</span> · <strong>b.</strong> <span class="mono">'48715'</span> · <strong>c.</strong> <span class="mono">'15'</span> · <strong>d.</strong> <span class="mono">'OD475'</span></span></li>
+        <li><span class="qtext">Join with a space.</span><span class="atext"><span class="mono">full = first + " " + last</span> <em>(an f-string is equally acceptable)</em></span></li>
+        <li><span class="qtext">Membership test.</span><span class="atext"><span class="mono">if "quick" in sentence:</span> then indented <span class="mono">print('found it')</span></span></li>
+        <li><span class="qtext">Testing methods.</span><span class="atext"><strong>a.</strong> True · <strong>b.</strong> True · <strong>c.</strong> False — the space is not alphanumeric · <strong>d.</strong> True · <strong>e.</strong> False — the period is not a digit</span></li>
+        <li><span class="qtext">Case-insensitive if.</span><span class="atext"><span class="mono">if answer.lower() == 'yes':</span> then indented <span class="mono">print('confirmed')</span>. <em>Accept <span class="mono">upper()</span> against <span class="mono">'YES'</span>.</em></span></li>
+        <li><span class="qtext">Stripping.</span><span class="atext"><strong>a.</strong> <span class="mono">'Falcon Ridge'</span> · <strong>b.</strong> <span class="mono">'Falcon Ridge   '</span> (trailing spaces remain) · <strong>c.</strong> <span class="mono">'   Falcon Ridge'</span> (leading spaces remain)</span></li>
+        <li><span class="qtext">Trace 1.</span><span class="atext"><span class="mono">'  Falcon  '</span> — unchanged. <span class="mono">strip()</span> returned a stripped copy, but the result was never assigned to anything, so it was discarded. This is the single most common string-method mistake.</span></li>
+        <li><span class="qtext">Search and replace.</span><span class="atext"><strong>a.</strong> 10 · <strong>b.</strong> -1 · <strong>c.</strong> <span class="mono">'the quick brown cat'</span> · <strong>d.</strong> <span class="mono">['the', 'quick', 'brown', 'fox']</span></span></li>
+        <li><span class="qtext">Divider.</span><span class="atext"><span class="mono">divider = "-" * 30</span></span></li>
+        <li><span class="qtext">Split on commas.</span><span class="atext"><span class="mono">fields = "Rey,7,2480".split(",")</span> → <span class="mono">['Rey', '7', '2480']</span>. <em>Note all three items are strings, including the numbers.</em></span></li>
+        <li><span class="qtext">Counting a character.</span><span class="atext"><span class="mono">count = 0</span> before the loop, then <span class="mono">for ch in word:</span> containing <span class="mono">if ch == 'a':</span> and <span class="mono">count += 1</span>. <em>Accept <span class="mono">word.count('a')</span> as a bonus observation, but the question asks for a loop.</em></span></li>
+        <li><span class="qtext">Two-part condition.</span><span class="atext"><span class="mono">if sku.startswith('BOLT') and sku.endswith('MM'):</span> then indented <span class="mono">print('Valid code')</span></span></li>
+        <li><span class="qtext">The bug.</span><span class="atext"><span class="mono">entry.strip()</span> returns a stripped copy that is thrown away — <span class="mono">entry</span> still holds the whitespace, so <span class="mono">isdigit()</span> returns <span class="mono">False</span> for an entry like <span class="mono">" 42"</span>. Fix by capturing the result: <span class="mono">entry = entry.strip()</span>.</span></li>
+        <li><span class="qtext">Comprehension.</span><span class="atext"><span class="mono">[n.upper() for n in names]</span></span></li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Exercise 1 · The Password Strength Checker — 14 points</h3>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">def</span> <span class="c-fn">analyze</span>(password):
+<span class="c-prompt">...</span>     upper = lower = digit = <span class="c-num">0</span>
+<span class="c-prompt">...</span>     <span class="c-kw">for</span> ch <span class="c-kw">in</span> password:
+<span class="c-prompt">...</span>         <span class="c-kw">if</span> ch.<span class="c-fn">isupper</span>():
+<span class="c-prompt">...</span>             upper += <span class="c-num">1</span>
+<span class="c-prompt">...</span>         <span class="c-kw">elif</span> ch.<span class="c-fn">islower</span>():
+<span class="c-prompt">...</span>             lower += <span class="c-num">1</span>
+<span class="c-prompt">...</span>         <span class="c-kw">elif</span> ch.<span class="c-fn">isdigit</span>():
+<span class="c-prompt">...</span>             digit += <span class="c-num">1</span>
+<span class="c-prompt">...</span>     <span class="c-kw">return</span> upper, lower, digit
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">analyze</span>(<span class="c-str">"Falcon2026"</span>)
+<span class="c-out">(1, 5, 4)</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">def</span> <span class="c-fn">is_strong</span>(password):
+<span class="c-prompt">...</span>     u, l, d = <span class="c-fn">analyze</span>(password)
+<span class="c-prompt">...</span>     <span class="c-kw">return</span> <span class="c-fn">len</span>(password) &gt;= <span class="c-num">8</span> <span class="c-kw">and</span> u &gt; <span class="c-num">0</span> <span class="c-kw">and</span> l &gt; <span class="c-num">0</span> <span class="c-kw">and</span> d &gt; <span class="c-num">0</span>
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">for</span> pw <span class="c-kw">in</span> [<span class="c-str">"Falcon2026"</span>, <span class="c-str">"hikeon"</span>, <span class="c-str">"PASSWORD1"</span>, <span class="c-str">"Ab3"</span>]:
+<span class="c-prompt">...</span>     <span class="c-fn">print</span>(pw, <span class="c-fn">analyze</span>(pw), <span class="c-fn">is_strong</span>(pw))
+<span class="c-prompt">...</span>
+<span class="c-out">Falcon2026 (1, 5, 4) True
+hikeon (0, 6, 0) False
+PASSWORD1 (8, 0, 1) False
+Ab3 (1, 1, 1) False</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">print</span>(<span class="c-str">"-"</span> * <span class="c-num">30</span>)
+<span class="c-out">------------------------------</span></code></pre>
+      </div>
+      <table class="ctable">
+        <thead><tr><th>Password</th><th>Length</th><th>upper / lower / digit</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Falcon2026</td><td>10</td><td>1 / 5 / 4</td><td>accept</td></tr>
+          <tr><td>hikeon</td><td>6</td><td>0 / 6 / 0</td><td>reject</td></tr>
+          <tr><td>PASSWORD1</td><td>9</td><td>8 / 0 / 1</td><td>reject</td></tr>
+          <tr><td>Ab3</td><td>3</td><td>1 / 1 / 1</td><td>reject</td></tr>
+        </tbody>
+      </table>
+      <ol class="akeys">
+        <li><span class="qtext">Step 2 — why elif.</span><span class="atext">The three conditions are mutually exclusive: a character cannot be both an uppercase letter and a digit. Using <span class="mono">elif</span> stops testing as soon as one matches, which is both faster and clearer about the intent. Three separate <span class="mono">if</span> statements would produce the same counts here, but they invite a bug the moment a condition overlaps — and they hide the fact that the categories are exclusive. <em>Accept either justification.</em></span></li>
+        <li><span class="qtext">Step 4 — three different failures.</span><span class="atext"><strong>hikeon</strong> is too short <em>and</em> has no uppercase and no digits — it fails on length first. <strong>PASSWORD1</strong> is long enough and has uppercase and a digit, but has <em>no lowercase</em> letters. <strong>Ab3</strong> has one of each kind but is only 3 characters, so it fails the length test alone. Full credit requires naming the distinct reason for each, not just "not strong."</span></li>
+        <li><span class="qtext">Step 6 — two ways to reject a space.</span><span class="atext">Any two of: test the whole string with <span class="mono">" " in password</span>; test each character in the loop with <span class="mono">ch.isspace()</span>; or compare <span class="mono">password</span> to <span class="mono">password.strip()</span> — though that catches only leading and trailing spaces, not interior ones, which is worth noting.</span></li>
+        <li><span class="qtext">Step 7 — the discarded return value.</span><span class="atext">Nothing would happen. <span class="mono">password.strip()</span> builds a stripped copy and returns it, but as a bare statement the copy is immediately discarded and <span class="mono">password</span> is unchanged — because strings are immutable, no method can alter it in place. To keep the result you must assign it: <span class="mono">password = password.strip()</span>.</span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>4</td><td>Working <span class="mono">analyze</span> returning three counts, correct for "Falcon2026".</td></tr>
+          <tr><td>3</td><td><span class="mono">is_strong</span> combines length with all three requirements and returns the right verdict for all four tests.</td></tr>
+          <tr><td>2</td><td>Step 2 — a sound reason for <span class="mono">elif</span>.</td></tr>
+          <tr><td>2</td><td>Step 4 — a distinct, correct failure reason for each of the three rejections.</td></tr>
+          <tr><td>1</td><td>Step 5 — report formatted with an f-string and a repetition-operator divider.</td></tr>
+          <tr><td>2</td><td>Steps 6–7 — two ways to detect a space, and the discarded-return-value explanation.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="akey">
+      <h3>Exercise 2 · The Trail Record Parser — 14 points</h3>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> line = <span class="c-str">"  ORD-48715 , Falcon Ridge , 1520 , OPEN  "</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> parts = line.<span class="c-fn">split</span>(<span class="c-str">","</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> parts
+<span class="c-out">['  ORD-48715 ', ' Falcon Ridge ', ' 1520 ', ' OPEN  ']</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> clean = [p.<span class="c-fn">strip</span>() <span class="c-kw">for</span> p <span class="c-kw">in</span> parts]
+<span class="c-prompt">&gt;&gt;&gt;</span> clean
+<span class="c-out">['ORD-48715', 'Falcon Ridge', '1520', 'OPEN']</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> code, name, elev, status = clean
+<span class="c-prompt">&gt;&gt;&gt;</span> code[:<span class="c-num">3</span>], code[<span class="c-num">4</span>:], code[<span class="c-num">4</span>:].<span class="c-fn">isdigit</span>()
+<span class="c-out">('ORD', '48715', True)</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> code.<span class="c-fn">find</span>(<span class="c-str">"-"</span>)
+<span class="c-out">3</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">int</span>(elev) + <span class="c-num">100</span>
+<span class="c-out">1620</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> status.<span class="c-fn">lower</span>() == <span class="c-str">"open"</span>
+<span class="c-out">True</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> renamed = name.<span class="c-fn">replace</span>(<span class="c-str">"Ridge"</span>, <span class="c-str">"Peak"</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> renamed, name
+<span class="c-out">('Falcon Peak', 'Falcon Ridge')</span></code></pre>
+      </div>
+      <ol class="akeys">
+        <li><span class="qtext">Step 2 — the problem with parts.</span><span class="atext">Every piece still carries stray spaces — <span class="mono">'  ORD-48715 '</span>, <span class="mono">' Falcon Ridge '</span>, and so on. <span class="mono">split(",")</span> breaks the string only at the commas and keeps everything else exactly as it was, including the spaces that surrounded each comma and the leading and trailing spaces of the whole line.</span></li>
+        <li><span class="qtext">Step 3 — why a comprehension.</span><span class="atext"><span class="mono">parts</span> is a <em>list</em>, and <span class="mono">strip()</span> is a <em>string</em> method — calling it on the list would raise an <span class="mono">AttributeError</span>. The stripping has to happen to each element individually, which means visiting every item: a comprehension or a loop. <span class="mono">[p.strip() for p in parts]</span> does it in one line.</span></li>
+        <li><span class="qtext">Step 5 — the fragile slice.</span><span class="atext"><span class="mono">code[4:]</span> assumes the prefix is exactly three characters plus a dash. A four-letter prefix such as <span class="mono">"BOLT-48715"</span> would make <span class="mono">code[4:]</span> return <span class="mono">"48715"</span> only by luck of that example — with <span class="mono">"BOLT-1234"</span> it would still start one character late or early depending on the prefix length. The reliable approach is to locate the separator first: <span class="mono">pos = code.find("-")</span>, then slice <span class="mono">code[:pos]</span> and <span class="mono">code[pos+1:]</span>, so the code adapts to any prefix length.</span></li>
+        <li><span class="qtext">Step 6 — why convert.</span><span class="atext"><span class="mono">elev</span> is the string <span class="mono">'1520'</span>, not the number 1520 — <span class="mono">split</span> always produces strings, no matter what the text looks like. Arithmetic on a string either fails with a <span class="mono">TypeError</span> or, with <span class="mono">+</span> and another string, silently concatenates. <span class="mono">int()</span> is required before any calculation.</span></li>
+        <li><span class="qtext">Step 7 — what displaying both proves.</span><span class="atext"><span class="mono">renamed</span> holds <span class="mono">'Falcon Peak'</span> while <span class="mono">name</span> still holds <span class="mono">'Falcon Ridge'</span>. That proves string methods do not modify the string they are called on — they return a brand-new string, exactly as immutability requires. The original survives untouched unless you deliberately reassign it.</span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>Steps 1–2: correct split on commas, with the untrimmed result displayed.</td></tr>
+          <tr><td>3</td><td>Steps 3–4: comprehension strips every piece, four values unpacked correctly.</td></tr>
+          <tr><td>2</td><td>Step 3 explanation — <span class="mono">strip</span> is a string method, so each element must be visited.</td></tr>
+          <tr><td>2</td><td>Step 5: slices and <span class="mono">find</span> correct, with a working fix for the fragile slice.</td></tr>
+          <tr><td>2</td><td>Step 6: conversion performed, and explained as <span class="mono">split</span> always yielding strings.</td></tr>
+          <tr><td>2</td><td>Step 7: case-insensitive match, <span class="mono">replace</span> copy, and immutability correctly concluded.</td></tr>
+        </tbody>
+      </table>
+      <div class="keypt"><b>Common error to watch for.</b> Writing <span class="mono">parts.strip()</span> in step 3 and getting <span class="mono">AttributeError: 'list' object has no attribute 'strip'</span>. It is worth surfacing in class — it is the moment students see that methods belong to a <em>type</em>, not to data in general.</div>
+    </div>
+
+    <div class="akey">
+      <h3>Point Summary</h3>
+      <table class="ctable">
+        <thead><tr><th>Section</th><th>Items</th><th>Points</th></tr></thead>
+        <tbody>
+          <tr><td>Multiple Choice</td><td>24 × 1 pt</td><td>24</td></tr>
+          <tr><td>True or False</td><td>10 × 1 pt</td><td>10</td></tr>
+          <tr><td>Short Answer</td><td>11 × 2 pts</td><td>22</td></tr>
+          <tr><td>Algorithm Workbench</td><td>16 × 1 pt</td><td>16</td></tr>
+          <tr><td>Programming Exercises</td><td>2 × 14 pts</td><td>28</td></tr>
+          <tr><td>Total</td><td>—</td><td>100</td></tr>
+        </tbody>
+      </table>
+      <div class="keypt"><b>Canvas note.</b> Multiple Choice and True/False convert directly into an auto-graded Canvas quiz. Short Answer and Algorithm Workbench work well as essay questions; the two Programming Exercises are best set up as a text-entry assignment so students can paste their console transcripts.</div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>CIS181 · Python Programming · Week 09 — Review Questions &amp; Answer Key</span>
+    <span>Original questions &amp; exercises · for classroom use</span>
+  </div>
+</footer>
+
+<script>
+  // scroll progress bar
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
+    bar.style.width = Math.min(100, Math.max(0, scrolled * 100)) + '%';
+  };
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // scrollspy active section
+  const links = Array.from(document.querySelectorAll('nav.toc a'));
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('main section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

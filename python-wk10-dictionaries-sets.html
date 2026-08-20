@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 10 — Dictionaries and Sets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;--py-blue-dark:#306998;--py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;--py-yellow-deep:#f0b400;
+    --slate-900:#0f172a;--slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;
+    --slate-500:#64748b;--slate-400:#94a3b8;--slate-300:#cbd5e1;--slate-200:#e2e8f0;
+    --slate-100:#f1f5f9;--slate-50:#f8fafc;
+    --good:#15803d;--good-bg:#dcfce7;--bad:#b91c1c;--bad-bg:#fee2e2;
+    --display:'Space Grotesk',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'Fira Code',ui-monospace,monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;font-size:17px;}
+  body{margin:0;font-family:var(--body);color:#2b303b;background:var(--slate-50);line-height:1.7;-webkit-font-smoothing:antialiased;}
+  a{color:var(--py-blue-dark);}
+  code{font-family:var(--mono);font-size:.92em;}
+  .hero{background:linear-gradient(150deg,var(--py-blue-deep) 0%,var(--py-blue-dark) 55%,var(--py-blue) 100%);color:#fff;padding:64px 24px 0;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;background:radial-gradient(circle,rgba(255,212,59,.22),transparent 70%);}
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{font-family:var(--mono);letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:var(--py-yellow);font-weight:600;margin-bottom:14px;}
+  .hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:0 0 18px;letter-spacing:-.02em;}
+  .hero h1 .accent{background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p.lede{font-size:1.12rem;max-width:60ch;color:#e0ecf5;margin:0 0 26px;}
+  .hero-bar{display:flex;flex-wrap:wrap;gap:8px;padding:18px 0 22px;}
+  .hero-bar a{font-size:.82rem;font-weight:600;color:#fff;text-decoration:none;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);padding:7px 13px;border-radius:999px;transition:.18s;}
+  .hero-bar a:hover{background:var(--py-yellow);color:var(--slate-900);border-color:var(--py-yellow);}
+  .hero-bar a.out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+  .toc-out{display:block;margin:14px 0 0;padding:9px 13px;text-decoration:none;font-size:.86rem;
+    font-weight:600;color:var(--py-blue-deep);background:#eaf2f9;border:1px solid #cfe0ee;
+    border-radius:9px;transition:.16s;}
+  .toc-out:hover{background:var(--py-blue-deep);color:#fff;border-color:var(--py-blue-deep);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:grid;grid-template-columns:232px 1fr;gap:42px;align-items:start;}
+  .toc{position:sticky;top:18px;padding:28px 0;align-self:start;}
+  .toc h2{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-500);margin:0 0 12px;}
+  .toc ol{list-style:none;margin:0;padding:0;counter-reset:t;}
+  .toc li{counter-increment:t;}
+  .toc a{display:block;text-decoration:none;color:var(--slate-600);font-size:.9rem;font-weight:500;padding:6px 10px 6px 34px;border-left:2px solid var(--slate-200);position:relative;transition:.16s;}
+  .toc a::before{content:counter(t,decimal-leading-zero);position:absolute;left:8px;top:6px;font-family:var(--mono);font-size:.68rem;color:var(--slate-400);}
+  .toc a:hover{color:var(--py-blue-dark);border-left-color:var(--py-blue);}
+  .toc a.active{color:var(--py-blue-deep);border-left-color:var(--py-yellow-deep);background:#fff;font-weight:600;}
+  main{padding:34px 0 60px;min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:18px;}
+  .sec-tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--py-blue);font-weight:600;margin-bottom:6px;}
+  h2.title{font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.12;margin:0 0 6px;color:var(--slate-900);letter-spacing:-.015em;}
+  h2.title .bar{display:block;width:54px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));margin-top:12px;}
+  h3{font-family:var(--display);font-weight:600;font-size:1.18rem;color:var(--slate-900);margin:30px 0 10px;}
+  p{margin:0 0 14px;}
+  .lead{font-size:1.06rem;color:var(--slate-700);}
+  .code{background:var(--slate-900);border-radius:12px;margin:16px 0;overflow:hidden;border:1px solid #0b1220;box-shadow:0 10px 30px -16px rgba(15,23,42,.5);}
+  .code-top{display:flex;align-items:center;gap:7px;padding:11px 15px;background:#0b1220;border-bottom:1px solid #1e293b;}
+  .code-top .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+  .code-top .dot.r{background:#f87171;}.code-top .dot.y{background:#fbbf24;}.code-top .dot.g{background:#34d399;}
+  .code-top .fn{margin-left:8px;font-family:var(--mono);font-size:.74rem;color:var(--slate-400);}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.7;color:#e2e8f0;}
+  .kw{color:#ff9d6f;}.bif{color:#7cc3ff;}.str{color:#ffd87a;}.num{color:#a5f3a0;}.com{color:#64748b;font-style:italic;}.op{color:#f0abfc;}.out{color:#94a3b8;}
+  .cards{display:grid;gap:12px;margin:18px 0;}
+  details.card{background:#fff;border:1px solid var(--slate-200);border-radius:12px;box-shadow:0 1px 2px rgba(15,23,42,.04);overflow:hidden;}
+  details.card>summary{cursor:pointer;list-style:none;padding:15px 18px;font-weight:600;color:var(--slate-900);display:flex;align-items:center;gap:12px;font-family:var(--display);}
+  details.card>summary::-webkit-details-marker{display:none;}
+  details.card>summary .ix{font-family:var(--mono);font-size:.72rem;color:var(--py-blue-dark);background:#e8f1f8;border-radius:6px;padding:3px 7px;font-weight:600;flex:none;}
+  details.card>summary .chev{margin-left:auto;color:var(--slate-400);transition:.2s;flex:none;}
+  details.card[open]>summary .chev{transform:rotate(90deg);color:var(--py-blue);}
+  details.card .body{padding:0 18px 17px;color:var(--slate-700);}
+  details.card .body>*:first-child{margin-top:0;}
+  .call{border-radius:11px;padding:14px 16px;margin:16px 0;border:1px solid;font-size:.95rem;}
+  .call .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:5px;}
+  .call.good{background:var(--good-bg);border-color:#86efac;color:#14532d;}
+  .call.good .lbl{background:var(--good);color:#fff;}
+  .call.bad{background:var(--bad-bg);border-color:#fca5a5;color:#7f1d1d;}
+  .call.bad .lbl{background:var(--bad);color:#fff;}
+  .call.note{background:#fff8e1;border-color:#fde68a;color:#713f12;}
+  .call.note .lbl{background:var(--py-yellow-deep);color:var(--slate-900);}
+  .call p:last-child{margin-bottom:0;}
+  .call code{background:rgba(15,23,42,.07);padding:1px 5px;border-radius:4px;}
+  .tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--slate-200);}
+  .tbl th{background:var(--py-blue-dark);color:#fff;text-align:left;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:.88rem;}
+  .tbl td{padding:9px 14px;border-top:1px solid var(--slate-200);vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:var(--slate-50);}
+  .tbl td code{color:var(--py-blue-deep);font-weight:600;}
+  figure{margin:22px 0;background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px 16px 8px;text-align:center;}
+  figure svg{max-width:100%;height:auto;}
+  figcaption{font-size:.84rem;color:var(--slate-500);margin-top:8px;padding-bottom:8px;}
+  figcaption b{color:var(--slate-700);font-family:var(--display);}
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.reveal{opacity:1;transform:none;transition:none;}}
+  @media (max-width:880px){.wrap{grid-template-columns:1fr;gap:0;}.toc{display:none;}main{padding-top:24px;}}
+  :focus-visible{outline:3px solid var(--py-yellow-deep);outline-offset:2px;border-radius:4px;}
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Week 10</div>
+    <h1>Dictionaries <span class="accent">and Sets</span></h1>
+    <p class="lede">Lists and tuples line data up in order and reach it by position. But a great deal of real data is naturally a <b>lookup</b> — a code that maps to a price, a name that maps to a score, a collection where the only thing that matters is whether something is <em>in</em> it. Python gives you two purpose-built containers for exactly that: the <b>dictionary</b>, which pairs keys with values, and the <b>set</b>, which holds unique items and answers membership and overlap questions fast.</p>
+    <nav class="hero-bar" aria-label="Module topics">
+      <a href="#dicts">Dictionaries</a>
+      <a href="#retrieve">Retrieving Values</a>
+      <a href="#addchange">Adding &amp; Changing</a>
+      <a href="#delete">Deleting</a>
+      <a href="#iterate">Size &amp; Iteration</a>
+      <a href="#methods">Dictionary Methods</a>
+      <a href="#sets">Sets</a>
+      <a href="#setbasics">Building Sets</a>
+      <a href="#setops">Set Operations</a>
+      <a href="#subset">Subsets &amp; Supersets</a>
+      <a href="#pickle">Serializing Objects</a>
+      <a href="#console">Practice Console</a>
+      <a href="python-wk10-review-questions.html" class="out">&#10003;&nbsp; Review Questions</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="toc">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#dicts">Dictionaries</a></li>
+      <li><a href="#retrieve">Retrieving values</a></li>
+      <li><a href="#addchange">Adding &amp; changing</a></li>
+      <li><a href="#delete">Deleting elements</a></li>
+      <li><a href="#iterate">Size &amp; iteration</a></li>
+      <li><a href="#methods">Dictionary methods</a></li>
+      <li><a href="#sets">Sets</a></li>
+      <li><a href="#setbasics">Building &amp; changing sets</a></li>
+      <li><a href="#setops">Set operations</a></li>
+      <li><a href="#subset">Subsets &amp; supersets</a></li>
+      <li><a href="#pickle">Serializing objects</a></li>
+      <li><a href="#console">Practice console</a></li>
+      <li><a href="#check">Check yourself</a></li>
+      <li><a href="#glossary">Key terms</a></li>
+    </ol>
+    <a class="toc-out" href="python-wk10-review-questions.html">&rarr;&nbsp; Review Questions</a>
+  </aside>
+
+  <main>
+    <!-- 1. DICTIONARIES -->
+    <section id="dicts" class="reveal">
+      <div class="sec-tag">Foundation</div>
+      <h2 class="title">Dictionaries: pairing keys with values<span class="bar"></span></h2>
+      <p class="lead">A <b>dictionary</b> is an object that stores a collection of data as <b>key&ndash;value pairs</b>. Each element has a <b>key</b> and an associated <b>value</b>, and you reach a value by handing the dictionary its key &mdash; never by a numeric position. Because of that, a dictionary is often described as a <b>mapping</b> of keys to values.</p>
+
+      <p>Imagine the slots of a vending machine. Each slot has a short code, and each code holds one product. The code is how you ask for a product, so the code is the key and the product is the value:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">create_dict.py</span></div>
+<pre><span class="com"># key : value, separated by commas, wrapped in braces</span>
+slots <span class="op">=</span> {<span class="str">"A1"</span><span class="op">:</span> <span class="str">"pretzels"</span><span class="op">,</span> <span class="str">"A2"</span><span class="op">:</span> <span class="str">"almonds"</span><span class="op">,</span> <span class="str">"B1"</span><span class="op">:</span> <span class="str">"raisins"</span>}
+
+<span class="bif">print</span>(slots[<span class="str">"A2"</span>])     <span class="out"># almonds   &larr; looked up by key, not by position</span></pre>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 480 200" role="img" aria-label="Three keys A1, A2, B1 each mapping by an arrow to a value: pretzels, almonds, raisins">
+          <defs>
+            <marker id="ah_d1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#306998"/></marker>
+          </defs>
+          <text x="80" y="26" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="12" font-weight="600">keys</text>
+          <text x="360" y="26" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="12" font-weight="600">values</text>
+          <g font-family="Fira Code,monospace" font-size="13">
+            <rect x="34" y="44" width="92" height="34" rx="7" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="1.4"/><text x="80" y="66" text-anchor="middle" fill="#1f4d72">"A1"</text>
+            <rect x="34" y="92" width="92" height="34" rx="7" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="1.4"/><text x="80" y="114" text-anchor="middle" fill="#1f4d72">"A2"</text>
+            <rect x="34" y="140" width="92" height="34" rx="7" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="1.4"/><text x="80" y="162" text-anchor="middle" fill="#1f4d72">"B1"</text>
+            <rect x="288" y="44" width="146" height="34" rx="7" fill="#fff8e1" stroke="#f0b400" stroke-width="1.4"/><text x="361" y="66" text-anchor="middle" fill="#713f12">"pretzels"</text>
+            <rect x="288" y="92" width="146" height="34" rx="7" fill="#fff8e1" stroke="#f0b400" stroke-width="1.4"/><text x="361" y="114" text-anchor="middle" fill="#713f12">"almonds"</text>
+            <rect x="288" y="140" width="146" height="34" rx="7" fill="#fff8e1" stroke="#f0b400" stroke-width="1.4"/><text x="361" y="162" text-anchor="middle" fill="#713f12">"raisins"</text>
+          </g>
+          <line x1="130" y1="61" x2="284" y2="61" stroke="#306998" stroke-width="2" marker-end="url(#ah_d1)"/>
+          <line x1="130" y1="109" x2="284" y2="109" stroke="#306998" stroke-width="2" marker-end="url(#ah_d1)"/>
+          <line x1="130" y1="157" x2="284" y2="157" stroke="#306998" stroke-width="2" marker-end="url(#ah_d1)"/>
+        </svg>
+        <figcaption><b>Figure 10-1.</b> A dictionary maps each key to one value. You supply a key; the dictionary hands back its value.</figcaption>
+      </figure>
+
+      <div class="cards">
+        <details class="card">
+          <summary><span class="ix">1</span>Keys must be immutable<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>A key has to be an object that can't change &mdash; a string, a number, or a tuple, for example. Lists can't be keys, because a mutable key would break the dictionary's ability to find things. Values have no such rule: they can be any type at all.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">2</span>Keys are unique<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Each key appears at most once. Assigning to a key that already exists doesn't add a second copy &mdash; it replaces the value that was there.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">3</span>Think lookup, not sequence<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Modern Python keeps a dictionary's pairs in the order you inserted them, which is handy when you print one. But the whole point of a dictionary is fast access <em>by key</em> &mdash; so reach for it when you want to look something up, and don't write logic that depends on key positions the way you would with a list.</p></div>
+        </details>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Empty to start</span>
+        <p>An empty dictionary is just <code>{}</code> (or <code>dict()</code>). You'll often create one empty and fill it as the program runs &mdash; you'll see that pattern below.</p>
+      </div>
+    </section>
+
+    <!-- 2. RETRIEVING VALUES -->
+    <section id="retrieve" class="reveal">
+      <div class="sec-tag">Reading data</div>
+      <h2 class="title">Retrieving a value, and testing for a key<span class="bar"></span></h2>
+      <p class="lead">To read a value, subscript the dictionary with a key: <code>dictionary[key]</code>. If the key is present, you get its value back. If it isn't, Python raises a <b>KeyError</b> &mdash; and that's a crash you want to prevent rather than meet.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">retrieve.py</span></div>
+<pre>slots <span class="op">=</span> {<span class="str">"A1"</span><span class="op">:</span> <span class="str">"pretzels"</span><span class="op">,</span> <span class="str">"A2"</span><span class="op">:</span> <span class="str">"almonds"</span><span class="op">,</span> <span class="str">"B1"</span><span class="op">:</span> <span class="str">"raisins"</span>}
+
+<span class="bif">print</span>(slots[<span class="str">"A1"</span>])     <span class="out"># pretzels</span>
+<span class="bif">print</span>(slots[<span class="str">"C9"</span>])     <span class="out"># KeyError: 'C9'  &larr; that key isn't here</span></pre>
+      </div>
+
+      <p>The fix is to ask first. The <code>in</code> and <code>not in</code> operators test whether a key exists, so you can guard the lookup:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">guard.py</span></div>
+<pre>code_wanted <span class="op">=</span> <span class="str">"C9"</span>
+
+<span class="kw">if</span> code_wanted <span class="kw">in</span> slots<span class="op">:</span>
+    <span class="bif">print</span>(slots[code_wanted])
+<span class="kw">else</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"That slot is empty."</span>)     <span class="out"># runs &mdash; no crash</span></pre>
+      </div>
+
+      <div class="call good">
+        <span class="lbl">Habit worth forming</span>
+        <p>When a key might be missing, test with <code>in</code> before subscripting (or use the <code>get</code> method you'll meet shortly). It turns a hard crash into a graceful response.</p>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">What <code>in</code> checks</span>
+        <p>For a dictionary, <code>in</code> looks at the <em>keys</em>, not the values. <code>"A1" in slots</code> is <code>True</code>; <code>"pretzels" in slots</code> is <code>False</code>, because "pretzels" is a value, not a key.</p>
+      </div>
+    </section>
+
+    <!-- 3. ADDING & CHANGING -->
+    <section id="addchange" class="reveal">
+      <div class="sec-tag">Writing data</div>
+      <h2 class="title">Adding and changing elements<span class="bar"></span></h2>
+      <p class="lead">Dictionaries are <b>mutable</b>, so you can grow and edit them after creation. One assignment statement does both jobs &mdash; <code>dictionary[key] = value</code> &mdash; and which job it does depends only on whether the key is already there.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">add_change.py</span></div>
+<pre>slots <span class="op">=</span> {<span class="str">"A1"</span><span class="op">:</span> <span class="str">"pretzels"</span><span class="op">,</span> <span class="str">"A2"</span><span class="op">:</span> <span class="str">"almonds"</span>}
+
+slots[<span class="str">"B2"</span>] <span class="op">=</span> <span class="str">"cashews"</span>     <span class="com"># B2 is new &rarr; a pair is ADDED</span>
+slots[<span class="str">"A2"</span>] <span class="op">=</span> <span class="str">"walnuts"</span>     <span class="com"># A2 exists  &rarr; its value is CHANGED</span>
+
+<span class="bif">print</span>(slots)
+<span class="out"># {'A1': 'pretzels', 'A2': 'walnuts', 'B2': 'cashews'}</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Same syntax, two outcomes</span>
+        <p>If the key is absent, the pair is inserted. If the key is present, its old value is overwritten &mdash; the dictionary never holds two pairs with the same key. That's worth remembering: an accidental reuse of a key silently replaces data rather than adding to it.</p>
+      </div>
+
+      <h3>Filling an empty dictionary as you go</h3>
+      <p>A common pattern is to start empty and add pairs while a loop runs &mdash; for example, tallying how many of each item a machine dispensed:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">tally.py</span></div>
+<pre>sold <span class="op">=</span> [<span class="str">"almonds"</span><span class="op">,</span> <span class="str">"raisins"</span><span class="op">,</span> <span class="str">"almonds"</span><span class="op">,</span> <span class="str">"cashews"</span><span class="op">,</span> <span class="str">"almonds"</span>]
+
+counts <span class="op">=</span> {}                       <span class="com"># start empty</span>
+<span class="kw">for</span> item <span class="kw">in</span> sold<span class="op">:</span>
+    <span class="kw">if</span> item <span class="kw">in</span> counts<span class="op">:</span>
+        counts[item] <span class="op">=</span> counts[item] <span class="op">+</span> <span class="num">1</span>   <span class="com"># seen before &rarr; bump it</span>
+    <span class="kw">else</span><span class="op">:</span>
+        counts[item] <span class="op">=</span> <span class="num">1</span>                <span class="com"># first time &rarr; start at 1</span>
+
+<span class="bif">print</span>(counts)     <span class="out"># {'almonds': 3, 'raisins': 1, 'cashews': 1}</span></pre>
+      </div>
+    </section>
+
+    <!-- 4. DELETING -->
+    <section id="delete" class="reveal">
+      <div class="sec-tag">Writing data</div>
+      <h2 class="title">Deleting elements<span class="bar"></span></h2>
+      <p class="lead">To remove a key&ndash;value pair, use the <code>del</code> statement with the key: <code>del dictionary[key]</code>. As with retrieval, asking to delete a key that isn't there raises a <b>KeyError</b>, so guard it the same way.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">delete.py</span></div>
+<pre>slots <span class="op">=</span> {<span class="str">"A1"</span><span class="op">:</span> <span class="str">"pretzels"</span><span class="op">,</span> <span class="str">"A2"</span><span class="op">:</span> <span class="str">"almonds"</span><span class="op">,</span> <span class="str">"B1"</span><span class="op">:</span> <span class="str">"raisins"</span>}
+
+<span class="kw">del</span> slots[<span class="str">"B1"</span>]            <span class="com"># raisins are discontinued</span>
+
+<span class="kw">if</span> <span class="str">"Z9"</span> <span class="kw">in</span> slots<span class="op">:</span>          <span class="com"># guard before deleting</span>
+    <span class="kw">del</span> slots[<span class="str">"Z9"</span>]
+<span class="kw">else</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Nothing to remove at Z9."</span>)
+
+<span class="bif">print</span>(slots)     <span class="out"># {'A1': 'pretzels', 'A2': 'almonds'}</span></pre>
+      </div>
+
+      <div class="call bad">
+        <span class="lbl">Crash to avoid</span>
+        <p><code>del slots["Z9"]</code> with no guard raises <code>KeyError: 'Z9'</code> when that key is absent. Test with <code>in</code> first whenever the key might not be present.</p>
+      </div>
+    </section>
+
+    <!-- 5. SIZE & ITERATION -->
+    <section id="iterate" class="reveal">
+      <div class="sec-tag">Working through a dictionary</div>
+      <h2 class="title">Size, mixed types, and iterating<span class="bar"></span></h2>
+
+      <h3>How many pairs?</h3>
+      <p>The built-in <code>len</code> function returns the number of key&ndash;value pairs:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">size.py</span></div>
+<pre>slots <span class="op">=</span> {<span class="str">"A1"</span><span class="op">:</span> <span class="str">"pretzels"</span><span class="op">,</span> <span class="str">"A2"</span><span class="op">:</span> <span class="str">"almonds"</span>}
+<span class="bif">print</span>(<span class="bif">len</span>(slots))     <span class="out"># 2</span></pre>
+      </div>
+
+      <h3>Keys and values can mix types</h3>
+      <p>Keys must be immutable, but they don't all have to be the <em>same</em> immutable type &mdash; one dictionary can mix string keys, integer keys, and tuple keys. Values are even freer: any object at all, including lists and other dictionaries.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">mixed.py</span></div>
+<pre>locker <span class="op">=</span> {
+    <span class="num">7</span><span class="op">:</span> <span class="str">"helmet"</span><span class="op">,</span>                  <span class="com"># integer key, string value</span>
+    <span class="str">"spare"</span><span class="op">:</span> [<span class="str">"gloves"</span><span class="op">,</span> <span class="str">"map"</span>]<span class="op">,</span>     <span class="com"># string key, list value</span>
+    (<span class="num">4</span><span class="op">,</span> <span class="num">2</span>)<span class="op">:</span> <span class="str">"corner bin"</span>            <span class="com"># tuple key (immutable, so allowed)</span>
+}
+<span class="bif">print</span>(locker[<span class="num">7</span>])         <span class="out"># helmet</span>
+<span class="bif">print</span>(locker[(<span class="num">4</span><span class="op">,</span> <span class="num">2</span>)])    <span class="out"># corner bin</span></pre>
+      </div>
+
+      <h3>Looping over a dictionary</h3>
+      <p>A <code>for</code> loop over a dictionary walks its <b>keys</b>, one per pass. With the key in hand, you can reach the value:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">loop.py</span></div>
+<pre>slots <span class="op">=</span> {<span class="str">"A1"</span><span class="op">:</span> <span class="str">"pretzels"</span><span class="op">,</span> <span class="str">"A2"</span><span class="op">:</span> <span class="str">"almonds"</span><span class="op">,</span> <span class="str">"B1"</span><span class="op">:</span> <span class="str">"raisins"</span>}
+
+<span class="kw">for</span> code <span class="kw">in</span> slots<span class="op">:</span>
+    <span class="bif">print</span>(code<span class="op">,</span> <span class="str">"holds"</span><span class="op">,</span> slots[code])
+<span class="out"># A1 holds pretzels</span>
+<span class="out"># A2 holds almonds</span>
+<span class="out"># B1 holds raisins</span></pre>
+      </div>
+      <div class="call note">
+        <span class="lbl">Looping gives keys</span>
+        <p>The loop variable receives each <em>key</em>, not each value. To get the value, subscript with the key &mdash; or use the <code>items</code> method (next section) to receive both at once.</p>
+      </div>
+    </section>
+
+    <!-- 6. DICTIONARY METHODS -->
+    <section id="methods" class="reveal">
+      <div class="sec-tag">The toolbox</div>
+      <h2 class="title">Dictionary methods<span class="bar"></span></h2>
+      <p class="lead">Beyond subscripting, a dictionary carries a set of methods that make common jobs cleaner and safer. We'll work with a small inventory dictionary &mdash; item name to quantity on hand:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">stock.py</span></div>
+<pre>stock <span class="op">=</span> {<span class="str">"pretzels"</span><span class="op">:</span> <span class="num">12</span><span class="op">,</span> <span class="str">"almonds"</span><span class="op">:</span> <span class="num">5</span><span class="op">,</span> <span class="str">"raisins"</span><span class="op">:</span> <span class="num">9</span>}</pre>
+      </div>
+
+      <h3><code>get</code> &mdash; lookup that can't crash</h3>
+      <p>The <code>get</code> method returns the value for a key, but if the key is missing it returns a <b>default</b> instead of raising a KeyError. It's the safe alternative to <code>[]</code>:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">get.py</span></div>
+<pre><span class="bif">print</span>(stock.get(<span class="str">"almonds"</span><span class="op">,</span> <span class="num">0</span>))     <span class="out"># 5    &larr; key found</span>
+<span class="bif">print</span>(stock.get(<span class="str">"cashews"</span><span class="op">,</span> <span class="num">0</span>))     <span class="out"># 0    &larr; key missing, default returned (no crash)</span></pre>
+      </div>
+
+      <h3><code>items</code> &mdash; keys and values together</h3>
+      <p>The <code>items</code> method returns the pairs as a sequence of <b>tuples</b> (a <em>dictionary view</em>). Loop over it with two variables and you receive the key and value at once &mdash; no subscripting needed:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">items.py</span></div>
+<pre><span class="kw">for</span> name<span class="op">,</span> qty <span class="kw">in</span> stock.items()<span class="op">:</span>
+    <span class="bif">print</span>(name<span class="op">,</span> <span class="str">"="</span><span class="op">,</span> qty)
+<span class="out"># pretzels = 12</span>
+<span class="out"># almonds = 5</span>
+<span class="out"># raisins = 9</span></pre>
+      </div>
+
+      <h3><code>keys</code> and <code>values</code></h3>
+      <p><code>keys</code> returns just the keys; <code>values</code> returns just the values. Both give you something you can loop over or hand to <code>list()</code>:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">keys_values.py</span></div>
+<pre><span class="bif">print</span>(<span class="bif">list</span>(stock.keys()))       <span class="out"># ['pretzels', 'almonds', 'raisins']</span>
+<span class="bif">print</span>(<span class="bif">sum</span>(stock.values()))      <span class="out"># 26   &larr; total items on hand</span></pre>
+      </div>
+
+      <h3><code>pop</code> and <code>popitem</code> &mdash; remove and return</h3>
+      <p><code>pop</code> removes the pair for a given key and hands back its value (with a default if the key's missing). <code>popitem</code> removes and returns the last pair as a tuple &mdash; useful for draining a dictionary:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">pop.py</span></div>
+<pre>left <span class="op">=</span> stock.pop(<span class="str">"almonds"</span><span class="op">,</span> <span class="num">0</span>)
+<span class="bif">print</span>(left)        <span class="out"># 5    &mdash; and "almonds" is now gone from stock</span>
+
+pair <span class="op">=</span> stock.popitem()
+<span class="bif">print</span>(pair)        <span class="out"># ('raisins', 9)  &mdash; returned as a tuple, then removed</span></pre>
+      </div>
+
+      <h3><code>clear</code> &mdash; empty it out</h3>
+      <p><code>clear</code> deletes every pair, leaving an empty dictionary:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">clear.py</span></div>
+<pre>stock.clear()
+<span class="bif">print</span>(stock)        <span class="out"># {}</span></pre>
+      </div>
+
+      <table class="tbl">
+        <caption style="caption-side:top;text-align:left;font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--py-blue);font-weight:600;padding-bottom:8px;">A few dictionary methods</caption>
+        <thead><tr><th style="width:34%;">Method</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>clear()</code></td><td>Removes all pairs, leaving the dictionary empty.</td></tr>
+          <tr><td><code>get(key, default)</code></td><td>Returns the value for <code>key</code>, or <code>default</code> if the key isn't found. Never raises KeyError.</td></tr>
+          <tr><td><code>items()</code></td><td>Returns the pairs as a sequence of <code>(key, value)</code> tuples.</td></tr>
+          <tr><td><code>keys()</code></td><td>Returns the keys as a sequence.</td></tr>
+          <tr><td><code>values()</code></td><td>Returns the values as a sequence.</td></tr>
+          <tr><td><code>pop(key, default)</code></td><td>Removes the pair for <code>key</code> and returns its value, or <code>default</code> if missing.</td></tr>
+          <tr><td><code>popitem()</code></td><td>Removes and returns the last pair as a <code>(key, value)</code> tuple.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 7. SETS -->
+    <section id="sets" class="reveal">
+      <div class="sec-tag">A different container</div>
+      <h2 class="title">Sets: a collection of unique items<span class="bar"></span></h2>
+      <p class="lead">A <b>set</b> stores a collection of data the way a mathematical set does. Three rules define it: every item is <b>unique</b> (no duplicates), the items are <b>unordered</b> (there's no first or last, and no indexing), and the items can be of <b>different types</b>. Sets shine when the question is "what's in here?" or "what do these two collections share?"</p>
+
+      <h3>Creating a set</h3>
+      <p>Build a set by passing an iterable &mdash; a list, tuple, or string &mdash; to the built-in <code>set</code> function. Any duplicates collapse to a single copy, which is exactly what makes sets useful for de-duplicating:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">make_set.py</span></div>
+<pre><span class="com"># from a list that has repeats</span>
+scans <span class="op">=</span> [<span class="num">204</span><span class="op">,</span> <span class="num">118</span><span class="op">,</span> <span class="num">204</span><span class="op">,</span> <span class="num">350</span><span class="op">,</span> <span class="num">118</span><span class="op">,</span> <span class="num">204</span>]
+unique_ids <span class="op">=</span> <span class="bif">set</span>(scans)
+<span class="bif">print</span>(unique_ids)      <span class="out"># {350, 204, 118}  &mdash; duplicates gone, order not guaranteed</span>
+
+<span class="com"># an empty set MUST use set() &mdash; {} makes an empty DICTIONARY</span>
+fresh <span class="op">=</span> <span class="bif">set</span>()</pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Two traps when creating sets</span>
+        <p>First, <code>{}</code> is an <em>empty dictionary</em>, not an empty set &mdash; use <code>set()</code> for an empty set. Second, <code>set("crew")</code> splits the <em>string</em> into its characters: <code>{'c', 'r', 'e', 'w'}</code>. To get a set of whole words, pass a list: <code>set(["crew", "deck"])</code>.</p>
+      </div>
+    </section>
+
+    <!-- 8. BUILDING & CHANGING SETS -->
+    <section id="setbasics" class="reveal">
+      <div class="sec-tag">Working with a set</div>
+      <h2 class="title">Building, changing, and scanning a set<span class="bar"></span></h2>
+
+      <h3>Size, and adding items</h3>
+      <p>Like everything else, <code>len</code> reports how many items a set holds. Sets are mutable: <code>add</code> puts in one item, and <code>update</code> merges in a whole group of items from an iterable.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">grow.py</span></div>
+<pre>signed_up <span class="op">=</span> {<span class="str">"welding"</span><span class="op">,</span> <span class="str">"avionics"</span>}
+
+signed_up.add(<span class="str">"painting"</span>)              <span class="com"># one item</span>
+signed_up.update([<span class="str">"riveting"</span><span class="op">,</span> <span class="str">"avionics"</span>])  <span class="com"># a group; "avionics" already in &rarr; ignored</span>
+
+<span class="bif">print</span>(<span class="bif">len</span>(signed_up))     <span class="out"># 4   &mdash; the duplicate didn't grow the set</span></pre>
+      </div>
+      <div class="call good">
+        <span class="lbl">Duplicates just vanish</span>
+        <p>Adding an item that's already present is harmless &mdash; the set simply stays as it was. You never have to check "is it already in here?" before adding; uniqueness is automatic.</p>
+      </div>
+
+      <h3>Removing items</h3>
+      <p>There are two single-item removers, and they differ only in how they handle a missing item: <code>remove</code> raises a <b>KeyError</b> if the item isn't there, while <code>discard</code> stays quiet. <code>clear</code> empties the whole set.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">shrink.py</span></div>
+<pre>signed_up.discard(<span class="str">"painting"</span>)    <span class="com"># removed</span>
+signed_up.discard(<span class="str">"sky-diving"</span>)  <span class="com"># not there &mdash; discard shrugs, no error</span>
+
+signed_up.remove(<span class="str">"sky-diving"</span>)   <span class="com"># KeyError! remove insists the item exists</span></pre>
+      </div>
+      <div class="call note">
+        <span class="lbl">Which remover?</span>
+        <p>Use <code>discard</code> when "remove it if it happens to be present" is what you mean &mdash; it's the safe choice. Reach for <code>remove</code> only when a missing item genuinely signals a bug you'd want to hear about.</p>
+      </div>
+
+      <h3>Scanning a set</h3>
+      <p>A <code>for</code> loop visits each item once (in no guaranteed order), and the <code>in</code> / <code>not in</code> operators test membership &mdash; the operation sets are fastest at:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">scan.py</span></div>
+<pre>signed_up <span class="op">=</span> {<span class="str">"welding"</span><span class="op">,</span> <span class="str">"avionics"</span><span class="op">,</span> <span class="str">"riveting"</span>}
+
+<span class="kw">for</span> course <span class="kw">in</span> signed_up<span class="op">:</span>
+    <span class="bif">print</span>(course)
+
+<span class="bif">print</span>(<span class="str">"avionics"</span> <span class="kw">in</span> signed_up)       <span class="out"># True</span>
+<span class="bif">print</span>(<span class="str">"plumbing"</span> <span class="kw">not</span> <span class="kw">in</span> signed_up)  <span class="out"># True</span></pre>
+      </div>
+    </section>
+
+    <!-- 9. SET OPERATIONS -->
+    <section id="setops" class="reveal">
+      <div class="sec-tag">Where sets earn their keep</div>
+      <h2 class="title">Combining sets: union, intersection, difference<span class="bar"></span></h2>
+      <p class="lead">The real power of sets is comparing two of them. Each operation below has both a <b>method</b> form and an <b>operator</b> form &mdash; they do the same thing &mdash; and each returns a <b>new</b> set, leaving the originals untouched. Picture two course rosters: students enrolled in a Python class and students enrolled in a Java class.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">rosters.py</span></div>
+<pre>python_roster <span class="op">=</span> {<span class="str">"Maya"</span><span class="op">,</span> <span class="str">"Dev"</span><span class="op">,</span> <span class="str">"Ana"</span><span class="op">,</span> <span class="str">"Theo"</span>}
+java_roster   <span class="op">=</span> {<span class="str">"Dev"</span><span class="op">,</span> <span class="str">"Ana"</span><span class="op">,</span> <span class="str">"Ravi"</span>}</pre>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 430 350" role="img" aria-label="Four Venn diagrams of two overlapping circles A and B showing union, intersection, difference, and symmetric difference shaded">
+          <defs>
+            <clipPath id="lens_inter"><circle cx="338" cy="70" r="36"/></clipPath>
+            <clipPath id="lens_diff"><circle cx="118" cy="250" r="36"/></clipPath>
+            <clipPath id="lens_sym"><circle cx="338" cy="250" r="36"/></clipPath>
+          </defs>
+          <!-- UNION (top-left): both circles shaded -->
+          <circle cx="68" cy="70" r="36" fill="#4B8BBE" fill-opacity=".38"/>
+          <circle cx="118" cy="70" r="36" fill="#4B8BBE" fill-opacity=".38"/>
+          <circle cx="68" cy="70" r="36" fill="none" stroke="#306998" stroke-width="1.6"/>
+          <circle cx="118" cy="70" r="36" fill="none" stroke="#306998" stroke-width="1.6"/>
+          <text x="40" y="34" fill="#1f4d72" font-family="Inter,sans-serif" font-size="13" font-weight="700">A</text>
+          <text x="146" y="34" fill="#1f4d72" font-family="Inter,sans-serif" font-size="13" font-weight="700">B</text>
+          <text x="93" y="132" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="12.5" font-weight="600">union</text>
+          <text x="93" y="150" text-anchor="middle" fill="#64748b" font-family="Fira Code,monospace" font-size="12">A | B</text>
+          <!-- INTERSECTION (top-right): only lens shaded -->
+          <circle cx="288" cy="70" r="36" fill="none" stroke="#306998" stroke-width="1.6"/>
+          <circle cx="338" cy="70" r="36" fill="none" stroke="#306998" stroke-width="1.6"/>
+          <circle cx="288" cy="70" r="36" fill="#4B8BBE" fill-opacity=".5" clip-path="url(#lens_inter)"/>
+          <text x="260" y="34" fill="#1f4d72" font-family="Inter,sans-serif" font-size="13" font-weight="700">A</text>
+          <text x="366" y="34" fill="#1f4d72" font-family="Inter,sans-serif" font-size="13" font-weight="700">B</text>
+          <text x="313" y="132" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="12.5" font-weight="600">intersection</text>
+          <text x="313" y="150" text-anchor="middle" fill="#64748b" font-family="Fira Code,monospace" font-size="12">A &amp; B</text>
+          <!-- DIFFERENCE (bottom-left): A only, overlap erased -->
+          <circle cx="68" cy="250" r="36" fill="#4B8BBE" fill-opacity=".38"/>
+          <circle cx="68" cy="250" r="36" fill="#fff" clip-path="url(#lens_diff)"/>
+          <circle cx="68" cy="250" r="36" fill="none" stroke="#306998" stroke-width="1.6"/>
+          <circle cx="118" cy="250" r="36" fill="none" stroke="#306998" stroke-width="1.6"/>
+          <text x="40" y="214" fill="#1f4d72" font-family="Inter,sans-serif" font-size="13" font-weight="700">A</text>
+          <text x="146" y="214" fill="#1f4d72" font-family="Inter,sans-serif" font-size="13" font-weight="700">B</text>
+          <text x="93" y="312" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="12.5" font-weight="600">difference</text>
+          <text x="93" y="330" text-anchor="middle" fill="#64748b" font-family="Fira Code,monospace" font-size="12">A - B</text>
+          <!-- SYMMETRIC DIFFERENCE (bottom-right): both shaded, overlap erased -->
+          <circle cx="288" cy="250" r="36" fill="#4B8BBE" fill-opacity=".38"/>
+          <circle cx="338" cy="250" r="36" fill="#4B8BBE" fill-opacity=".38"/>
+          <circle cx="288" cy="250" r="36" fill="#fff" clip-path="url(#lens_sym)"/>
+          <circle cx="288" cy="250" r="36" fill="none" stroke="#306998" stroke-width="1.6"/>
+          <circle cx="338" cy="250" r="36" fill="none" stroke="#306998" stroke-width="1.6"/>
+          <text x="260" y="214" fill="#1f4d72" font-family="Inter,sans-serif" font-size="13" font-weight="700">A</text>
+          <text x="366" y="214" fill="#1f4d72" font-family="Inter,sans-serif" font-size="13" font-weight="700">B</text>
+          <text x="313" y="312" text-anchor="middle" fill="#334155" font-family="Inter,sans-serif" font-size="12.5" font-weight="600">symmetric difference</text>
+          <text x="313" y="330" text-anchor="middle" fill="#64748b" font-family="Fira Code,monospace" font-size="12">A ^ B</text>
+        </svg>
+        <figcaption><b>Figure 10-2.</b> The four ways to combine two sets. Shaded regions show which items end up in the result.</figcaption>
+      </figure>
+
+      <h3>Union &mdash; everything in either set</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">union.py</span></div>
+<pre>everyone <span class="op">=</span> python_roster.union(java_roster)    <span class="com"># or:  python_roster | java_roster</span>
+<span class="bif">print</span>(everyone)
+<span class="out"># {'Maya', 'Dev', 'Ana', 'Theo', 'Ravi'}  &mdash; each name once</span></pre>
+      </div>
+
+      <h3>Intersection &mdash; only items in both</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">intersection.py</span></div>
+<pre>both_classes <span class="op">=</span> python_roster.intersection(java_roster)  <span class="com"># or:  python_roster &amp; java_roster</span>
+<span class="bif">print</span>(both_classes)
+<span class="out"># {'Dev', 'Ana'}  &mdash; enrolled in both</span></pre>
+      </div>
+
+      <h3>Difference &mdash; in the first but not the second</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">difference.py</span></div>
+<pre>python_only <span class="op">=</span> python_roster.difference(java_roster)   <span class="com"># or:  python_roster - java_roster</span>
+<span class="bif">print</span>(python_only)
+<span class="out"># {'Maya', 'Theo'}  &mdash; in Python, not in Java</span></pre>
+      </div>
+
+      <h3>Symmetric difference &mdash; in one or the other, but not both</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">symmetric.py</span></div>
+<pre>just_one <span class="op">=</span> python_roster.symmetric_difference(java_roster)  <span class="com"># or:  python_roster ^ java_roster</span>
+<span class="bif">print</span>(just_one)
+<span class="out"># {'Maya', 'Theo', 'Ravi'}  &mdash; everyone NOT shared by both</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Order matters for difference</span>
+        <p>Union, intersection, and symmetric difference give the same answer whichever set you start from. <b>Difference</b> does not: <code>A - B</code> (in A only) is different from <code>B - A</code> (in B only). Here <code>java_roster - python_roster</code> would be <code>{'Ravi'}</code>.</p>
+      </div>
+    </section>
+
+    <!-- 10. SUBSETS & SUPERSETS -->
+    <section id="subset" class="reveal">
+      <div class="sec-tag">Comparing membership</div>
+      <h2 class="title">Subsets and supersets<span class="bar"></span></h2>
+      <p class="lead">Two more comparisons ask about containment rather than overlap. Set&nbsp;A is a <b>subset</b> of set&nbsp;B if every item in A is also in B. Flip it around: B is then a <b>superset</b> of A &mdash; it contains all of A and possibly more.</p>
+
+      <figure>
+        <svg viewBox="0 0 360 180" role="img" aria-label="A small circle A drawn entirely inside a larger circle B, showing A is a subset of B and B is a superset of A">
+          <circle cx="180" cy="90" r="78" fill="#4B8BBE" fill-opacity=".14" stroke="#306998" stroke-width="1.8"/>
+          <circle cx="150" cy="98" r="38" fill="#FFD43B" fill-opacity=".4" stroke="#f0b400" stroke-width="1.8"/>
+          <text x="150" y="103" text-anchor="middle" fill="#713f12" font-family="Inter,sans-serif" font-size="15" font-weight="700">A</text>
+          <text x="232" y="52" text-anchor="middle" fill="#1f4d72" font-family="Inter,sans-serif" font-size="15" font-weight="700">B</text>
+          <text x="180" y="170" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="11.5">A &#8838; B (every item of A is in B) &#8212; equivalently B &#8839; A</text>
+        </svg>
+        <figcaption><b>Figure 10-3.</b> When A sits entirely inside B, A is a subset of B and B is a superset of A.</figcaption>
+      </figure>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">subset.py</span></div>
+<pre>core_skills <span class="op">=</span> {<span class="str">"riveting"</span><span class="op">,</span> <span class="str">"welding"</span>}
+all_skills  <span class="op">=</span> {<span class="str">"riveting"</span><span class="op">,</span> <span class="str">"welding"</span><span class="op">,</span> <span class="str">"avionics"</span><span class="op">,</span> <span class="str">"painting"</span>}
+
+<span class="bif">print</span>(core_skills.issubset(all_skills))     <span class="com"># or: core_skills &lt;= all_skills</span>
+<span class="out"># True   &mdash; every core skill is in the full list</span>
+
+<span class="bif">print</span>(all_skills.issuperset(core_skills))   <span class="com"># or: all_skills &gt;= core_skills</span>
+<span class="out"># True   &mdash; the full list contains all the core skills</span></pre>
+      </div>
+
+      <div class="call good">
+        <span class="lbl">A practical read</span>
+        <p>Subset tests answer questions like "has this trainee completed all the required modules?" &mdash; <code>required.issubset(completed)</code> is <code>True</code> exactly when nothing required is missing.</p>
+      </div>
+    </section>
+
+    <!-- 11. SERIALIZING OBJECTS -->
+    <section id="pickle" class="reveal">
+      <div class="sec-tag">Saving objects to a file</div>
+      <h2 class="title">Serializing objects with <code>pickle</code><span class="bar"></span></h2>
+      <p class="lead">You've built dictionaries and sets in memory &mdash; but memory disappears when the program ends. <b>Serializing</b> an object means converting it to a stream of bytes that can be written to a file and read back later, rebuilt into the same object. In Python, serializing is called <b>pickling</b>, and the <code>pickle</code> module does it for you.</p>
+
+      <figure>
+        <svg viewBox="0 0 560 120" role="img" aria-label="A dictionary object flows through pickle.dump into a binary file, and flows back through pickle.load into a rebuilt object">
+          <defs>
+            <marker id="ah_p1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#306998"/></marker>
+          </defs>
+          <rect x="20" y="34" width="120" height="48" rx="9" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="1.6"/>
+          <text x="80" y="56" text-anchor="middle" fill="#1f4d72" font-family="Inter,sans-serif" font-size="12" font-weight="600">object</text>
+          <text x="80" y="72" text-anchor="middle" fill="#64748b" font-family="Fira Code,monospace" font-size="11">dict, set, ...</text>
+
+          <rect x="220" y="30" width="120" height="56" rx="9" fill="#fff8e1" stroke="#f0b400" stroke-width="1.6"/>
+          <text x="280" y="52" text-anchor="middle" fill="#713f12" font-family="Fira Code,monospace" font-size="11.5">pickle.dump</text>
+          <text x="280" y="70" text-anchor="middle" fill="#713f12" font-family="Fira Code,monospace" font-size="11.5">pickle.load</text>
+
+          <rect x="420" y="34" width="120" height="48" rx="9" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="1.6"/>
+          <text x="480" y="56" text-anchor="middle" fill="#1f4d72" font-family="Inter,sans-serif" font-size="12" font-weight="600">binary file</text>
+          <text x="480" y="72" text-anchor="middle" fill="#64748b" font-family="Fira Code,monospace" font-size="11">stream of bytes</text>
+
+          <line x1="142" y1="48" x2="216" y2="48" stroke="#306998" stroke-width="2" marker-end="url(#ah_p1)"/>
+          <text x="179" y="40" text-anchor="middle" fill="#15803d" font-family="Inter,sans-serif" font-size="10">dump</text>
+          <line x1="342" y1="48" x2="416" y2="48" stroke="#306998" stroke-width="2" marker-end="url(#ah_p1)"/>
+
+          <line x1="416" y1="70" x2="342" y2="70" stroke="#306998" stroke-width="2" marker-end="url(#ah_p1)"/>
+          <line x1="216" y1="70" x2="142" y2="70" stroke="#306998" stroke-width="2" marker-end="url(#ah_p1)"/>
+          <text x="179" y="86" text-anchor="middle" fill="#15803d" font-family="Inter,sans-serif" font-size="10">load</text>
+        </svg>
+        <figcaption><b>Figure 10-4.</b> Pickling writes an object out as bytes; unpickling reads those bytes back into an equivalent object.</figcaption>
+      </figure>
+
+      <h3>Pickling: write an object out</h3>
+      <p>The steps are always the same: import <code>pickle</code>, open a file for <b>binary writing</b> (<code>"wb"</code>), call <code>pickle.dump(object, file)</code>, and close the file. You can dump several objects to one file before closing it.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">save.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+profile <span class="op">=</span> {<span class="str">"call_sign"</span><span class="op">:</span> <span class="str">"BR-204"</span><span class="op">,</span> <span class="str">"hours"</span><span class="op">:</span> <span class="num">312</span><span class="op">,</span> <span class="str">"ratings"</span><span class="op">:</span> {<span class="str">"IFR"</span><span class="op">,</span> <span class="str">"night"</span>}}
+
+out_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"profile.dat"</span><span class="op">,</span> <span class="str">"wb"</span>)   <span class="com"># wb = write, binary</span>
+pickle.dump(profile<span class="op">,</span> out_file)
+out_file.close()</pre>
+      </div>
+
+      <h3>Unpickling: read it back</h3>
+      <p>Reverse the process: open the file for <b>binary reading</b> (<code>"rb"</code>), call <code>pickle.load(file)</code>, and close the file. What comes back is an equivalent object &mdash; here, a dictionary that still contains a set as one of its values:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">restore.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+in_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"profile.dat"</span><span class="op">,</span> <span class="str">"rb"</span>)    <span class="com"># rb = read, binary</span>
+profile <span class="op">=</span> pickle.load(in_file)
+in_file.close()
+
+<span class="bif">print</span>(profile[<span class="str">"call_sign"</span>])    <span class="out"># BR-204</span>
+<span class="bif">print</span>(profile[<span class="str">"ratings"</span>])      <span class="out"># {'IFR', 'night'}  &mdash; the set came back intact</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Two cautions with pickle</span>
+        <p>First, a pickle file is <em>binary</em>, not text &mdash; don't try to read it in a text editor, and always open with <code>"wb"</code>/<code>"rb"</code>. Second, only unpickle files you trust: loading a pickle can execute arbitrary code, so never unpickle data from an unknown source.</p>
+      </div>
+    </section>
+
+    <style>
+      .repl{background:#0b1220;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 14px 40px -20px rgba(15,23,42,.6);margin:18px 0;}
+      .repl-head{display:flex;align-items:center;gap:8px;padding:11px 15px;background:#111c30;border-bottom:1px solid #1e293b;}
+      .repl-head .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+      .repl-head .r{background:#f87171;}.repl-head .y{background:#fbbf24;}.repl-head .g{background:#34d399;}
+      .repl-head .ttl{margin-left:6px;font-family:var(--mono);font-size:.76rem;color:#94a3b8;}
+      .repl-head .rst{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:4px 10px;cursor:pointer;}
+      .repl-head .rst:hover{background:#334155;color:#fff;}
+      .repl-start{padding:40px 24px;text-align:center;}
+      .repl-start p{color:#94a3b8;font-size:.92rem;max-width:48ch;margin:0 auto 18px;}
+      .repl-start button{font-family:var(--display);font-weight:600;font-size:.95rem;cursor:pointer;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));color:#1f2937;border:none;border-radius:10px;padding:12px 22px;transition:.18s;}
+      .repl-start button:hover{filter:brightness(1.05);transform:translateY(-1px);}
+      .repl-start button:disabled{opacity:.6;cursor:wait;transform:none;}
+      .repl-status{font-family:var(--mono);font-size:.78rem;color:var(--py-yellow);margin-top:14px;min-height:1em;}
+      .repl-screen{display:none;}
+      .repl-out{font-family:var(--mono);font-size:.85rem;line-height:1.55;color:#e2e8f0;padding:14px 16px 4px;max-height:340px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}
+      .repl-out .echo{color:#cbd5e1;}.repl-out .ps{color:#7cc3ff;}.repl-out .res{color:#a5f3a0;}.repl-out .err{color:#fca5a5;}
+      .repl-line{display:flex;align-items:flex-start;gap:8px;padding:4px 16px 14px;}
+      .repl-line .ps{font-family:var(--mono);font-size:.85rem;color:#7cc3ff;padding-top:2px;flex:none;}
+      .repl-line input{flex:1;background:transparent;border:none;outline:none;color:#e2e8f0;font-family:var(--mono);font-size:.85rem;padding:2px 0;}
+      .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px;}
+      .chips button{font-family:var(--mono);font-size:.76rem;cursor:pointer;background:#fff;border:1px solid var(--slate-300);border-radius:7px;padding:6px 10px;transition:.15s;color:var(--slate-700);}
+      .chips button:hover{border-color:var(--py-blue);background:#eff6fc;color:var(--py-blue-deep);}
+      .chips .lbl-mini{width:100%;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-400);margin-bottom:2px;}
+    </style>    <!-- PRACTICE CONSOLE -->
+    <!-- PRACTICE CONSOLE -->
+    <section id="console" class="reveal">
+      <div class="sec-tag">Hands-on</div>
+      <h2 class="title">Practice in the console<span class="bar"></span></h2>
+      <p class="lead">A real Python interpreter, running entirely in your browser. Click <b>Start</b> to load it (about a 10&nbsp;MB one-time download), then type at the <code>&gt;&gt;&gt;</code> prompt. Build a dictionary and look things up by key; make a set and combine it with another. Caught in a loop? Hit <b>Reset session</b>.</p>
+
+      <div class="chips">
+        <span class="lbl-mini">Tap a sample to drop it at the prompt:</span>
+        <button data-code="slots = {'A1': 'pretzels', 'A2': 'almonds'}">make a dict</button>
+        <button data-code="slots['A1']">slots['A1']</button>
+        <button data-code="'A1' in slots">'A1' in slots</button>
+        <button data-code="slots['B2'] = 'cashews'">add a pair</button>
+        <button data-code="slots.get('C9', 'empty')">.get with default</button>
+        <button data-code="len(slots)">len(slots)</button>
+        <button data-code="for k, v in slots.items():&#10;    print(k, v)">loop the items</button>
+        <button data-code="set([2, 2, 3, 3, 3])">de-dup with set()</button>
+        <button data-code="{1, 2, 3} & {2, 3, 4}">intersection &amp;</button>
+        <button data-code="{1, 2, 3} | {3, 4}">union |</button>
+        <button data-code="{1, 2, 3} - {3, 4}">difference -</button>
+        <button data-code="{1, 2} <= {1, 2, 3}">subset &lt;=</button>
+      </div>
+      <div class="repl" id="repl">
+        <div class="repl-head">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="ttl">Python &mdash; interactive mode</span>
+          <button class="rst" id="replReset" style="display:none;">Reset session</button>
+        </div>
+        <div class="repl-start" id="replStart">
+          <p>A genuine CPython interpreter (via Pyodide) loads on demand, so pages you're only reading stay light.</p>
+          <button id="replStartBtn">&#9654;&nbsp; Start the Python interpreter</button>
+          <div class="repl-status" id="replStatus"></div>
+        </div>
+        <div class="repl-screen" id="replScreen">
+          <div class="repl-out" id="replOut"></div>
+          <div class="repl-line">
+            <span class="ps" id="replPrompt">&gt;&gt;&gt;</span>
+            <input id="replInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Python prompt">
+          </div>
+        </div>
+      </div>
+      <div class="call note">
+        <span class="lbl">Heads up</span>
+        <p>The interpreter needs an internet connection to download the first time, and works best in an up-to-date browser. Use the up and down arrows to recall previous commands. Sets print in no guaranteed order, so <code>{2, 3}</code> may display as <code>{2, 3}</code> or <code>{3, 2}</code> &mdash; that's expected.</p>
+      </div>
+    </section>
+
+    <!-- CHECK YOURSELF -->
+    <section id="check" class="reveal">
+      <div class="sec-tag">Review</div>
+      <h2 class="title">Check yourself<span class="bar"></span></h2>
+      <p class="lead">Predict each answer, then open the card. Even better, try it in the console above.</p>
+      <div class="cards">
+        <details class="card">
+          <summary><span class="ix">Q1</span>Given <code>slots = {"A1": "pretzels"}</code>, why does <code>slots["B1"]</code> raise an error, and how do you avoid it?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>"B1"</code> isn't a key, so subscripting raises a <code>KeyError</code>. Avoid it by testing <code>"B1" in slots</code> first, or by using <code>slots.get("B1", default)</code>, which returns the default instead of crashing.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q2</span>What does <code>slots["A1"] = "walnuts"</code> do when <code>"A1"</code> already exists?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>It <em>replaces</em> the existing value &mdash; the dictionary now maps <code>"A1"</code> to <code>"walnuts"</code>. The same statement would have <em>added</em> the pair if <code>"A1"</code> hadn't been there. Keys are unique, so there's never a second <code>"A1"</code>.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q3</span>When you write <code>for x in some_dict:</code>, what does <code>x</code> receive on each pass?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Each <em>key</em>, not each value. To get the value, use <code>some_dict[x]</code> &mdash; or loop over <code>some_dict.items()</code> with two variables to receive the key and value together.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q4</span>What's the difference between a set's <code>remove</code> and <code>discard</code> methods?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Both remove the given item. If the item isn't in the set, <code>remove</code> raises a <code>KeyError</code> while <code>discard</code> does nothing. Use <code>discard</code> when a missing item is fine; use <code>remove</code> when its absence would indicate a bug.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q5</span>How is <code>{}</code> different from <code>set()</code>?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>{}</code> creates an empty <em>dictionary</em>, not a set. There's no brace shortcut for an empty set &mdash; you must write <code>set()</code>. (Once it has items, <code>{1, 2, 3}</code> is a set.)</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q6</span>Given <code>A = {1, 2, 3}</code> and <code>B = {3, 4}</code>, what are <code>A &amp; B</code>, <code>A | B</code>, and <code>A - B</code>?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>A &amp; B</code> is <code>{3}</code> (in both), <code>A | B</code> is <code>{1, 2, 3, 4}</code> (in either), and <code>A - B</code> is <code>{1, 2}</code> (in A but not B). Note <code>B - A</code> would instead be <code>{4}</code>.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q7</span>What must be true for <code>required.issubset(completed)</code> to return <code>True</code>?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Every item in <code>required</code> must also appear in <code>completed</code>. In other words, nothing required is missing &mdash; <code>completed</code> may contain extras, which don't affect the result.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q8</span>You pickled a dictionary to a file. What mode do you open the file in to read it back, and what call rebuilds the object?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Open it in binary-read mode, <code>"rb"</code>, then call <code>pickle.load(file)</code>. (Writing used <code>"wb"</code> and <code>pickle.dump(object, file)</code>.) Pickle files are binary, so text mode won't work.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- GLOSSARY -->
+    <section id="glossary" class="reveal">
+      <div class="sec-tag">Reference</div>
+      <h2 class="title">Key terms<span class="bar"></span></h2>
+      <dl class="gloss">
+        <div><dt>dictionary</dt><dd>An object that stores data as key&ndash;value pairs, accessed by key.</dd></div>
+        <div><dt>key</dt><dd>The lookup half of a pair; must be immutable and is unique within the dictionary.</dd></div>
+        <div><dt>value</dt><dd>The data half of a pair; may be any type of object.</dd></div>
+        <div><dt>mapping</dt><dd>Another name for the key-to-value association a dictionary provides.</dd></div>
+        <div><dt>key-value pair</dt><dd>A single element of a dictionary: one key and its associated value.</dd></div>
+        <div><dt>KeyError</dt><dd>Raised when you access or delete a key that isn't in the dictionary (or remove a missing set item).</dd></div>
+        <div><dt>in / not in</dt><dd>Operators that test whether a key (or set item) is present.</dd></div>
+        <div><dt>del statement</dt><dd>Removes a key&ndash;value pair: <code>del d[key]</code>.</dd></div>
+        <div><dt>get method</dt><dd>Returns a key's value or a default if the key is absent; never raises KeyError.</dd></div>
+        <div><dt>items method</dt><dd>Returns the pairs as a sequence of <code>(key, value)</code> tuples.</dd></div>
+        <div><dt>keys / values methods</dt><dd>Return the dictionary's keys, or its values, as a sequence.</dd></div>
+        <div><dt>pop method</dt><dd>Removes a key's pair and returns its value (or a default).</dd></div>
+        <div><dt>popitem method</dt><dd>Removes and returns the last pair as a tuple.</dd></div>
+        <div><dt>clear method</dt><dd>Removes every element, leaving the dictionary or set empty.</dd></div>
+        <div><dt>dictionary view</dt><dd>The sequence-like object returned by <code>items</code>, <code>keys</code>, or <code>values</code>.</dd></div>
+        <div><dt>set</dt><dd>An unordered collection of unique items.</dd></div>
+        <div><dt>unique</dt><dd>Holding no duplicates; adding an item already present has no effect.</dd></div>
+        <div><dt>unordered</dt><dd>Having no positions or indexing; items aren't kept in a defined order.</dd></div>
+        <div><dt>set function</dt><dd><code>set()</code> builds a set, optionally from an iterable; <code>set()</code> alone is the empty set.</dd></div>
+        <div><dt>add method</dt><dd>Adds one item to a set.</dd></div>
+        <div><dt>update method</dt><dd>Adds a group of items to a set from an iterable.</dd></div>
+        <div><dt>remove method</dt><dd>Removes a set item; raises KeyError if it's absent.</dd></div>
+        <div><dt>discard method</dt><dd>Removes a set item if present; does nothing if it's absent.</dd></div>
+        <div><dt>union</dt><dd>A set of all items in either set; <code>a.union(b)</code> or <code>a | b</code>.</dd></div>
+        <div><dt>intersection</dt><dd>A set of items in both sets; <code>a.intersection(b)</code> or <code>a &amp; b</code>.</dd></div>
+        <div><dt>difference</dt><dd>Items in the first set but not the second; <code>a.difference(b)</code> or <code>a - b</code>.</dd></div>
+        <div><dt>symmetric difference</dt><dd>Items in exactly one of the two sets; <code>a ^ b</code>.</dd></div>
+        <div><dt>subset</dt><dd>Set A is a subset of B if every item of A is in B; <code>a.issubset(b)</code> or <code>a &lt;= b</code>.</dd></div>
+        <div><dt>superset</dt><dd>Set A is a superset of B if A contains all of B; <code>a.issuperset(b)</code> or <code>a &gt;= b</code>.</dd></div>
+        <div><dt>serialize</dt><dd>Convert an object to a stream of bytes that can be stored in a file.</dd></div>
+        <div><dt>pickling</dt><dd>Serializing an object with the <code>pickle</code> module's <code>dump</code> function.</dd></div>
+        <div><dt>unpickling</dt><dd>Rebuilding a pickled object from a file with <code>pickle.load</code>.</dd></div>
+        <div><dt>binary file</dt><dd>A file of raw bytes (opened with <code>"wb"</code>/<code>"rb"</code>), as pickle uses &mdash; not human-readable text.</dd></div>
+      </dl>
+    </section>
+
+
+    <section>
+      <div style="background:linear-gradient(160deg,var(--py-blue-deep),var(--py-blue));
+                  border-radius:16px;padding:28px 30px;color:#fff;margin-top:8px;
+                  box-shadow:0 18px 45px -22px rgba(15,23,42,.75);
+                  display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+        <div style="flex:1 1 320px;min-width:0;">
+          <div style="font-family:var(--mono);font-size:.72rem;letter-spacing:2.5px;
+                      text-transform:uppercase;color:var(--py-yellow);margin-bottom:8px;">Next step</div>
+          <h2 style="margin:0 0 7px;font-size:1.4rem;color:#fff;">Week 10 Review Questions</h2>
+          <p style="margin:0;color:rgba(255,255,255,.88);font-size:.95rem;max-width:58ch;">
+            Multiple choice, true/false, short answer, and an algorithm workbench covering everything above &mdash;
+            plus two programming exercises you build at the <code style="background:rgba(255,255,255,.14);
+            color:#fff;padding:1px 5px;border-radius:4px;">&gt;&gt;&gt;</code> prompt.</p>
+        </div>
+        <a href="python-wk10-review-questions.html"
+           style="flex:none;background:var(--py-yellow);color:var(--slate-900);
+                  font-family:var(--display);font-weight:600;font-size:1rem;text-decoration:none;
+                  padding:12px 24px;border-radius:999px;white-space:nowrap;">Start the review &rarr;</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer style="background:var(--slate-900);color:#94a3b8;padding:30px 24px;text-align:center;font-size:.85rem;">
+  <div style="max-width:var(--maxw);margin:0 auto;">
+    <span style="font-family:var(--mono);color:var(--py-yellow);">Week 10</span> &middot; Dictionaries and Sets &middot; original course materials, concepts only
+  </div>
+</footer>
+<style>
+  dl.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;background:#fff;border:1px solid var(--slate-200);border-radius:12px;overflow:hidden;}
+  dl.gloss>div{padding:13px 16px;border-bottom:1px solid var(--slate-100);border-right:1px solid var(--slate-100);}
+  dl.gloss dt{font-family:var(--mono);font-weight:600;color:var(--py-blue-deep);font-size:.86rem;margin-bottom:3px;}
+  dl.gloss dd{margin:0;color:var(--slate-600);font-size:.9rem;line-height:1.5;}
+  dl.gloss code{background:rgba(15,23,42,.06);padding:1px 4px;border-radius:4px;}
+</style><script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var spy = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map[e.target.id]; if(a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin:'-10% 0px -75% 0px', threshold:0 });
+  document.querySelectorAll('main section[id]').forEach(function(s){ spy.observe(s); });
+
+  var rev = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } });
+  }, { threshold:0.08 });
+  document.querySelectorAll('.reveal').forEach(function(s){ rev.observe(s); });
+
+  var PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.4/full/";
+  var startBtn = document.getElementById('replStartBtn');
+  var startBox = document.getElementById('replStart');
+  var statusEl = document.getElementById('replStatus');
+  var screenEl = document.getElementById('replScreen');
+  var outEl    = document.getElementById('replOut');
+  var inputEl  = document.getElementById('replInput');
+  var promptEl = document.getElementById('replPrompt');
+  var resetBtn = document.getElementById('replReset');
+
+  var pyodide=null, pushLine=null, resetConsole=null, loading=false;
+  var history=[], hIdx=0, contMode=false;
+
+  window._webInput = function(p){ var v = window.prompt(p || ""); return v===null ? "" : v; };
+
+  function append(text, cls){
+    if(text===undefined || text===null || text==="") return;
+    var span=document.createElement('span');
+    if(cls) span.className=cls;
+    span.textContent=text;
+    outEl.appendChild(span);
+    outEl.scrollTop=outEl.scrollHeight;
+  }
+  function echoLine(promptStr, code){ append(promptStr+' ', 'ps'); append(code+'\n', 'echo'); }
+
+  var SETUP = [
+    "import sys, io, code, builtins",
+    "from js import _webInput",
+    "class WebConsole(code.InteractiveConsole):",
+    "    def write(self, data):",
+    "        sys.stdout.write(data)",
+    "_ns = {'__name__': '__main__'}",
+    "_console = WebConsole(locals=_ns)",
+    "def _web_input(prompt=''):",
+    "    sys.stdout.write(str(prompt))",
+    "    val = _webInput(str(prompt))",
+    "    sys.stdout.write(str(val) + chr(10))",
+    "    return val",
+    "builtins.input = _web_input",
+    "def push_line(line):",
+    "    buf = io.StringIO()",
+    "    old = sys.stdout",
+    "    sys.stdout = buf",
+    "    try:",
+    "        more = _console.push(line)",
+    "    finally:",
+    "        sys.stdout = old",
+    "    return [bool(more), buf.getvalue()]",
+    "def reset_console():",
+    "    global _console",
+    "    _console = WebConsole(locals={'__name__': '__main__'})"
+  ].join("\n");
+
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s=document.createElement('script'); s.src=src;
+      s.onload=res; s.onerror=function(){ rej(new Error('Could not load '+src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function start(){
+    if(loading || pyodide) return;
+    loading=true; startBtn.disabled=true;
+    statusEl.textContent='Downloading the Python runtime…';
+    try{
+      await loadScript(PYODIDE_URL+'pyodide.js');
+      statusEl.textContent='Starting Python…';
+      pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
+      pyodide.runPython(SETUP);
+      pushLine = pyodide.globals.get('push_line');
+      resetConsole = pyodide.globals.get('reset_console');
+      var ver = pyodide.runPython("sys.version.split()[0]");
+      startBox.style.display='none';
+      screenEl.style.display='block';
+      resetBtn.style.display='inline-block';
+      append('Python '+ver+' (Pyodide) — type a statement and press Enter.\n', 'res');
+      inputEl.focus();
+    }catch(err){
+      statusEl.textContent='Could not start: '+err.message+'  (check your connection and try again)';
+      startBtn.disabled=false; loading=false;
+    }
+  }
+
+  function process(line){
+    var shownPrompt = contMode ? '...' : '>>>';
+    echoLine(shownPrompt, line);
+    var res = pushLine(line);
+    var arr = res.toJs(); res.destroy();
+    var more = arr[0], output = arr[1];
+    if(output){
+      var cls = /(^|\n)\s*(Traceback|[A-Za-z]*Error|[A-Za-z]*Warning)/.test(output) ? 'err' : 'res';
+      append(output, cls);
+    }
+    contMode = more;
+    promptEl.textContent = contMode ? '...' : '>>>';
+  }
+
+  function runChip(code){
+    if(!pyodide){ return; }
+    var lines = code.split('\n');
+    for(var i=0;i<lines.length;i++){ process(lines[i]); }
+    if(contMode){ process(''); }
+    inputEl.focus();
+  }
+
+  inputEl && inputEl.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      var line = inputEl.value;
+      if(line.trim()!=='') { history.push(line); }
+      hIdx = history.length;
+      inputEl.value='';
+      process(line);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      if(hIdx>0){ hIdx--; inputEl.value=history[hIdx]||''; }
+    } else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(hIdx<history.length-1){ hIdx++; inputEl.value=history[hIdx]||''; }
+      else { hIdx=history.length; inputEl.value=''; }
+    }
+  });
+
+  startBtn && startBtn.addEventListener('click', start);
+  resetBtn && resetBtn.addEventListener('click', function(){
+    if(resetConsole){ resetConsole(); }
+    outEl.innerHTML=''; contMode=false; promptEl.textContent='>>>';
+    append('Session reset.\n', 'res'); inputEl.focus();
+  });
+
+  document.querySelectorAll('.chips button[data-code]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var code = b.getAttribute('data-code');
+      if(pyodide){ runChip(code); }
+      else { if(code.indexOf('\n')===-1){ inputEl.value=code; } start(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>

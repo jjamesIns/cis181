@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 04 — Repetition Structures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;--py-blue-dark:#306998;--py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;--py-yellow-deep:#f0b400;
+    --slate-900:#0f172a;--slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;
+    --slate-500:#64748b;--slate-400:#94a3b8;--slate-300:#cbd5e1;--slate-200:#e2e8f0;
+    --slate-100:#f1f5f9;--slate-50:#f8fafc;
+    --good:#15803d;--good-bg:#dcfce7;--bad:#b91c1c;--bad-bg:#fee2e2;
+    --display:'Space Grotesk',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'Fira Code',ui-monospace,monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;font-size:17px;}
+  body{margin:0;font-family:var(--body);color:#2b303b;background:var(--slate-50);line-height:1.7;-webkit-font-smoothing:antialiased;}
+  a{color:var(--py-blue-dark);}
+  code{font-family:var(--mono);font-size:.92em;}
+  .hero{background:linear-gradient(150deg,var(--py-blue-deep) 0%,var(--py-blue-dark) 55%,var(--py-blue) 100%);color:#fff;padding:64px 24px 0;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;background:radial-gradient(circle,rgba(255,212,59,.22),transparent 70%);}
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{font-family:var(--mono);letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:var(--py-yellow);font-weight:600;margin-bottom:14px;}
+  .hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:0 0 18px;letter-spacing:-.02em;}
+  .hero h1 .accent{background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p.lede{font-size:1.12rem;max-width:60ch;color:#e0ecf5;margin:0 0 26px;}
+  .hero-bar{display:flex;flex-wrap:wrap;gap:8px;padding:18px 0 22px;}
+  .hero-bar a{font-size:.82rem;font-weight:600;color:#fff;text-decoration:none;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);padding:7px 13px;border-radius:999px;transition:.18s;}
+  .hero-bar a:hover{background:var(--py-yellow);color:var(--slate-900);border-color:var(--py-yellow);}
+  .hero-bar a.out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+  .toc-out{display:block;margin:14px 0 0;padding:9px 13px;text-decoration:none;font-size:.86rem;
+    font-weight:600;color:var(--py-blue-deep);background:#eaf2f9;border:1px solid #cfe0ee;
+    border-radius:9px;transition:.16s;}
+  .toc-out:hover{background:var(--py-blue-deep);color:#fff;border-color:var(--py-blue-deep);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:grid;grid-template-columns:232px 1fr;gap:42px;align-items:start;}
+  .toc{position:sticky;top:18px;padding:28px 0;align-self:start;}
+  .toc h2{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-500);margin:0 0 12px;}
+  .toc ol{list-style:none;margin:0;padding:0;counter-reset:t;}
+  .toc li{counter-increment:t;}
+  .toc a{display:block;text-decoration:none;color:var(--slate-600);font-size:.9rem;font-weight:500;padding:6px 10px 6px 34px;border-left:2px solid var(--slate-200);position:relative;transition:.16s;}
+  .toc a::before{content:counter(t,decimal-leading-zero);position:absolute;left:8px;top:6px;font-family:var(--mono);font-size:.68rem;color:var(--slate-400);}
+  .toc a:hover{color:var(--py-blue-dark);border-left-color:var(--py-blue);}
+  .toc a.active{color:var(--py-blue-deep);border-left-color:var(--py-yellow-deep);background:#fff;font-weight:600;}
+  main{padding:34px 0 60px;min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:18px;}
+  .sec-tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--py-blue);font-weight:600;margin-bottom:6px;}
+  h2.title{font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.12;margin:0 0 6px;color:var(--slate-900);letter-spacing:-.015em;}
+  h2.title .bar{display:block;width:54px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));margin-top:12px;}
+  h3{font-family:var(--display);font-weight:600;font-size:1.18rem;color:var(--slate-900);margin:30px 0 10px;}
+  p{margin:0 0 14px;}
+  .lead{font-size:1.06rem;color:var(--slate-700);}
+  .code{background:var(--slate-900);border-radius:12px;margin:16px 0;overflow:hidden;border:1px solid #0b1220;box-shadow:0 10px 30px -16px rgba(15,23,42,.5);}
+  .code-top{display:flex;align-items:center;gap:7px;padding:11px 15px;background:#0b1220;border-bottom:1px solid #1e293b;}
+  .code-top .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+  .code-top .dot.r{background:#f87171;}.code-top .dot.y{background:#fbbf24;}.code-top .dot.g{background:#34d399;}
+  .code-top .fn{margin-left:8px;font-family:var(--mono);font-size:.74rem;color:var(--slate-400);}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.7;color:#e2e8f0;}
+  .kw{color:#ff9d6f;}.bif{color:#7cc3ff;}.str{color:#ffd87a;}.num{color:#a5f3a0;}.com{color:#64748b;font-style:italic;}.op{color:#f0abfc;}.out{color:#94a3b8;}
+  .cards{display:grid;gap:12px;margin:18px 0;}
+  details.card{background:#fff;border:1px solid var(--slate-200);border-radius:12px;box-shadow:0 1px 2px rgba(15,23,42,.04);overflow:hidden;}
+  details.card>summary{cursor:pointer;list-style:none;padding:15px 18px;font-weight:600;color:var(--slate-900);display:flex;align-items:center;gap:12px;font-family:var(--display);}
+  details.card>summary::-webkit-details-marker{display:none;}
+  details.card>summary .ix{font-family:var(--mono);font-size:.72rem;color:var(--py-blue-dark);background:#e8f1f8;border-radius:6px;padding:3px 7px;font-weight:600;flex:none;}
+  details.card>summary .chev{margin-left:auto;color:var(--slate-400);transition:.2s;flex:none;}
+  details.card[open]>summary .chev{transform:rotate(90deg);color:var(--py-blue);}
+  details.card .body{padding:0 18px 17px;color:var(--slate-700);}
+  details.card .body>*:first-child{margin-top:0;}
+  .call{border-radius:11px;padding:14px 16px;margin:16px 0;border:1px solid;font-size:.95rem;}
+  .call .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:5px;}
+  .call.good{background:var(--good-bg);border-color:#86efac;color:#14532d;}
+  .call.good .lbl{background:var(--good);color:#fff;}
+  .call.bad{background:var(--bad-bg);border-color:#fca5a5;color:#7f1d1d;}
+  .call.bad .lbl{background:var(--bad);color:#fff;}
+  .call.note{background:#fff8e1;border-color:#fde68a;color:#713f12;}
+  .call.note .lbl{background:var(--py-yellow-deep);color:var(--slate-900);}
+  .call p:last-child{margin-bottom:0;}
+  .call code{background:rgba(15,23,42,.07);padding:1px 5px;border-radius:4px;}
+  .tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--slate-200);}
+  .tbl th{background:var(--py-blue-dark);color:#fff;text-align:left;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:.88rem;}
+  .tbl td{padding:9px 14px;border-top:1px solid var(--slate-200);vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:var(--slate-50);}
+  .tbl td code{color:var(--py-blue-deep);font-weight:600;}
+  figure{margin:22px 0;background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px 16px 8px;text-align:center;}
+  figure svg{max-width:100%;height:auto;}
+  figcaption{font-size:.84rem;color:var(--slate-500);margin-top:8px;padding-bottom:8px;}
+  figcaption b{color:var(--slate-700);font-family:var(--display);}
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.reveal{opacity:1;transform:none;transition:none;}}
+  @media (max-width:880px){.wrap{grid-template-columns:1fr;gap:0;}.toc{display:none;}main{padding-top:24px;}}
+  :focus-visible{outline:3px solid var(--py-yellow-deep);outline-offset:2px;border-radius:4px;}
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Week 04</div>
+    <h1>Repetition <span class="accent">Structures</span></h1>
+    <p class="lede">A decision lets a program choose a path once. A loop lets it do the same work many times — counting, totaling, validating, repeating — without you writing the same lines over and over.</p>
+    <nav class="hero-bar" aria-label="Module topics">
+      <a href="#intro">Why Repeat</a>
+      <a href="#while">The while Loop</a>
+      <a href="#infinite">Infinite Loops</a>
+      <a href="#for">The for Loop</a>
+      <a href="#range">The range Function</a>
+      <a href="#running">Running Totals</a>
+      <a href="#augmented">Augmented Assignment</a>
+      <a href="#sentinels">Sentinels</a>
+      <a href="#validation">Input Validation</a>
+      <a href="#nested">Nested Loops</a>
+      <a href="#console">Practice Console</a>
+      <a href="python-wk04-review-questions.html" class="out">&#10003;&nbsp; Review Questions</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="toc">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#intro">Why repeat</a></li>
+      <li><a href="#while">The while loop</a></li>
+      <li><a href="#infinite">Infinite loops</a></li>
+      <li><a href="#for">The for loop</a></li>
+      <li><a href="#range">The range function</a></li>
+      <li><a href="#running">Running totals</a></li>
+      <li><a href="#augmented">Augmented assignment</a></li>
+      <li><a href="#sentinels">Sentinels</a></li>
+      <li><a href="#validation">Input validation</a></li>
+      <li><a href="#nested">Nested loops</a></li>
+      <li><a href="#console">Practice console</a></li>
+      <li><a href="#check">Check yourself</a></li>
+      <li><a href="#glossary">Key terms</a></li>
+    </ol>
+    <a class="toc-out" href="python-wk04-review-questions.html">&rarr;&nbsp; Review Questions</a>
+  </aside>
+
+  <main>
+
+    <!-- 1. INTRO -->
+    <section id="intro" class="reveal">
+      <div class="sec-tag">Foundation</div>
+      <h2 class="title">Why programs repeat<span class="bar"></span></h2>
+      <p class="lead">Programs often need to perform the same task many times. You could copy and paste the code, but duplicating it is a bad idea on every count.</p>
+      <ul>
+        <li>It makes the program needlessly <b>large</b>.</li>
+        <li>Typing the same thing repeatedly is <b>slow</b> and error-prone.</li>
+        <li>If the logic ever changes, you have to <b>fix it in every copy</b> — and you'll miss one.</li>
+      </ul>
+      <p>A <b>repetition structure</b> — a loop — solves all three. You write the repeated code once, and the computer runs it as many times as needed. Python offers two kinds:</p>
+
+      <div class="cards">
+        <details class="card" open>
+          <summary><span class="ix">while</span>Condition-controlled loop<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Repeats <em>as long as a condition is true</em>. Use it when you don't know in advance how many repetitions you'll need — you just keep going until something changes.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">for</span>Count-controlled loop<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Repeats <em>a specific number of times</em>, once for each item in a sequence. Use it when the number of repetitions is known — five rows, ten students, every item in a list.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 2. WHILE -->
+    <section id="while" class="reveal">
+      <div class="sec-tag">Condition-controlled</div>
+      <h2 class="title">The <code>while</code> loop<span class="bar"></span></h2>
+      <p class="lead">A <code>while</code> loop reads like its plain-English meaning: <em>while</em> this condition is true, keep doing this. It has two parts — a condition that's tested for true or false, and a block of statements that repeats as long as the condition holds.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">countdown.py</span></div>
+<pre><span class="n">seconds</span> <span class="op">=</span> <span class="num">5</span>
+
+<span class="kw">while</span> seconds <span class="op">&gt;</span> <span class="num">0</span><span class="op">:</span>
+    <span class="bif">print</span>(seconds)
+    <span class="n">seconds</span> <span class="op">=</span> seconds <span class="op">-</span> <span class="num">1</span>
+
+<span class="bif">print</span>(<span class="str">"Liftoff!"</span>)</pre>
+      </div>
+
+      <p>This prints 5, 4, 3, 2, 1, then "Liftoff!". Each pass through the body is one <b>iteration</b>. The crucial line is <code>seconds = seconds - 1</code>: without it, <code>seconds</code> would stay at 5 forever and the loop would never stop.</p>
+
+      <div class="call note">
+        <span class="lbl">Pretest loop</span>
+        <p>The <code>while</code> loop is a <b>pretest</b> loop — it checks the condition <em>before</em> each iteration. Two consequences: if the condition is false at the very start, the body never runs even once; and you usually have to set up a variable <em>before</em> the loop so the first test has something to check.</p>
+      </div>
+
+      <p>For a loop to ever stop, something inside the body must eventually make the condition false. Here's the general shape:</p>
+
+      <figure>
+        <svg viewBox="0 0 480 300" role="img" aria-label="Flowchart of the logic of a while loop">
+          <defs>
+            <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#475569"/></marker>
+          </defs>
+          <rect x="60" y="12" width="110" height="34" rx="17" fill="#334155"/>
+          <text x="115" y="34" text-anchor="middle" fill="#fff" font-family="Space Grotesk,sans-serif" font-size="13" font-weight="600">Start</text>
+          <line x1="115" y1="46" x2="115" y2="74" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+          <polygon points="115,78 205,128 115,178 25,128" fill="#4B8BBE"/>
+          <text x="115" y="132" text-anchor="middle" fill="#fff" font-family="Fira Code,monospace" font-size="12">condition</text>
+          <!-- True to the right -->
+          <text x="212" y="122" fill="#15803d" font-family="Fira Code,monospace" font-size="12" font-weight="600">True</text>
+          <line x1="205" y1="128" x2="270" y2="128" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+          <rect x="274" y="106" width="150" height="44" rx="6" fill="#fff" stroke="#475569" stroke-width="1.5"/>
+          <text x="349" y="132" text-anchor="middle" fill="#1e293b" font-family="Inter,sans-serif" font-size="12">statement(s)</text>
+          <!-- loop back up over the top -->
+          <line x1="349" y1="106" x2="349" y2="60" stroke="#475569" stroke-width="2"/>
+          <line x1="349" y1="60" x2="115" y2="60" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+          <!-- False down to End -->
+          <text x="100" y="200" fill="#b91c1c" font-family="Fira Code,monospace" font-size="12" font-weight="600" text-anchor="end">False</text>
+          <line x1="115" y1="178" x2="115" y2="246" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+          <rect x="60" y="248" width="110" height="34" rx="17" fill="#334155"/>
+          <text x="115" y="270" text-anchor="middle" fill="#fff" font-family="Space Grotesk,sans-serif" font-size="13" font-weight="600">End</text>
+        </svg>
+        <figcaption><b>Figure 4-1.</b> The logic of a <code>while</code> loop. While the condition is true, the body runs and control loops back to re-test; once it's false, the loop exits.</figcaption>
+      </figure>
+
+      <p>You can also let a loop run until the <em>user</em> decides to stop, by testing a control variable that the user updates each pass:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">log_readings.py</span></div>
+<pre><span class="n">again</span> <span class="op">=</span> <span class="str">"y"</span>
+
+<span class="kw">while</span> again <span class="op">==</span> <span class="str">"y"</span><span class="op">:</span>
+    <span class="n">reading</span> <span class="op">=</span> <span class="bif">float</span>(<span class="bif">input</span>(<span class="str">"Sensor reading: "</span>))
+    <span class="bif">print</span>(<span class="str">"Logged"</span>, reading)
+    <span class="n">again</span> <span class="op">=</span> <span class="bif">input</span>(<span class="str">"Log another? (y/n): "</span>)
+
+<span class="bif">print</span>(<span class="str">"Done."</span>)</pre>
+      </div>
+
+      <p>The control variable <code>again</code> is given a starting value of <code>"y"</code> <em>before</em> the loop so the first test passes; inside the loop the user resets it, and the moment they type anything other than <code>"y"</code> the loop ends.</p>
+    </section>
+
+    <!-- 3. INFINITE -->
+    <section id="infinite" class="reveal">
+      <div class="sec-tag">The classic bug</div>
+      <h2 class="title">Infinite loops<span class="bar"></span></h2>
+      <p class="lead">Every loop must contain, within itself, a way to terminate. If nothing inside a <code>while</code> loop ever makes the condition false, you get an <b>infinite loop</b> — one that repeats until the program is forcibly interrupted.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">oops.py</span></div>
+<pre><span class="n">seconds</span> <span class="op">=</span> <span class="num">5</span>
+
+<span class="kw">while</span> seconds <span class="op">&gt;</span> <span class="num">0</span><span class="op">:</span>
+    <span class="bif">print</span>(seconds)
+    <span class="com"># forgot to decrement seconds — it stays 5 forever</span></pre>
+      </div>
+
+      <p>Because <code>seconds</code> never changes, <code>seconds &gt; 0</code> is always true and the program prints <code>5</code> endlessly. Infinite loops almost always come from forgetting the line that moves the loop toward its stopping point. When you write a loop, make a habit of asking: "What in this body will eventually make the condition false?"</p>
+
+      <div class="call note">
+        <span class="lbl">If it happens to you</span>
+        <p>Stuck in a runaway loop in IDLE or a terminal? Press <b>Ctrl&nbsp;+&nbsp;C</b> to interrupt the program. (In the practice console at the bottom of this page, just hit <b>Reset session</b>.)</p>
+      </div>
+    </section>
+
+    <!-- 4. FOR -->
+    <section id="for" class="reveal">
+      <div class="sec-tag">Count-controlled</div>
+      <h2 class="title">The <code>for</code> loop<span class="bar"></span></h2>
+      <p class="lead">When you know how many times to repeat — or want to step through every item in a sequence — reach for a <code>for</code> loop. It's a <b>count-controlled</b> loop: it iterates once for each item in a sequence, no manual counter needed.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">scores.py</span></div>
+<pre><span class="kw">for</span> score <span class="kw">in</span> [<span class="num">88</span>, <span class="num">92</span>, <span class="num">75</span>, <span class="num">99</span>]<span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Score:"</span>, score)</pre>
+      </div>
+
+      <p>This runs four times. On each pass, the <b>target variable</b> <code>score</code> is assigned the next item from the list — 88, then 92, then 75, then 99. The target variable is simply the name that receives each item at the start of every iteration; you use it inside the body to do the work.</p>
+
+      <div class="call note">
+        <span class="lbl">Two loops, two jobs</span>
+        <p>A <code>for</code> loop manages its own counting, so you can't accidentally create an infinite <code>for</code> loop over a fixed sequence. A <code>while</code> loop puts you in charge of the condition — more flexible, but you own the responsibility of making it stop.</p>
+      </div>
+    </section>
+
+    <!-- 5. RANGE -->
+    <section id="range" class="reveal">
+      <div class="sec-tag">Generating sequences</div>
+      <h2 class="title">The <code>range</code> function<span class="bar"></span></h2>
+      <p class="lead">Listing values by hand gets tedious fast. The <code>range</code> function generates a sequence of numbers for you, and it's the usual companion to a <code>for</code> loop. It returns an <b>iterable</b> — an object that produces a sequence of values one at a time.</p>
+
+      <p><code>range</code> takes one, two, or three arguments:</p>
+      <table class="tbl">
+        <thead><tr><th>Call</th><th>Produces</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>range(5)</code></td><td>0, 1, 2, 3, 4</td><td>One argument: the ending limit (start defaults to 0).</td></tr>
+          <tr><td><code>range(2, 8)</code></td><td>2, 3, 4, 5, 6, 7</td><td>Two arguments: starting value and ending limit.</td></tr>
+          <tr><td><code>range(0, 20, 5)</code></td><td>0, 5, 10, 15</td><td>Three arguments: start, limit, and a step value.</td></tr>
+          <tr><td><code>range(5, 0, -1)</code></td><td>5, 4, 3, 2, 1</td><td>A negative step counts downward.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="call bad">
+        <span class="lbl">The off-by-one trap</span>
+        <p><code>range</code> <b>never includes the ending limit</b>. <code>range(5)</code> stops at 4, and <code>range(2, 8)</code> stops at 7. To loop through 1 up to and including 10, you need <code>range(1, 11)</code>.</p>
+      </div>
+
+      <p>Inside the loop, the target variable holds each generated number, ready to use in a calculation. Here's a small squares table:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">squares.py</span></div>
+<pre><span class="kw">for</span> n <span class="kw">in</span> <span class="bif">range</span>(<span class="num">1</span>, <span class="num">6</span>)<span class="op">:</span>
+    <span class="bif">print</span>(n, <span class="str">"squared is"</span>, n <span class="op">**</span> <span class="num">2</span>)</pre>
+      </div>
+
+      <p>And when the program doesn't know the count ahead of time, it can ask the user for the bounds and feed those variables to <code>range</code> — just remember to add 1 to the limit if the upper number should be included:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">user_range.py</span></div>
+<pre><span class="n">start</span> <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Start at: "</span>))
+<span class="n">end</span> <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"End at: "</span>))
+
+<span class="kw">for</span> num <span class="kw">in</span> <span class="bif">range</span>(start, end <span class="op">+</span> <span class="num">1</span>)<span class="op">:</span>
+    <span class="bif">print</span>(num)</pre>
+      </div>
+    </section>
+
+    <!-- 6. RUNNING TOTALS -->
+    <section id="running" class="reveal">
+      <div class="sec-tag">A core pattern</div>
+      <h2 class="title">Calculating a running total<span class="bar"></span></h2>
+      <p class="lead">Adding up a series of numbers is one of the most common loop jobs. The pattern has two pieces: a loop that reads each value, and an <b>accumulator</b> — a variable that keeps the growing total.</p>
+
+      <p>The accumulator starts at 0 <em>before</em> the loop. Each iteration adds the current value to it. When the loop ends, the accumulator holds the final total.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">expenses.py</span></div>
+<pre><span class="n">expenses</span> <span class="op">=</span> [<span class="num">42.50</span>, <span class="num">18.00</span>, <span class="num">7.25</span>, <span class="num">30.10</span>]
+
+<span class="n">total</span> <span class="op">=</span> <span class="num">0.0</span>          <span class="com"># accumulator starts empty</span>
+<span class="kw">for</span> amount <span class="kw">in</span> expenses<span class="op">:</span>
+    <span class="n">total</span> <span class="op">=</span> total <span class="op">+</span> amount
+
+<span class="bif">print</span>(<span class="str">"Total spent:"</span>, total)</pre>
+      </div>
+
+      <p>Watch the accumulator grow: it's 0.0, then 42.50, then 60.50, then 67.75, and finally 97.85. The line <code>total = total + amount</code> is the heart of it — take the old total, add the new value, store it back.</p>
+
+      <figure>
+        <svg viewBox="0 0 500 320" role="img" aria-label="Flowchart for calculating a running total">
+          <defs>
+            <marker id="ah2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#475569"/></marker>
+          </defs>
+          <rect x="30" y="10" width="120" height="34" rx="17" fill="#334155"/>
+          <text x="90" y="32" text-anchor="middle" fill="#fff" font-family="Space Grotesk,sans-serif" font-size="13" font-weight="600">Start</text>
+          <line x1="90" y1="44" x2="90" y2="64" stroke="#475569" stroke-width="2" marker-end="url(#ah2)"/>
+          <rect x="20" y="66" width="140" height="40" rx="6" fill="#fff" stroke="#475569" stroke-width="1.5"/>
+          <text x="90" y="91" text-anchor="middle" fill="#1e293b" font-family="Inter,sans-serif" font-size="12">set total = 0</text>
+          <line x1="90" y1="106" x2="90" y2="134" stroke="#475569" stroke-width="2" marker-end="url(#ah2)"/>
+          <polygon points="90,138 190,186 90,234 -10,186" fill="#4B8BBE"/>
+          <text x="90" y="182" text-anchor="middle" fill="#fff" font-family="Inter,sans-serif" font-size="10.5">another</text>
+          <text x="90" y="196" text-anchor="middle" fill="#fff" font-family="Inter,sans-serif" font-size="10.5">number?</text>
+          <text x="196" y="176" fill="#15803d" font-family="Fira Code,monospace" font-size="11" font-weight="600">Yes</text>
+          <line x1="190" y1="186" x2="232" y2="186" stroke="#475569" stroke-width="2" marker-end="url(#ah2)"/>
+          <path d="M236,166 h120 l-14,40 h-120 z" fill="#fde68a" stroke="#d97706" stroke-width="1.3"/>
+          <text x="294" y="190" text-anchor="middle" fill="#7c2d12" font-family="Inter,sans-serif" font-size="11">read next number</text>
+          <line x1="356" y1="186" x2="392" y2="186" stroke="#475569" stroke-width="2" marker-end="url(#ah2)"/>
+          <rect x="396" y="164" width="96" height="44" rx="6" fill="#fff" stroke="#475569" stroke-width="1.5"/>
+          <text x="444" y="183" text-anchor="middle" fill="#1e293b" font-family="Inter,sans-serif" font-size="10.5">add to</text>
+          <text x="444" y="197" text-anchor="middle" fill="#1e293b" font-family="Inter,sans-serif" font-size="10.5">total</text>
+          <!-- loop back -->
+          <line x1="444" y1="164" x2="444" y2="120" stroke="#475569" stroke-width="2"/>
+          <line x1="444" y1="120" x2="90" y2="120" stroke="#475569" stroke-width="2" marker-end="url(#ah2)"/>
+          <text x="74" y="258" fill="#b91c1c" font-family="Fira Code,monospace" font-size="11" font-weight="600" text-anchor="end">No</text>
+          <line x1="90" y1="234" x2="90" y2="270" stroke="#475569" stroke-width="2" marker-end="url(#ah2)"/>
+          <rect x="30" y="272" width="120" height="34" rx="17" fill="#334155"/>
+          <text x="90" y="294" text-anchor="middle" fill="#fff" font-family="Space Grotesk,sans-serif" font-size="13" font-weight="600">End</text>
+        </svg>
+        <figcaption><b>Figure 4-2.</b> Logic for a running total. The accumulator is zeroed once, then each value is added on every pass until there are no more numbers.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 7. AUGMENTED -->
+    <section id="augmented" class="reveal">
+      <div class="sec-tag">Shorthand</div>
+      <h2 class="title">Augmented assignment operators<span class="bar"></span></h2>
+      <p class="lead">In the accumulator above, the variable on the left of <code>=</code> also appeared on the right: <code>total = total + amount</code>. That pattern is so common that Python provides <b>augmented assignment operators</b> as shorthand for it.</p>
+
+      <table class="tbl">
+        <thead><tr><th>Operator</th><th>Example</th><th>Equivalent to</th></tr></thead>
+        <tbody>
+          <tr><td><code>+=</code></td><td><code>score += 10</code></td><td><code>score = score + 10</code></td></tr>
+          <tr><td><code>-=</code></td><td><code>lives -= 1</code></td><td><code>lives = lives - 1</code></td></tr>
+          <tr><td><code>*=</code></td><td><code>price *= 2</code></td><td><code>price = price * 2</code></td></tr>
+          <tr><td><code>/=</code></td><td><code>total /= 4</code></td><td><code>total = total / 4</code></td></tr>
+          <tr><td><code>%=</code></td><td><code>n %= 7</code></td><td><code>n = n % 7</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>So the accumulator line becomes simply <code>total += amount</code>, and the countdown's <code>seconds = seconds - 1</code> becomes <code>seconds -= 1</code>. Same behavior, less typing, and the intent reads more clearly.</p>
+    </section>
+
+    <!-- 8. SENTINELS -->
+    <section id="sentinels" class="reveal">
+      <div class="sec-tag">Knowing when to stop</div>
+      <h2 class="title">Sentinels<span class="bar"></span></h2>
+      <p class="lead">Sometimes you're reading a series of values but don't know how many there will be. A <b>sentinel</b> is a special value that marks the end of the sequence. When the loop reads the sentinel, it knows the data is finished and stops.</p>
+
+      <p>A sentinel must be distinctive enough that it can never be mistaken for a real data value. If you're reading test scores, which are always 0 or higher, then <code>-1</code> makes a safe sentinel — no real score could ever be negative.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">scores_total.py</span></div>
+<pre><span class="n">total</span> <span class="op">=</span> <span class="num">0</span>
+<span class="n">score</span> <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Enter a score (-1 to finish): "</span>))
+
+<span class="kw">while</span> score <span class="op">!=</span> <span class="op">-</span><span class="num">1</span><span class="op">:</span>
+    <span class="n">total</span> <span class="op">+=</span> score
+    <span class="n">score</span> <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Enter a score (-1 to finish): "</span>))
+
+<span class="bif">print</span>(<span class="str">"Total of all scores:"</span>, total)</pre>
+      </div>
+
+      <p>Notice the structure: one input <em>before</em> the loop (the priming read) gives the first test something to check, and a matching input at the <em>bottom</em> of the loop fetches the next value. The sentinel <code>-1</code> is never added to the total — the loop exits the moment it's seen.</p>
+
+      <div class="call note">
+        <span class="lbl">Choosing a sentinel</span>
+        <p>The right sentinel depends on the data. For positive-only numbers, a negative works. For reading lines from a file, an empty line often serves. The rule never changes: it must be a value that can't legitimately appear in the real data.</p>
+      </div>
+    </section>
+
+    <!-- 9. VALIDATION -->
+    <section id="validation" class="reveal">
+      <div class="sec-tag">Defensive input</div>
+      <h2 class="title">Input validation loops<span class="bar"></span></h2>
+      <p class="lead">A computer can't tell good data from bad — if a user enters nonsense, the program happily computes a nonsense result. Programmers sum this up as <b>GIGO: garbage in, garbage out</b>. The fix is to inspect input before using it, and refuse to move on until it's valid.</p>
+
+      <p><b>Input validation</b> is usually done with a <code>while</code> loop that repeats <em>as long as the input is bad</em>. Read a value first, then loop: while it fails the check, show an error and read again. Control only leaves the loop once the value is acceptable.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">validate_rating.py</span></div>
+<pre><span class="n">rating</span> <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Rate 1 to 5: "</span>))
+
+<span class="kw">while</span> rating <span class="op">&lt;</span> <span class="num">1</span> <span class="kw">or</span> rating <span class="op">&gt;</span> <span class="num">5</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"That's not between 1 and 5."</span>)
+    <span class="n">rating</span> <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Rate 1 to 5: "</span>))
+
+<span class="bif">print</span>(<span class="str">"Thanks! You rated it"</span>, rating)</pre>
+      </div>
+
+      <p>If the first entry is already valid, the loop body never runs — the pretest nature of <code>while</code> means good input passes straight through. Only bad input triggers the error-and-retry cycle.</p>
+
+      <figure>
+        <svg viewBox="0 0 500 320" role="img" aria-label="Flowchart containing an input validation loop">
+          <defs>
+            <marker id="ah3" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#475569"/></marker>
+          </defs>
+          <rect x="30" y="10" width="120" height="34" rx="17" fill="#334155"/>
+          <text x="90" y="32" text-anchor="middle" fill="#fff" font-family="Space Grotesk,sans-serif" font-size="13" font-weight="600">Start</text>
+          <line x1="90" y1="44" x2="90" y2="62" stroke="#475569" stroke-width="2" marker-end="url(#ah3)"/>
+          <path d="M30,64 h120 l-14,40 h-120 z" fill="#fde68a" stroke="#d97706" stroke-width="1.3"/>
+          <text x="83" y="88" text-anchor="middle" fill="#7c2d12" font-family="Inter,sans-serif" font-size="12">get input</text>
+          <line x1="90" y1="104" x2="90" y2="132" stroke="#475569" stroke-width="2" marker-end="url(#ah3)"/>
+          <polygon points="90,136 185,184 90,232 -5,184" fill="#4B8BBE"/>
+          <text x="90" y="180" text-anchor="middle" fill="#fff" font-family="Inter,sans-serif" font-size="10.5">input</text>
+          <text x="90" y="194" text-anchor="middle" fill="#fff" font-family="Inter,sans-serif" font-size="10.5">bad?</text>
+          <text x="192" y="174" fill="#15803d" font-family="Fira Code,monospace" font-size="11" font-weight="600">Yes</text>
+          <line x1="185" y1="184" x2="226" y2="184" stroke="#475569" stroke-width="2" marker-end="url(#ah3)"/>
+          <rect x="230" y="162" width="110" height="44" rx="6" fill="#fff" stroke="#475569" stroke-width="1.5"/>
+          <text x="285" y="181" text-anchor="middle" fill="#1e293b" font-family="Inter,sans-serif" font-size="10.5">show error</text>
+          <text x="285" y="195" text-anchor="middle" fill="#1e293b" font-family="Inter,sans-serif" font-size="10.5">message</text>
+          <line x1="340" y1="184" x2="376" y2="184" stroke="#475569" stroke-width="2" marker-end="url(#ah3)"/>
+          <path d="M380,164 h110 l-14,40 h-110 z" fill="#fde68a" stroke="#d97706" stroke-width="1.3"/>
+          <text x="431" y="188" text-anchor="middle" fill="#7c2d12" font-family="Inter,sans-serif" font-size="11">get input again</text>
+          <line x1="438" y1="164" x2="438" y2="120" stroke="#475569" stroke-width="2"/>
+          <line x1="438" y1="120" x2="90" y2="120" stroke="#475569" stroke-width="2" marker-end="url(#ah3)"/>
+          <text x="74" y="256" fill="#b91c1c" font-family="Fira Code,monospace" font-size="11" font-weight="600" text-anchor="end">No</text>
+          <line x1="90" y1="232" x2="90" y2="270" stroke="#475569" stroke-width="2" marker-end="url(#ah3)"/>
+          <rect x="30" y="272" width="120" height="34" rx="17" fill="#334155"/>
+          <text x="90" y="294" text-anchor="middle" fill="#fff" font-family="Space Grotesk,sans-serif" font-size="13" font-weight="600">End</text>
+        </svg>
+        <figcaption><b>Figure 4-3.</b> An input validation loop. Bad input is sent back through an error message and a re-read; good input falls straight through to the end.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 10. NESTED -->
+    <section id="nested" class="reveal">
+      <div class="sec-tag">Loops within loops</div>
+      <h2 class="title">Nested loops<span class="bar"></span></h2>
+      <p class="lead">A <b>nested loop</b> is a loop contained inside another loop. A digital clock is the classic mental model: for each tick of the hours, the minutes run through all 60 of their values, and for each minute, the seconds run through all 60 of theirs.</p>
+
+      <p>A simpler example prints a grid of seat labels — three rows, four seats per row:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">seating.py</span></div>
+<pre><span class="kw">for</span> row <span class="kw">in</span> <span class="bif">range</span>(<span class="num">1</span>, <span class="num">4</span>)<span class="op">:</span>          <span class="com"># outer: 3 rows</span>
+    <span class="kw">for</span> seat <span class="kw">in</span> <span class="bif">range</span>(<span class="num">1</span>, <span class="num">5</span>)<span class="op">:</span>     <span class="com"># inner: 4 seats</span>
+        <span class="bif">print</span>(<span class="str">"Row"</span>, row, <span class="str">"Seat"</span>, seat)</pre>
+      </div>
+
+      <p>Three key facts about nested loops:</p>
+      <ul>
+        <li>The <b>inner loop runs through all of its iterations for each single iteration of the outer loop</b>. Row 1 prints seats 1–4, then row 2 prints seats 1–4, and so on.</li>
+        <li>The <b>inner loop finishes faster</b> — it cycles completely before the outer loop advances once.</li>
+        <li>The <b>total number of iterations is the inner count times the outer count</b>. Here that's 4 &times; 3 = 12 lines printed.</li>
+      </ul>
+
+      <figure>
+        <svg viewBox="0 0 420 250" role="img" aria-label="Diagram showing an inner loop contained inside an outer loop">
+          <rect x="20" y="20" width="380" height="210" rx="12" fill="#e8f1f8" stroke="#4B8BBE" stroke-width="2"/>
+          <text x="40" y="46" fill="#1f4d72" font-family="Fira Code,monospace" font-size="13" font-weight="600">for row in range(1, 4):</text>
+          <text x="356" y="46" fill="#306998" font-family="Inter,sans-serif" font-size="11" text-anchor="end" font-style="italic">outer &#183; runs 3&#215;</text>
+          <rect x="60" y="64" width="320" height="146" rx="10" fill="#fff8e1" stroke="#f0b400" stroke-width="2"/>
+          <text x="80" y="92" fill="#7c2d12" font-family="Fira Code,monospace" font-size="13" font-weight="600">for seat in range(1, 5):</text>
+          <text x="374" y="92" fill="#b45309" font-family="Inter,sans-serif" font-size="11" text-anchor="end" font-style="italic">inner &#183; 4&#215; each</text>
+          <rect x="96" y="112" width="252" height="80" rx="8" fill="#fff" stroke="#94a3b8" stroke-width="1.5"/>
+          <text x="222" y="148" text-anchor="middle" fill="#1e293b" font-family="Fira Code,monospace" font-size="12">print(row, seat)</text>
+          <text x="222" y="170" text-anchor="middle" fill="#64748b" font-family="Inter,sans-serif" font-size="11">body runs 4 &#215; 3 = 12 times total</text>
+        </svg>
+        <figcaption><b>Figure 4-4.</b> Containment view of a nested loop. The inner loop sits entirely inside the outer loop's body, so it completes a full cycle on every outer pass.</figcaption>
+      </figure>
+    </section>
+
+    <!-- PRACTICE CONSOLE -->
+    <style>
+      .repl{background:#0b1220;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 14px 40px -20px rgba(15,23,42,.6);margin:18px 0;}
+      .repl-head{display:flex;align-items:center;gap:8px;padding:11px 15px;background:#111c30;border-bottom:1px solid #1e293b;}
+      .repl-head .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+      .repl-head .r{background:#f87171;}.repl-head .y{background:#fbbf24;}.repl-head .g{background:#34d399;}
+      .repl-head .ttl{margin-left:6px;font-family:var(--mono);font-size:.76rem;color:#94a3b8;}
+      .repl-head .rst{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:4px 10px;cursor:pointer;}
+      .repl-head .rst:hover{background:#334155;color:#fff;}
+      .repl-start{padding:40px 24px;text-align:center;}
+      .repl-start p{color:#94a3b8;font-size:.92rem;max-width:48ch;margin:0 auto 18px;}
+      .repl-start button{font-family:var(--display);font-weight:600;font-size:.95rem;cursor:pointer;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));color:#1f2937;border:none;border-radius:10px;padding:12px 22px;transition:.18s;}
+      .repl-start button:hover{filter:brightness(1.05);transform:translateY(-1px);}
+      .repl-start button:disabled{opacity:.6;cursor:wait;transform:none;}
+      .repl-status{font-family:var(--mono);font-size:.78rem;color:var(--py-yellow);margin-top:14px;min-height:1em;}
+      .repl-screen{display:none;}
+      .repl-out{font-family:var(--mono);font-size:.85rem;line-height:1.55;color:#e2e8f0;padding:14px 16px 4px;max-height:340px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}
+      .repl-out .echo{color:#cbd5e1;}.repl-out .ps{color:#7cc3ff;}.repl-out .res{color:#a5f3a0;}.repl-out .err{color:#fca5a5;}
+      .repl-line{display:flex;align-items:flex-start;gap:8px;padding:4px 16px 14px;}
+      .repl-line .ps{font-family:var(--mono);font-size:.85rem;color:#7cc3ff;padding-top:2px;flex:none;}
+      .repl-line input{flex:1;background:transparent;border:none;outline:none;color:#e2e8f0;font-family:var(--mono);font-size:.85rem;padding:2px 0;}
+      .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px;}
+      .chips button{font-family:var(--mono);font-size:.76rem;cursor:pointer;background:#fff;border:1px solid var(--slate-300);border-radius:7px;padding:6px 10px;transition:.15s;color:var(--slate-700);}
+      .chips button:hover{border-color:var(--py-blue);background:#eff6fc;color:var(--py-blue-deep);}
+      .chips .lbl-mini{width:100%;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-400);margin-bottom:2px;}
+    </style>
+    <section id="console" class="reveal">
+      <div class="sec-tag">Hands-on</div>
+      <h2 class="title">Practice in the console<span class="bar"></span></h2>
+      <p class="lead">A real Python interpreter, running entirely in your browser. Click <b>Start</b> to load it (about a 10&nbsp;MB one-time download), then type at the <code>&gt;&gt;&gt;</code> prompt. Loop bodies switch the prompt to <code>...</code>; press Enter on a blank line to finish a block. Caught in an endless loop? Hit <b>Reset session</b>.</p>
+
+      <div class="chips">
+        <span class="lbl-mini">Tap a sample to drop it at the prompt:</span>
+        <button data-code="list(range(2, 8))">list(range(2, 8))</button>
+        <button data-code="list(range(5, 0, -1))">list(range(5, 0, -1))</button>
+        <button data-code="sum([42.50, 18.00, 7.25, 30.10])">sum([&hellip;])</button>
+        <button data-code="for i in range(5):&#10;    print(i)">for i in range(5): &hellip;</button>
+        <button data-code="count = 3&#10;while count > 0:&#10;    print(count)&#10;    count -= 1">while countdown</button>
+        <button data-code="total = 0&#10;for x in [10, 20, 30]:&#10;    total += x&#10;print(total)">running total</button>
+        <button data-code="for row in range(1, 4):&#10;    for seat in range(1, 5):&#10;        print(row, seat)">nested loop</button>
+      </div>
+
+      <div class="repl" id="repl">
+        <div class="repl-head">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="ttl">Python &mdash; interactive mode</span>
+          <button class="rst" id="replReset" style="display:none;">Reset session</button>
+        </div>
+        <div class="repl-start" id="replStart">
+          <p>A genuine CPython interpreter (via Pyodide) loads on demand, so pages you're only reading stay light.</p>
+          <button id="replStartBtn">&#9654;&nbsp; Start the Python interpreter</button>
+          <div class="repl-status" id="replStatus"></div>
+        </div>
+        <div class="repl-screen" id="replScreen">
+          <div class="repl-out" id="replOut"></div>
+          <div class="repl-line">
+            <span class="ps" id="replPrompt">&gt;&gt;&gt;</span>
+            <input id="replInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Python prompt">
+          </div>
+        </div>
+      </div>
+      <div class="call note">
+        <span class="lbl">Heads up</span>
+        <p>The interpreter needs an internet connection to download the first time, and works best in an up-to-date browser. <code>input()</code> pops up a small dialog standing in for the keyboard. Use the up and down arrows to recall previous commands.</p>
+      </div>
+    </section>
+
+    <!-- CHECK YOURSELF -->
+    <section id="check" class="reveal">
+      <div class="sec-tag">Review</div>
+      <h2 class="title">Check yourself<span class="bar"></span></h2>
+      <p class="lead">Predict each answer, then open the card. Even better, run it in the console above.</p>
+      <div class="cards">
+        <details class="card">
+          <summary><span class="ix">Q1</span>How many numbers does <code>range(1, 6)</code> produce, and what are they?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Five: 1, 2, 3, 4, 5. The ending limit 6 is excluded.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q2</span>What makes a <code>while</code> loop infinite?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Nothing in the body ever makes the condition false — most often a forgotten counter update like <code>count -= 1</code>.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q3</span>Rewrite <code>total = total + price</code> using an augmented operator.<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>total += price</code>.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q4</span>Why does an accumulator start at 0 before the loop?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>So the first addition has a known starting point. Starting it inside the loop would reset the total to 0 on every pass, wiping out the running sum.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q5</span>An outer loop runs 5 times; its inner loop runs 3 times. How many total iterations?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>15 — inner count times outer count (3 &times; 5).</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q6</span>Why must a sentinel be a value that can't appear in the real data?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Because the loop stops the instant it sees the sentinel. If a legitimate value matched it, the loop would quit early and skip real data.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- GLOSSARY -->
+    <section id="glossary" class="reveal">
+      <div class="sec-tag">Reference</div>
+      <h2 class="title">Key terms<span class="bar"></span></h2>
+      <dl class="gloss">
+        <div><dt>repetition structure</dt><dd>A loop — a structure that repeats a block of code as many times as needed.</dd></div>
+        <div><dt>condition-controlled loop</dt><dd>A loop that repeats while a condition is true; written with <code>while</code>.</dd></div>
+        <div><dt>count-controlled loop</dt><dd>A loop that repeats a set number of times, once per item in a sequence; written with <code>for</code>.</dd></div>
+        <div><dt>iteration</dt><dd>One single execution of the body of a loop.</dd></div>
+        <div><dt>pretest loop</dt><dd>A loop that tests its condition before each iteration, so the body may run zero times.</dd></div>
+        <div><dt>infinite loop</dt><dd>A loop with no way to stop, because its condition never becomes false.</dd></div>
+        <div><dt>target variable</dt><dd>The variable a <code>for</code> loop assigns each sequence item to on every pass.</dd></div>
+        <div><dt>iterable</dt><dd>An object that yields a sequence of values one at a time, such as a <code>range</code>.</dd></div>
+        <div><dt>accumulator</dt><dd>A variable that builds up a running total across the iterations of a loop.</dd></div>
+        <div><dt>augmented assignment</dt><dd>Shorthand operators (<code>+= -= *= /= %=</code>) that update a variable using its own value.</dd></div>
+        <div><dt>sentinel</dt><dd>A distinctive value that marks the end of a sequence and stops the loop.</dd></div>
+        <div><dt>input validation</dt><dd>Checking input before using it, re-prompting until it is acceptable.</dd></div>
+        <div><dt>GIGO</dt><dd>"Garbage in, garbage out" — bad input produces bad output.</dd></div>
+        <div><dt>nested loop</dt><dd>A loop placed inside another loop; the inner loop completes fully on each outer pass.</dd></div>
+      </dl>
+    </section>
+
+
+    <section>
+      <div style="background:linear-gradient(160deg,var(--py-blue-deep),var(--py-blue));
+                  border-radius:16px;padding:28px 30px;color:#fff;margin-top:8px;
+                  box-shadow:0 18px 45px -22px rgba(15,23,42,.75);
+                  display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+        <div style="flex:1 1 320px;min-width:0;">
+          <div style="font-family:var(--mono);font-size:.72rem;letter-spacing:2.5px;
+                      text-transform:uppercase;color:var(--py-yellow);margin-bottom:8px;">Next step</div>
+          <h2 style="margin:0 0 7px;font-size:1.4rem;color:#fff;">Week 4 Review Questions</h2>
+          <p style="margin:0;color:rgba(255,255,255,.88);font-size:.95rem;max-width:58ch;">
+            Multiple choice, true/false, short answer, and an algorithm workbench covering everything above &mdash;
+            plus two programming exercises you build at the <code style="background:rgba(255,255,255,.14);
+            color:#fff;padding:1px 5px;border-radius:4px;">&gt;&gt;&gt;</code> prompt.</p>
+        </div>
+        <a href="python-wk04-review-questions.html"
+           style="flex:none;background:var(--py-yellow);color:var(--slate-900);
+                  font-family:var(--display);font-weight:600;font-size:1rem;text-decoration:none;
+                  padding:12px 24px;border-radius:999px;white-space:nowrap;">Start the review &rarr;</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer style="background:var(--slate-900);color:#94a3b8;padding:30px 24px;text-align:center;font-size:.85rem;">
+  <div style="max-width:var(--maxw);margin:0 auto;">
+    <span style="font-family:var(--mono);color:var(--py-yellow);">Week 04</span> &middot; Repetition Structures &middot; original course materials, concepts only
+  </div>
+</footer>
+
+<style>
+  dl.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;background:#fff;border:1px solid var(--slate-200);border-radius:12px;overflow:hidden;}
+  dl.gloss>div{padding:13px 16px;border-bottom:1px solid var(--slate-100);border-right:1px solid var(--slate-100);}
+  dl.gloss dt{font-family:var(--mono);font-weight:600;color:var(--py-blue-deep);font-size:.86rem;margin-bottom:3px;}
+  dl.gloss dd{margin:0;color:var(--slate-600);font-size:.9rem;line-height:1.5;}
+  dl.gloss code{background:rgba(15,23,42,.06);padding:1px 4px;border-radius:4px;}
+</style>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var spy = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map[e.target.id]; if(a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin:'-10% 0px -75% 0px', threshold:0 });
+  document.querySelectorAll('main section[id]').forEach(function(s){ spy.observe(s); });
+
+  var rev = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } });
+  }, { threshold:0.08 });
+  document.querySelectorAll('.reveal').forEach(function(s){ rev.observe(s); });
+
+  var PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.4/full/";
+  var startBtn = document.getElementById('replStartBtn');
+  var startBox = document.getElementById('replStart');
+  var statusEl = document.getElementById('replStatus');
+  var screenEl = document.getElementById('replScreen');
+  var outEl    = document.getElementById('replOut');
+  var inputEl  = document.getElementById('replInput');
+  var promptEl = document.getElementById('replPrompt');
+  var resetBtn = document.getElementById('replReset');
+
+  var pyodide=null, pushLine=null, resetConsole=null, loading=false;
+  var history=[], hIdx=0, contMode=false;
+
+  window._webInput = function(p){ var v = window.prompt(p || ""); return v===null ? "" : v; };
+
+  function append(text, cls){
+    if(text===undefined || text===null || text==="") return;
+    var span=document.createElement('span');
+    if(cls) span.className=cls;
+    span.textContent=text;
+    outEl.appendChild(span);
+    outEl.scrollTop=outEl.scrollHeight;
+  }
+  function echoLine(promptStr, code){ append(promptStr+' ', 'ps'); append(code+'\n', 'echo'); }
+
+  var SETUP = [
+    "import sys, io, code, builtins",
+    "from js import _webInput",
+    "class WebConsole(code.InteractiveConsole):",
+    "    def write(self, data):",
+    "        sys.stdout.write(data)",
+    "_ns = {'__name__': '__main__'}",
+    "_console = WebConsole(locals=_ns)",
+    "def _web_input(prompt=''):",
+    "    sys.stdout.write(str(prompt))",
+    "    val = _webInput(str(prompt))",
+    "    sys.stdout.write(str(val) + chr(10))",
+    "    return val",
+    "builtins.input = _web_input",
+    "def push_line(line):",
+    "    buf = io.StringIO()",
+    "    old = sys.stdout",
+    "    sys.stdout = buf",
+    "    try:",
+    "        more = _console.push(line)",
+    "    finally:",
+    "        sys.stdout = old",
+    "    return [bool(more), buf.getvalue()]",
+    "def reset_console():",
+    "    global _console",
+    "    _console = WebConsole(locals={'__name__': '__main__'})"
+  ].join("\n");
+
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s=document.createElement('script'); s.src=src;
+      s.onload=res; s.onerror=function(){ rej(new Error('Could not load '+src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function start(){
+    if(loading || pyodide) return;
+    loading=true; startBtn.disabled=true;
+    statusEl.textContent='Downloading the Python runtime…';
+    try{
+      await loadScript(PYODIDE_URL+'pyodide.js');
+      statusEl.textContent='Starting Python…';
+      pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
+      pyodide.runPython(SETUP);
+      pushLine = pyodide.globals.get('push_line');
+      resetConsole = pyodide.globals.get('reset_console');
+      var ver = pyodide.runPython("sys.version.split()[0]");
+      startBox.style.display='none';
+      screenEl.style.display='block';
+      resetBtn.style.display='inline-block';
+      append('Python '+ver+' (Pyodide) — type a statement and press Enter.\n', 'res');
+      inputEl.focus();
+    }catch(err){
+      statusEl.textContent='Could not start: '+err.message+'  (check your connection and try again)';
+      startBtn.disabled=false; loading=false;
+    }
+  }
+
+  function process(line){
+    var shownPrompt = contMode ? '...' : '>>>';
+    echoLine(shownPrompt, line);
+    var res = pushLine(line);
+    var arr = res.toJs(); res.destroy();
+    var more = arr[0], output = arr[1];
+    if(output){
+      var cls = /(^|\n)\s*(Traceback|[A-Za-z]*Error|[A-Za-z]*Warning)/.test(output) ? 'err' : 'res';
+      append(output, cls);
+    }
+    contMode = more;
+    promptEl.textContent = contMode ? '...' : '>>>';
+  }
+
+  function runChip(code){
+    if(!pyodide){ return; }
+    var lines = code.split('\n');
+    for(var i=0;i<lines.length;i++){ process(lines[i]); }
+    if(contMode){ process(''); }
+    inputEl.focus();
+  }
+
+  inputEl && inputEl.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      var line = inputEl.value;
+      if(line.trim()!=='') { history.push(line); }
+      hIdx = history.length;
+      inputEl.value='';
+      process(line);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      if(hIdx>0){ hIdx--; inputEl.value=history[hIdx]||''; }
+    } else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(hIdx<history.length-1){ hIdx++; inputEl.value=history[hIdx]||''; }
+      else { hIdx=history.length; inputEl.value=''; }
+    }
+  });
+
+  startBtn && startBtn.addEventListener('click', start);
+  resetBtn && resetBtn.addEventListener('click', function(){
+    if(resetConsole){ resetConsole(); }
+    outEl.innerHTML=''; contMode=false; promptEl.textContent='>>>';
+    append('Session reset.\n', 'res'); inputEl.focus();
+  });
+
+  document.querySelectorAll('.chips button[data-code]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var code = b.getAttribute('data-code');
+      if(pyodide){ runChip(code); }
+      else { if(code.indexOf('\n')===-1){ inputEl.value=code; } start(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>

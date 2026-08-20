@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 02 — Input, Processing, and Output</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;
+    --py-blue-dk:#306998;
+    --py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;
+    --py-yellow-dk:#E5A800;
+    --ink:#2b303b;
+    --ink-soft:#5b6470;
+    --ink-faint:#8a929d;
+    --page:#f6f8fa;
+    --surface:#ffffff;
+    --border:#e1e4e8;
+    --border-strong:#cfd6dd;
+    --code-bg:#1e2530;
+    --code-bg2:#262f3d;
+    --code-text:#e6edf3;
+    --code-comment:#7d8893;
+    --shadow:0 1px 2px rgba(27,40,55,.06),0 6px 22px rgba(27,40,55,.07);
+    --shadow-lift:0 8px 30px rgba(27,40,55,.13);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:88px;}
+  body{
+    margin:0;background:var(--page);color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:"Space Grotesk","Inter",sans-serif;line-height:1.18;margin:0;}
+  code,kbd,pre,.mono{font-family:"Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;}
+  a{color:var(--py-blue-dk);}
+
+  /* ---------- scroll progress ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:4px;width:0%;z-index:60;
+    background:linear-gradient(90deg,var(--py-blue) 0%,var(--py-blue) 55%,var(--py-yellow) 100%);
+    transition:width .08s linear;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:
+      radial-gradient(1100px 380px at 82% -40%,rgba(255,212,59,.20),transparent 60%),
+      linear-gradient(160deg,var(--py-blue-deep) 0%,var(--py-blue-dk) 52%,var(--py-blue) 120%);
+    color:#fff;padding:64px 24px 54px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:">>>";position:absolute;right:3%;bottom:-26px;
+    font-family:"Fira Code",monospace;font-size:170px;font-weight:600;
+    color:rgba(255,255,255,.07);letter-spacing:-6px;pointer-events:none;
+  }
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:2;}
+  .brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .brand .mark{
+    font-family:"Fira Code",monospace;font-weight:600;font-size:15px;
+    color:var(--py-blue-deep);background:var(--py-yellow);
+    padding:4px 10px;border-radius:7px;letter-spacing:1px;
+  }
+  .brand .brand-txt{font-family:"Space Grotesk";font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.82);}
+  .eyebrow{font-family:"Fira Code",monospace;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--py-yellow);margin-bottom:14px;}
+  .hero h1{font-size:clamp(30px,5vw,52px);font-weight:700;letter-spacing:-.5px;max-width:18ch;}
+  .hero .sub{margin-top:18px;font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.9);max-width:62ch;}
+  .topics{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px;}
+  .topics a{
+    text-decoration:none;color:#fff;font-size:14.5px;font-weight:500;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);
+    padding:8px 14px;border-radius:999px;transition:.18s;backdrop-filter:blur(2px);
+  }
+  .topics a:hover{background:var(--py-yellow);color:var(--py-blue-deep);border-color:var(--py-yellow);transform:translateY(-1px);}
+  .topics a .n{font-family:"Fira Code";color:var(--py-yellow);margin-right:7px;font-size:13px;}
+  .topics a:hover .n{color:var(--py-blue-deep);}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  .grid{display:grid;grid-template-columns:232px minmax(0,1fr);gap:40px;align-items:start;padding:40px 24px 80px;max-width:var(--maxw);margin:0 auto;}
+
+  /* ---------- side nav ---------- */
+  nav.toc{position:sticky;top:24px;align-self:start;}
+  nav.toc .toc-title{font-family:"Fira Code";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);margin:0 0 12px 14px;}
+  nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border);}
+  nav.toc a{
+    display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink-soft);
+    font-size:14.5px;font-weight:500;padding:8px 14px;margin-left:-2px;
+    border-left:2px solid transparent;transition:.16s;line-height:1.35;
+  }
+  nav.toc a .num{font-family:"Fira Code";font-size:12px;color:var(--py-blue);opacity:.8;}
+  nav.toc a:hover{color:var(--ink);background:#eef2f6;}
+  nav.toc a.active{color:var(--py-blue-dk);border-left-color:var(--py-blue);background:#eaf2f9;font-weight:600;}
+  nav.toc a.active .num{opacity:1;}
+
+  /* ---------- sections ---------- */
+  main{min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:84px;}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+  .sec-num{
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:#fff;
+    background:var(--py-blue-dk);min-width:34px;height:34px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  section h2{font-size:clamp(23px,3vw,31px);font-weight:700;letter-spacing:-.3px;}
+  .lead{color:var(--ink-soft);font-size:18px;margin:6px 0 22px;}
+  section h3{font-size:20px;font-weight:600;margin:30px 0 10px;color:var(--py-blue-deep);}
+  p{margin:0 0 15px;}
+  .wrap-note{max-width:74ch;}
+
+  strong{font-weight:600;}
+  .term{font-weight:600;color:var(--py-blue-deep);}
+
+  /* ---------- callouts ---------- */
+  .note{
+    border:1px solid var(--border);border-left:4px solid var(--py-yellow);
+    background:#fffdf3;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .note b{color:var(--py-yellow-dk);}
+  .keypt{
+    border:1px solid var(--border);border-left:4px solid var(--py-blue);
+    background:#f3f8fc;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .keypt b{color:var(--py-blue-dk);}
+
+  /* ---------- concept cards (tap to expand) ---------- */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px;margin:18px 0 8px;}
+  details.card{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    box-shadow:var(--shadow);transition:.18s;overflow:hidden;
+  }
+  details.card[open]{box-shadow:var(--shadow-lift);border-color:var(--border-strong);}
+  details.card summary{
+    cursor:pointer;list-style:none;padding:15px 17px;font-family:"Space Grotesk";
+    font-weight:600;font-size:16px;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  details.card summary::-webkit-details-marker{display:none;}
+  details.card summary .plus{
+    flex:none;width:22px;height:22px;border-radius:6px;background:#eef2f6;color:var(--py-blue-dk);
+    display:inline-flex;align-items:center;justify-content:center;font-size:18px;line-height:1;transition:.18s;font-family:"Fira Code";
+  }
+  details.card[open] summary .plus{background:var(--py-blue);color:#fff;transform:rotate(45deg);}
+  details.card .body{padding:0 17px 16px;font-size:15px;color:var(--ink-soft);}
+  details.card .body p:last-child{margin-bottom:0;}
+
+  /* ---------- code blocks ---------- */
+  .code{
+    background:var(--code-bg);border-radius:11px;margin:18px 0;overflow:hidden;
+    border:1px solid #2c3645;box-shadow:var(--shadow);
+  }
+  .code .bar{
+    display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--code-bg2);
+    border-bottom:1px solid #313c4c;
+  }
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .d1{background:#ff5f56;}.code .bar .d2{background:#ffbd2e;}.code .bar .d3{background:#27c93f;}
+  .code .bar .fname{margin-left:8px;font-family:"Fira Code";font-size:12.5px;color:#9aa6b2;}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;}
+  .code code{font-size:14.5px;color:var(--code-text);line-height:1.65;display:block;white-space:pre;}
+  .c-kw{color:#ff9d6b;}      /* keyword */
+  .c-fn{color:#7cc4ff;}      /* function */
+  .c-str{color:#9ae26b;}     /* string */
+  .c-num{color:#f7c873;}     /* number */
+  .c-com{color:var(--code-comment);font-style:italic;}
+  .c-prompt{color:#6fae4f;}  /* >>> */
+  .c-out{color:#cbd3dc;}     /* output */
+  .c-err{color:#ff7b72;}     /* error */
+
+  kbd{
+    font-size:13px;background:#eef2f6;border:1px solid var(--border-strong);
+    border-bottom-width:2px;border-radius:5px;padding:1px 7px;color:var(--ink);
+  }
+
+  /* ---------- figures ---------- */
+  figure{margin:24px 0;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 20px 14px;box-shadow:var(--shadow);}
+  figure svg{display:block;width:100%;height:auto;}
+  figcaption{margin-top:12px;font-size:14px;color:var(--ink-faint);text-align:center;font-family:"Fira Code";letter-spacing:.2px;}
+  .svg-label{font-family:"Inter",sans-serif;font-weight:600;}
+  .svg-sub{font-family:"Inter",sans-serif;}
+  .svg-mono{font-family:"Fira Code",monospace;}
+
+  /* ---------- comparison table ---------- */
+  .ctable{width:100%;border-collapse:collapse;margin:20px 0;font-size:15.5px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .ctable th,.ctable td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .ctable thead th{background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td:first-child{font-weight:600;color:var(--py-blue-deep);white-space:nowrap;}
+  .ctable tbody tr:nth-child(even){background:#f9fbfc;}
+
+  /* ---------- self check ---------- */
+  .check{background:linear-gradient(160deg,#f3f8fc,#fffdf3);border:1px solid var(--border);border-radius:14px;padding:22px 24px;}
+  .check h3{margin-top:0;}
+  details.q{border-bottom:1px solid var(--border);padding:4px 0;}
+  details.q:last-child{border-bottom:none;}
+  details.q summary{cursor:pointer;list-style:none;padding:11px 2px;font-weight:600;color:var(--ink);display:flex;gap:10px;}
+  details.q summary::-webkit-details-marker{display:none;}
+  details.q summary .qmark{font-family:"Fira Code";color:var(--py-blue);}
+  details.q[open] summary{color:var(--py-blue-dk);}
+  details.q .ans{padding:0 2px 14px 26px;color:var(--ink-soft);font-size:15.5px;}
+
+  /* ---------- practice / review call-to-action ---------- */
+  .practice{
+    margin-top:26px;border-radius:14px;padding:26px 28px;color:#fff;
+    background:linear-gradient(160deg,var(--py-blue-deep) 0%,var(--py-blue-dk) 100%);
+    box-shadow:var(--shadow-lift);
+    display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  }
+  .practice .ptxt{flex:1 1 320px;min-width:0;}
+  .practice .plabel{font-family:"Fira Code";font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--py-yellow);margin-bottom:8px;}
+  .practice h3{color:#fff;margin:0 0 7px;font-size:22px;}
+  .practice p{margin:0;color:rgba(255,255,255,.88);font-size:15.5px;max-width:58ch;}
+  .practice .pbtn{
+    flex:none;display:inline-flex;align-items:center;gap:10px;text-decoration:none;white-space:nowrap;
+    background:var(--py-yellow);color:var(--py-blue-deep);
+    font-family:"Space Grotesk";font-weight:600;font-size:16px;
+    padding:12px 24px;border-radius:999px;transition:.18s;
+  }
+  .practice .pbtn:hover{background:#fff;transform:translateY(-1px);}
+  .practice .pbtn .arrow{font-family:"Fira Code";}
+
+  /* outbound link in the side nav */
+  nav.toc .toc-out{
+    display:flex;gap:9px;align-items:baseline;margin:14px 0 0;padding:9px 14px;
+    text-decoration:none;font-size:14.5px;font-weight:600;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:9px;transition:.16s;
+  }
+  nav.toc .toc-out:hover{background:var(--py-blue-dk);color:#fff;border-color:var(--py-blue-dk);}
+  nav.toc .toc-out .num{font-family:"Fira Code";font-size:12px;color:inherit;opacity:1;}
+
+  /* hero chip that leaves the page */
+  .topics a.topic-out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:26px 24px;color:var(--ink-faint);font-size:13.5px;}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:880px){
+    .grid{grid-template-columns:1fr;gap:0;padding-top:0;}
+    nav.toc{position:sticky;top:0;z-index:40;background:var(--page);margin:0 -24px 24px;padding:10px 0;border-bottom:1px solid var(--border);}
+    nav.toc .toc-title{display:none;}
+    nav.toc ol{display:flex;overflow-x:auto;border-left:none;padding:0 18px;gap:4px;}
+    nav.toc a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent;border-radius:8px 8px 0 0;}
+    nav.toc a.active{border-left:none;border-bottom-color:var(--py-blue);}
+    nav.toc .toc-out{display:none;}
+    .practice{padding:22px 20px;}
+    .hero::after{font-size:96px;bottom:-12px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}*{transition:none!important;}
+  }
+  :focus-visible{outline:3px solid var(--py-yellow);outline-offset:2px;border-radius:4px;}
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  /* keep the mobile sticky TOC bar clear of the floating home pill */
+  @media (max-width:880px){
+    nav.toc{ top:48px; }
+  }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+<div id="progress"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand">
+      <span class="mark">&gt;&gt;&gt;</span>
+      <span class="brand-txt">CIS181 · Python Programming</span>
+    </div>
+    <div class="eyebrow">Week 02</div>
+    <h1>Input, Processing, and Output</h1>
+    <p class="sub">Every useful program follows the same rhythm: take something in, do something with it, send something back out. This module turns that rhythm into real Python — designing the steps first, then reading input, storing it in variables, calculating with it, and displaying clean output.</p>
+    <div class="topics">
+      <a href="#s1"><span class="n">01</span>Designing a Program</a>
+      <a href="#s2"><span class="n">02</span>Input, Processing, Output</a>
+      <a href="#s3"><span class="n">03</span>Output with print</a>
+      <a href="#s4"><span class="n">04</span>Comments</a>
+      <a href="#s5"><span class="n">05</span>Variables</a>
+      <a href="#s6"><span class="n">06</span>Reading Input</a>
+      <a href="#s7"><span class="n">07</span>Calculations</a>
+      <a href="#s8"><span class="n">08</span>More Output</a>
+      <a href="#s9"><span class="n">09</span>F-strings</a>
+      <a href="#s10"><span class="n">10</span>Named Constants</a>
+      <a href="python-wk02-review-questions.html" class="topic-out"><span class="n">✓</span>Review Questions</a>
+    </div>
+  </div>
+</header>
+
+<div class="grid">
+  <nav class="toc" aria-label="Section navigation">
+    <p class="toc-title">On this page</p>
+    <ol>
+      <li><a href="#s1"><span class="num">1</span>Designing a Program</a></li>
+      <li><a href="#s2"><span class="num">2</span>Input, Processing, Output</a></li>
+      <li><a href="#s3"><span class="num">3</span>Output with print</a></li>
+      <li><a href="#s4"><span class="num">4</span>Comments</a></li>
+      <li><a href="#s5"><span class="num">5</span>Variables</a></li>
+      <li><a href="#s6"><span class="num">6</span>Reading Input</a></li>
+      <li><a href="#s7"><span class="num">7</span>Performing Calculations</a></li>
+      <li><a href="#s8"><span class="num">8</span>More About Output</a></li>
+      <li><a href="#s9"><span class="num">9</span>F-strings</a></li>
+      <li><a href="#s10"><span class="num">10</span>Named Constants</a></li>
+      <li><a href="#summary"><span class="num">✓</span>Summary &amp; Self-Check</a></li>
+    </ol>
+    <a class="toc-out" href="python-wk02-review-questions.html">
+      <span class="num">&rarr;</span>Review Questions
+    </a>
+  </nav>
+
+  <main>
+
+  <!-- ============ SECTION 1 ============ -->
+  <section id="s1">
+    <div class="sec-head"><span class="sec-num">1</span><h2>Designing a Program</h2></div>
+    <p class="lead">Good programs are designed before they are typed. Code is the last step, not the first.</p>
+    <div class="wrap-note">
+    <p>Professional software is built in a repeating sequence called the <span class="term">program development cycle</span>. Notice that writing code is only one stage of five — and it comes <em>after</em> design.</p>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 720 250" role="img" aria-label="The program development cycle: design, write code, correct syntax errors, test, correct logic errors, looping back to design.">
+        <defs>
+          <marker id="ar" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#4B8BBE"/>
+          </marker>
+        </defs>
+        <g>
+          <rect x="20" y="100" width="118" height="56" rx="11" fill="#306998"/>
+          <text x="79" y="125" text-anchor="middle" class="svg-label" font-size="14" fill="#fff">1 · Design</text>
+          <text x="79" y="143" text-anchor="middle" class="svg-sub" font-size="11" fill="#cfe3f3">plan the steps</text>
+
+          <rect x="172" y="100" width="118" height="56" rx="11" fill="#4B8BBE"/>
+          <text x="231" y="125" text-anchor="middle" class="svg-label" font-size="14" fill="#fff">2 · Write code</text>
+          <text x="231" y="143" text-anchor="middle" class="svg-sub" font-size="11" fill="#eaf2f9">translate to Python</text>
+
+          <rect x="324" y="100" width="118" height="56" rx="11" fill="#ffffff" stroke="#cfd6dd" stroke-width="2"/>
+          <text x="383" y="123" text-anchor="middle" class="svg-label" font-size="13.5" fill="#2b303b">3 · Fix syntax</text>
+          <text x="383" y="141" text-anchor="middle" class="svg-sub" font-size="11" fill="#5b6470">errors</text>
+
+          <rect x="476" y="100" width="118" height="56" rx="11" fill="#fffaf0" stroke="#E5A800" stroke-width="2"/>
+          <text x="535" y="125" text-anchor="middle" class="svg-label" font-size="14" fill="#8a6400">4 · Test</text>
+          <text x="535" y="143" text-anchor="middle" class="svg-sub" font-size="11" fill="#5b6470">run &amp; check</text>
+
+          <rect x="602" y="100" width="100" height="56" rx="11" fill="#ffffff" stroke="#cfd6dd" stroke-width="2"/>
+          <text x="652" y="123" text-anchor="middle" class="svg-label" font-size="13" fill="#2b303b">5 · Fix logic</text>
+          <text x="652" y="141" text-anchor="middle" class="svg-sub" font-size="11" fill="#5b6470">errors</text>
+        </g>
+        <line x1="138" y1="128" x2="168" y2="128" stroke="#4B8BBE" stroke-width="2.4" marker-end="url(#ar)"/>
+        <line x1="290" y1="128" x2="320" y2="128" stroke="#4B8BBE" stroke-width="2.4" marker-end="url(#ar)"/>
+        <line x1="442" y1="128" x2="472" y2="128" stroke="#4B8BBE" stroke-width="2.4" marker-end="url(#ar)"/>
+        <line x1="594" y1="128" x2="598" y2="128" stroke="#4B8BBE" stroke-width="2.4" marker-end="url(#ar)"/>
+        <!-- loop back from test/fix to design -->
+        <path d="M652 156 q0 56 -286 56 q-287 0 -287 -54" fill="none" stroke="#4B8BBE" stroke-width="2.2" stroke-dasharray="5 5" marker-end="url(#ar)"/>
+        <text x="360" y="230" text-anchor="middle" class="svg-mono" font-size="11.5" fill="#5b6470">repeat until the program is correct</text>
+      </svg>
+      <figcaption>Figure 2.1 — The five stages of the program development cycle</figcaption>
+    </figure>
+
+    <p><strong>Design is the most important stage.</strong> Before writing anything, you work to fully understand the task: you talk with whoever wants the program built, ask questions about the details, and capture the answers as <span class="term">software requirements</span> — the things the finished program must do. Then you break the task into a series of clear steps.</p>
+
+    <h3>Algorithms, Pseudocode, and Flowcharts</h3>
+    <p>That ordered set of steps is an <span class="term">algorithm</span>: a set of well-defined, logical steps that must be taken to perform a task. Designers capture algorithms with two common tools before writing real code.</p>
+    <div class="cards">
+      <details class="card"><summary>Pseudocode <span class="plus">+</span></summary><div class="body"><p>"Fake code" — an informal language with no syntax rules, never compiled or run. Because you ignore syntax, you can focus purely on the design, then translate it into any real language later.</p></div></details>
+      <details class="card"><summary>Flowchart <span class="plus">+</span></summary><div class="body"><p>A diagram that graphically depicts the steps in a program. Ovals are terminal (start/end) symbols, parallelograms are input/output, rectangles are processing steps, and arrows show the flow.</p></div></details>
+    </div>
+
+    <p>Here is an original algorithm — totaling a movie-ticket purchase — shown as a flowchart using those symbols:</p>
+    <figure>
+      <svg viewBox="0 0 420 470" role="img" aria-label="Flowchart: Start, input number of tickets, input price per ticket, calculate total as tickets times price, display the total, End.">
+        <defs>
+          <marker id="ar2" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#306998"/>
+          </marker>
+        </defs>
+        <!-- start -->
+        <rect x="135" y="14" width="150" height="46" rx="23" fill="#306998"/>
+        <text x="210" y="42" text-anchor="middle" class="svg-label" font-size="15" fill="#fff">Start</text>
+        <!-- input 1 (parallelogram) -->
+        <polygon points="100,90 320,90 290,136 70,136" fill="#eaf2f9" stroke="#4B8BBE" stroke-width="2"/>
+        <text x="195" y="118" text-anchor="middle" class="svg-sub" font-size="13" fill="#1f4a6e">Input number of tickets</text>
+        <!-- input 2 -->
+        <polygon points="100,166 320,166 290,212 70,212" fill="#eaf2f9" stroke="#4B8BBE" stroke-width="2"/>
+        <text x="195" y="194" text-anchor="middle" class="svg-sub" font-size="13" fill="#1f4a6e">Input price per ticket</text>
+        <!-- process (rectangle) -->
+        <rect x="70" y="242" width="250" height="64" rx="4" fill="#ffffff" stroke="#2b303b" stroke-width="2"/>
+        <text x="195" y="270" text-anchor="middle" class="svg-sub" font-size="13" fill="#2b303b">Calculate total as number of</text>
+        <text x="195" y="290" text-anchor="middle" class="svg-sub" font-size="13" fill="#2b303b">tickets multiplied by price</text>
+        <!-- output (parallelogram) -->
+        <polygon points="100,336 320,336 290,382 70,382" fill="#fffaf0" stroke="#E5A800" stroke-width="2"/>
+        <text x="195" y="364" text-anchor="middle" class="svg-sub" font-size="13" fill="#8a6400">Display the total cost</text>
+        <!-- end -->
+        <rect x="135" y="412" width="150" height="46" rx="23" fill="#306998"/>
+        <text x="210" y="440" text-anchor="middle" class="svg-label" font-size="15" fill="#fff">End</text>
+        <!-- arrows -->
+        <line x1="210" y1="60" x2="210" y2="88" stroke="#306998" stroke-width="2.2" marker-end="url(#ar2)"/>
+        <line x1="195" y1="136" x2="195" y2="164" stroke="#306998" stroke-width="2.2" marker-end="url(#ar2)"/>
+        <line x1="195" y1="212" x2="195" y2="240" stroke="#306998" stroke-width="2.2" marker-end="url(#ar2)"/>
+        <line x1="195" y1="306" x2="195" y2="334" stroke="#306998" stroke-width="2.2" marker-end="url(#ar2)"/>
+        <line x1="210" y1="382" x2="210" y2="410" stroke="#306998" stroke-width="2.2" marker-end="url(#ar2)"/>
+      </svg>
+      <figcaption>Figure 2.2 — A sequential flowchart for an original ticket-total algorithm</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ SECTION 2 ============ -->
+  <section id="s2">
+    <div class="sec-head"><span class="sec-num">2</span><h2>Input, Processing, and Output</h2></div>
+    <p class="lead">Most programs do three things, in this order.</p>
+    <div class="wrap-note">
+    <p>A typical program performs a simple three-step process: it receives <span class="term">input</span>, performs some <span class="term">processing</span> on it, and produces <span class="term">output</span>. Input is any data the program receives while it is running — perhaps typed at the keyboard. Processing is the work done on that data, often a calculation. Output is the result the program sends back.</p>
+    </div>
+    <div class="keypt"><b>A concrete example.</b> A tip calculator reads the bill amount and tip percent (<em>input</em>), multiplies them and adds the result to the bill (<em>processing</em>), then shows the tip and grand total on screen (<em>output</em>). Almost everything you write this term fits this shape.</div>
+  </section>
+
+  <!-- ============ SECTION 3 ============ -->
+  <section id="s3">
+    <div class="sec-head"><span class="sec-num">3</span><h2>Displaying Output with the print Function</h2></div>
+    <p class="lead">The print function is your program's voice.</p>
+    <div class="wrap-note">
+    <p>A <span class="term">function</span> is a piece of prewritten code that performs an operation. The <span class="term">print</span> function displays output on the screen. The data you hand to a function is called an <span class="term">argument</span> — for <span class="mono">print</span>, the argument is whatever you want displayed. Statements in a program execute in the order they appear, from top to bottom.</p>
+    </div>
+
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">first_output.py</span></div>
+<pre><code><span class="c-fn">print</span>(<span class="c-str">"Welcome to the trail log."</span>)
+<span class="c-fn">print</span>(<span class="c-str">"Let's record today's hike."</span>)</code></pre>
+    </div>
+
+    <h3>Strings and String Literals</h3>
+    <p>A <span class="term">string</span> is a sequence of characters used as data. A <span class="term">string literal</span> is a string written directly in your code, and it must be enclosed in quote marks — single (<span class="mono">'</span>) or double (<span class="mono">"</span>). A literal enclosed in <em>triple</em> quotes (<span class="mono">'''</span> or <span class="mono">"""</span>) may contain both kinds of quote and span multiple lines.</p>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">strings.py</span></div>
+<pre><code><span class="c-fn">print</span>(<span class="c-str">'Single quotes work.'</span>)
+<span class="c-fn">print</span>(<span class="c-str">"Double quotes work too."</span>)
+<span class="c-fn">print</span>(<span class="c-str">"""Triple quotes can hold 'both' kinds
+and even span more than one line."""</span>)</code></pre>
+    </div>
+
+    <h3>Displaying Multiple Items</h3>
+    <p>A single call to <span class="mono">print</span> can display several items at once. You separate them with commas when passing them as arguments; they appear in the order passed, and Python automatically puts a single space between them on screen.</p>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">multiple_items.py</span></div>
+<pre><code>miles = <span class="c-num">5</span>
+<span class="c-fn">print</span>(<span class="c-str">"Distance:"</span>, miles, <span class="c-str">"miles"</span>)
+<span class="c-com"># Output:  Distance: 5 miles</span></code></pre>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 4 ============ -->
+  <section id="s4">
+    <div class="sec-head"><span class="sec-num">4</span><h2>Comments</h2></div>
+    <p class="lead">Notes for humans, invisible to the interpreter.</p>
+    <div class="wrap-note">
+    <p><span class="term">Comments</span> are notes of explanation within a program. The Python interpreter ignores them entirely — they exist for the people reading your code. A comment begins with a <span class="mono">#</span> character. An <span class="term">end-line comment</span> appears at the end of a line of code and typically explains the purpose of that line.</p>
+    </div>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">comments.py</span></div>
+<pre><code><span class="c-com"># Convert the hike duration from minutes to hours.</span>
+minutes = <span class="c-num">150</span>
+hours = minutes / <span class="c-num">60</span>        <span class="c-com"># 60 minutes per hour</span>
+<span class="c-fn">print</span>(<span class="c-str">"Duration in hours:"</span>, hours)</code></pre>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 5 ============ -->
+  <section id="s5">
+    <div class="sec-head"><span class="sec-num">5</span><h2>Variables</h2></div>
+    <p class="lead">A variable is a name that points to a value stored in memory.</p>
+    <div class="wrap-note">
+    <p>A <span class="term">variable</span> is a name that represents a value stored in the computer's memory; you use it to access and manipulate that data. You create a variable with an <span class="term">assignment statement</span>, whose general form is <span class="mono">variable = expression</span>. The equal sign is the <span class="term">assignment operator</span>, and the variable receiving the value must always be on the <em>left</em> side.</p>
+    </div>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">variables.py</span></div>
+<pre><code>trail_name = <span class="c-str">"Sunrise Loop"</span>
+elevation_gain = <span class="c-num">1240</span>
+
+<span class="c-fn">print</span>(trail_name, <span class="c-str">"climbs"</span>, elevation_gain, <span class="c-str">"feet."</span>)</code></pre>
+    </div>
+    <p>A variable can be passed as an argument to a function (without quote marks — quoting the name would turn it into a literal string instead). And you can only use a variable <em>after</em> a value has been assigned to it.</p>
+
+    <h3>A Variable Is a Reference</h3>
+    <p>A variable does not "contain" its value so much as <em>reference</em> it. Variables can reference different values while the program runs, and a variable that referenced one type can be reassigned to a completely different type. When a value is left with nothing referencing it, Python's <span class="term">garbage collection</span> automatically reclaims that memory.</p>
+    <figure>
+      <svg viewBox="0 0 640 220" role="img" aria-label="The variable score first references the integer 1500, then is reassigned to reference the string Champion; the old value is garbage collected.">
+        <defs>
+          <marker id="ar3" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#306998"/>
+          </marker>
+        </defs>
+        <text x="160" y="24" text-anchor="middle" class="svg-label" font-size="13.5" fill="#1f4a6e">After  score = 1500</text>
+        <rect x="60" y="44" width="92" height="40" rx="8" fill="#eaf2f9" stroke="#4B8BBE" stroke-width="2"/>
+        <text x="106" y="69" text-anchor="middle" class="svg-mono" font-size="15" fill="#1f4a6e">score</text>
+        <rect x="230" y="44" width="70" height="40" rx="8" fill="#ffffff" stroke="#cfd6dd" stroke-width="2"/>
+        <text x="265" y="69" text-anchor="middle" class="svg-mono" font-size="15" fill="#2b303b">1500</text>
+        <line x1="152" y1="64" x2="226" y2="64" stroke="#306998" stroke-width="2.2" marker-end="url(#ar3)"/>
+
+        <text x="160" y="134" text-anchor="middle" class="svg-label" font-size="13.5" fill="#8a6400">After  score = "Champion"</text>
+        <rect x="60" y="154" width="92" height="40" rx="8" fill="#fffaf0" stroke="#E5A800" stroke-width="2"/>
+        <text x="106" y="179" text-anchor="middle" class="svg-mono" font-size="15" fill="#8a6400">score</text>
+        <rect x="230" y="154" width="140" height="40" rx="8" fill="#ffffff" stroke="#cfd6dd" stroke-width="2"/>
+        <text x="300" y="179" text-anchor="middle" class="svg-mono" font-size="14" fill="#2b303b">"Champion"</text>
+        <line x1="152" y1="174" x2="226" y2="174" stroke="#E5A800" stroke-width="2.2" marker-end="url(#ar3)"/>
+        <!-- old value now unreferenced -->
+        <rect x="450" y="154" width="70" height="40" rx="8" fill="#f3f4f6" stroke="#d7dbe0" stroke-width="2" stroke-dasharray="4 4"/>
+        <text x="485" y="179" text-anchor="middle" class="svg-mono" font-size="15" fill="#aeb6bf">1500</text>
+        <text x="560" y="170" class="svg-sub" font-size="11.5" fill="#8a929d">no longer</text>
+        <text x="560" y="185" class="svg-sub" font-size="11.5" fill="#8a929d">referenced →</text>
+        <text x="560" y="200" class="svg-sub" font-size="11.5" fill="#8a929d">garbage collected</text>
+      </svg>
+      <figcaption>Figure 2.3 — Reassigning <span class="svg-mono">score</span> from an integer to a string</figcaption>
+    </figure>
+
+    <h3>Variable Naming Rules</h3>
+    <p>Python enforces a few rules, and convention adds one more:</p>
+    <div class="cards">
+      <details class="card"><summary>Not a keyword <span class="plus">+</span></summary><div class="body"><p>A variable name cannot be one of Python's reserved key words (such as <span class="mono">if</span> or <span class="mono">for</span>).</p></div></details>
+      <details class="card"><summary>No spaces <span class="plus">+</span></summary><div class="body"><p>Names cannot contain spaces. Use an underscore to join words: <span class="mono">total_cost</span>.</p></div></details>
+      <details class="card"><summary>Valid first character <span class="plus">+</span></summary><div class="body"><p>The first character must be a letter or an underscore — never a digit.</p></div></details>
+      <details class="card"><summary>Valid rest <span class="plus">+</span></summary><div class="body"><p>After the first character, you may use letters, digits, or underscores.</p></div></details>
+      <details class="card"><summary>Case sensitive <span class="plus">+</span></summary><div class="body"><p><span class="mono">Total</span>, <span class="mono">total</span>, and <span class="mono">TOTAL</span> are three different variables.</p></div></details>
+      <details class="card"><summary>Reflect its use <span class="plus">+</span></summary><div class="body"><p>Convention, not a rule: choose a name that describes the value, so the code reads clearly.</p></div></details>
+    </div>
+
+    <h3>Data Types: int, float, and str</h3>
+    <p>A <span class="term">data type</span> categorizes a value in memory. The three you meet first are <span class="mono">int</span> (whole numbers), <span class="mono">float</span> (real numbers with a decimal point), and <span class="mono">str</span> (strings). A <span class="term">numeric literal</span> with no decimal point is treated as an <span class="mono">int</span>; with a decimal point it is a <span class="mono">float</span>. Some operations behave differently depending on the data type involved.</p>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">data_types.py</span></div>
+<pre><code>steps  = <span class="c-num">8000</span>          <span class="c-com"># int   — no decimal point</span>
+pace   = <span class="c-num">9.5</span>           <span class="c-com"># float — has a decimal point</span>
+runner = <span class="c-str">"Ada"</span>         <span class="c-com"># str   — text in quotes</span></code></pre>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 6 ============ -->
+  <section id="s6">
+    <div class="sec-head"><span class="sec-num">6</span><h2>Reading Input from the Keyboard</h2></div>
+    <p class="lead">The input function lets the user hand data to your program.</p>
+    <div class="wrap-note">
+    <p>Most programs need to read input from the user. The built-in <span class="term">input</span> function reads a line typed at the keyboard and <strong>always returns it as a string</strong>. The general format is <span class="mono">variable = input(prompt)</span>, where the prompt is a string telling the user what to enter. Note that <span class="mono">input</span> does not automatically add a space after the prompt — include one yourself if you want the cursor to sit a space away.</p>
+    </div>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">greeting.py</span></div>
+<pre><code>name = <span class="c-fn">input</span>(<span class="c-str">"Enter your name: "</span>)
+<span class="c-fn">print</span>(<span class="c-str">"Good to see you,"</span>, name)</code></pre>
+    </div>
+
+    <h3>Reading Numbers</h3>
+    <p>Because <span class="mono">input</span> always returns a <em>string</em>, you cannot do math on its result directly. Built-in functions convert between types: <span class="mono">int(item)</span> converts to an integer and <span class="mono">float(item)</span> converts to a floating-point number. Conversion only succeeds if the item is a valid number; otherwise Python raises an exception.</p>
+    <p>The usual pattern wraps the conversion around the input call — a <span class="term">nested function call</span>, with the general form <span class="mono">function1(function2(argument))</span>. The value returned by the inner function is passed straight to the outer one.</p>
+    <figure>
+      <svg viewBox="0 0 700 150" role="img" aria-label="Nested call: input returns the string 42, then int converts it to the integer 42 stored in age.">
+        <defs>
+          <marker id="ar4" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#306998"/>
+          </marker>
+        </defs>
+        <rect x="30" y="50" width="170" height="54" rx="10" fill="#fffaf0" stroke="#E5A800" stroke-width="2"/>
+        <text x="115" y="74" text-anchor="middle" class="svg-mono" font-size="13" fill="#8a6400">input("Age: ")</text>
+        <text x="115" y="93" text-anchor="middle" class="svg-sub" font-size="11.5" fill="#5b6470">returns the string "42"</text>
+
+        <rect x="280" y="50" width="150" height="54" rx="10" fill="#eaf2f9" stroke="#4B8BBE" stroke-width="2"/>
+        <text x="355" y="74" text-anchor="middle" class="svg-mono" font-size="14" fill="#1f4a6e">int("42")</text>
+        <text x="355" y="93" text-anchor="middle" class="svg-sub" font-size="11.5" fill="#5b6470">converts to the int 42</text>
+
+        <rect x="510" y="50" width="160" height="54" rx="10" fill="#ffffff" stroke="#cfd6dd" stroke-width="2"/>
+        <text x="590" y="74" text-anchor="middle" class="svg-mono" font-size="13" fill="#2b303b">age = 42</text>
+        <text x="590" y="93" text-anchor="middle" class="svg-sub" font-size="11.5" fill="#5b6470">stored, ready for math</text>
+
+        <line x1="200" y1="77" x2="276" y2="77" stroke="#306998" stroke-width="2.2" marker-end="url(#ar4)"/>
+        <line x1="430" y1="77" x2="506" y2="77" stroke="#306998" stroke-width="2.2" marker-end="url(#ar4)"/>
+        <text x="350" y="30" text-anchor="middle" class="svg-mono" font-size="12.5" fill="#1f4a6e">age = int(input("Age: "))</text>
+      </svg>
+      <figcaption>Figure 2.4 — A nested call: the inner result feeds the outer function</figcaption>
+    </figure>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">read_numbers.py</span></div>
+<pre><code>age   = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Enter your age: "</span>))
+price = <span class="c-fn">float</span>(<span class="c-fn">input</span>(<span class="c-str">"Enter the price: "</span>))
+
+<span class="c-fn">print</span>(<span class="c-str">"Next year you will be"</span>, age + <span class="c-num">1</span>)</code></pre>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 7 ============ -->
+  <section id="s7">
+    <div class="sec-head"><span class="sec-num">7</span><h2>Performing Calculations</h2></div>
+    <p class="lead">Operators, operands, and the order Python applies them.</p>
+    <div class="wrap-note">
+    <p>A <span class="term">math expression</span> performs a calculation and produces a value. A <span class="term">math operator</span> is the tool that performs it, and the <span class="term">operands</span> are the values on either side of the operator (variables can be operands too). The resulting value is typically assigned to a variable.</p>
+    </div>
+
+    <h3>The Math Operators</h3>
+    <table class="ctable">
+      <thead><tr><th>Operator</th><th>Operation</th><th>Example</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>+</td><td>Addition</td><td><span class="mono">12 + 5</span></td><td><span class="mono">17</span></td></tr>
+        <tr><td>-</td><td>Subtraction</td><td><span class="mono">12 - 5</span></td><td><span class="mono">7</span></td></tr>
+        <tr><td>*</td><td>Multiplication</td><td><span class="mono">12 * 5</span></td><td><span class="mono">60</span></td></tr>
+        <tr><td>/</td><td>Floating-point division</td><td><span class="mono">7 / 2</span></td><td><span class="mono">3.5</span></td></tr>
+        <tr><td>//</td><td>Integer division</td><td><span class="mono">7 // 2</span></td><td><span class="mono">3</span></td></tr>
+        <tr><td>**</td><td>Exponent (power)</td><td><span class="mono">3 ** 4</span></td><td><span class="mono">81</span></td></tr>
+        <tr><td>%</td><td>Remainder (modulus)</td><td><span class="mono">17 % 5</span></td><td><span class="mono">2</span></td></tr>
+      </tbody>
+    </table>
+    <p>There are two kinds of division. The <span class="mono">/</span> operator performs <span class="term">floating-point division</span> and always yields a <span class="mono">float</span>. The <span class="mono">//</span> operator performs <span class="term">integer division</span>: positive results are truncated toward zero, and negative results round away from zero. The <span class="term">remainder operator</span> <span class="mono">%</span> (also called modulus) returns what is left over after division — handy for converting units or testing whether a number is even or odd.</p>
+
+    <h3>Operator Precedence and Parentheses</h3>
+    <p>When an expression mixes operators, Python applies them in a fixed order of <span class="term">precedence</span>. Operators of equal precedence are applied left to right.</p>
+    <figure>
+      <svg viewBox="0 0 640 270" role="img" aria-label="Operator precedence from highest to lowest: parentheses, exponent, multiplication division and remainder, addition and subtraction.">
+        <text x="320" y="24" text-anchor="middle" class="svg-label" font-size="14" fill="#1f4a6e">Highest precedence — applied first</text>
+        <rect x="120" y="38" width="400" height="44" rx="9" fill="#306998"/>
+        <text x="320" y="65" text-anchor="middle" class="svg-mono" font-size="15" fill="#fff">( )  parentheses</text>
+        <rect x="120" y="92" width="400" height="44" rx="9" fill="#4B8BBE"/>
+        <text x="320" y="119" text-anchor="middle" class="svg-mono" font-size="15" fill="#fff">**  exponent</text>
+        <rect x="120" y="146" width="400" height="44" rx="9" fill="#7fb0d6"/>
+        <text x="320" y="173" text-anchor="middle" class="svg-mono" font-size="15" fill="#10324d">*  /  //  %</text>
+        <rect x="120" y="200" width="400" height="44" rx="9" fill="#cfe3f3"/>
+        <text x="320" y="227" text-anchor="middle" class="svg-mono" font-size="15" fill="#10324d">+  -  addition &amp; subtraction</text>
+        <text x="320" y="262" text-anchor="middle" class="svg-label" font-size="14" fill="#8a6400">Lowest precedence — applied last</text>
+      </svg>
+      <figcaption>Figure 2.5 — Python operator precedence, highest to lowest</figcaption>
+    </figure>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">precedence.py</span></div>
+<pre><code><span class="c-fn">print</span>(<span class="c-num">2</span> + <span class="c-num">3</span> * <span class="c-num">4</span>)        <span class="c-com"># 14  — * happens before +</span>
+<span class="c-fn">print</span>((<span class="c-num">2</span> + <span class="c-num">3</span>) * <span class="c-num">4</span>)      <span class="c-com"># 20  — parentheses force + first</span></code></pre>
+    </div>
+
+    <h3>Converting Math Formulas to Code</h3>
+    <p>An operator is required for <em>every</em> mathematical operation — algebra's "implied" multiplication does not exist in code. When you translate a formula into a statement you often need to add multiplication operators and insert parentheses to preserve the intended order.</p>
+    <div class="keypt"><b>From algebra to Python.</b> The formula <em>y</em> = 3<em>x</em> + 2 cannot be written <span class="mono">y = 3x + 2</span>. The multiplication must be explicit: <span class="mono">y = 3 * x + 2</span>.</div>
+
+    <h3>Mixed-Type Expressions</h3>
+    <p>The data type that results from a calculation depends on the operands. Two <span class="mono">int</span> values give an <span class="mono">int</span>; two <span class="mono">float</span> values give a <span class="mono">float</span>. When an <span class="mono">int</span> and a <span class="mono">float</span> are combined — a <span class="term">mixed-type expression</span> — the <span class="mono">int</span> is temporarily converted to a <span class="mono">float</span> and the result is a <span class="mono">float</span>. Converting a <span class="mono">float</span> to an <span class="mono">int</span> truncates the fractional part.</p>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">mixed_types.py</span></div>
+<pre><code><span class="c-fn">print</span>(<span class="c-num">5</span> + <span class="c-num">2</span>)        <span class="c-com"># 7    — int + int → int</span>
+<span class="c-fn">print</span>(<span class="c-num">5</span> + <span class="c-num">2.0</span>)      <span class="c-com"># 7.0  — int + float → float</span>
+<span class="c-fn">print</span>(<span class="c-fn">int</span>(<span class="c-num">7.9</span>))     <span class="c-com"># 7    — fractional part truncated</span></code></pre>
+    </div>
+
+    <h3>Breaking Long Statements Across Lines</h3>
+    <p>A very long statement is hard to read and can be cut off when printed. The <span class="term">line-continuation character</span> — a backslash <span class="mono">\</span> at the end of a line — lets you split one statement across several lines. Anything already inside parentheses can be broken across lines <em>without</em> the backslash.</p>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">long_lines.py</span></div>
+<pre><code><span class="c-com"># Backslash continuation</span>
+total = base_fare * <span class="c-num">2</span> + bag_fee * <span class="c-num">3</span> + \
+        seat_fee * <span class="c-num">4</span> + snack_fee * <span class="c-num">5</span>
+
+<span class="c-com"># Parentheses allow breaking with no backslash</span>
+total = (base_fare + bag_fee +
+         seat_fee + snack_fee)</code></pre>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 8 ============ -->
+  <section id="s8">
+    <div class="sec-head"><span class="sec-num">8</span><h2>More About Data Output</h2></div>
+    <p class="lead">Controlling exactly how output looks.</p>
+    <div class="wrap-note">
+    <p>By default, the <span class="mono">print</span> function ends every line with an invisible <span class="term">newline character</span>, and it separates multiple items with a single space. Two special arguments let you change that behavior.</p>
+    </div>
+    <table class="ctable">
+      <thead><tr><th>Argument</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>end='…'</td><td>Replaces the newline at the end of the output with whatever delimiter you give (so the next <span class="mono">print</span> continues on the same line).</td></tr>
+        <tr><td>sep='…'</td><td>Replaces the space between items with whatever delimiter you give.</td></tr>
+      </tbody>
+    </table>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">end_and_sep.py</span></div>
+<pre><code><span class="c-fn">print</span>(<span class="c-str">"Loading"</span>, end=<span class="c-str">"..."</span>)
+<span class="c-fn">print</span>(<span class="c-str">"done"</span>)            <span class="c-com"># Output:  Loading...done</span>
+
+<span class="c-fn">print</span>(<span class="c-str">"2025"</span>, <span class="c-str">"11"</span>, <span class="c-str">"30"</span>, sep=<span class="c-str">"-"</span>)   <span class="c-com"># Output:  2025-11-30</span></code></pre>
+    </div>
+
+    <h3>Escape Sequences and Concatenation</h3>
+    <p>A special character inside a string literal is written with a leading backslash and acts as an embedded command. The two most common are <span class="mono">\n</span> (newline) and <span class="mono">\t</span> (horizontal tab). Separately, when the <span class="mono">+</span> operator is used on two strings it performs <span class="term">string concatenation</span> — joining them — which is useful for breaking one long string literal into pieces.</p>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">escapes.py</span></div>
+<pre><code><span class="c-fn">print</span>(<span class="c-str">"Name:\tAda\nLevel:\t7"</span>)
+<span class="c-com"># Output (tab-aligned, two lines):</span>
+<span class="c-com">#   Name:   Ada</span>
+<span class="c-com">#   Level:  7</span>
+
+greeting = <span class="c-str">"Welcome, "</span> + <span class="c-str">"traveler!"</span>   <span class="c-com"># concatenation</span></code></pre>
+    </div>
+
+    <h3>Formatting Numbers</h3>
+    <p>The built-in <span class="term">format</span> function formats how a number is displayed. It takes two arguments — the numeric value and a <span class="term">format specifier</span> — and returns a string. The specifier can set precision and type, switch to scientific notation, add comma group separators, set a minimum field width, or show a value as a percentage. For an integer, use <span class="mono">d</span> as the type designator and do not specify precision.</p>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">formatting.py</span></div>
+<pre><code><span class="c-fn">print</span>(<span class="c-fn">format</span>(<span class="c-num">12345.678</span>, <span class="c-str">",.2f"</span>))  <span class="c-com"># 12,345.68</span>
+<span class="c-fn">print</span>(<span class="c-fn">format</span>(<span class="c-num">0.25</span>, <span class="c-str">".0%"</span>))        <span class="c-com"># 25%</span>
+<span class="c-fn">print</span>(<span class="c-fn">format</span>(<span class="c-num">1234567</span>, <span class="c-str">",d"</span>))       <span class="c-com"># 1,234,567</span></code></pre>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 9 ============ -->
+  <section id="s9">
+    <div class="sec-head"><span class="sec-num">9</span><h2>Displaying Formatted Output with F-strings</h2></div>
+    <p class="lead">A cleaner way to build a message out of variables and formatted values.</p>
+
+    <p>An <span class="term">f-string</span> — short for <em>formatted string literal</em> — is a string literal prefixed with the letter <span class="mono">f</span>. On its own it behaves like any other string:</p>
+
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">basic_fstring.py</span></div>
+<pre><code><span class="c-fn">print</span>(f<span class="c-str">"Welcome to the trail log."</span>)
+<span class="c-com"># Output: Welcome to the trail log.</span></code></pre>
+    </div>
+
+    <p>The power comes from <span class="term">placeholders</span>. Anywhere inside an f-string you can write a name in braces, and when the statement runs, that placeholder is replaced by the value it refers to.</p>
+
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">placeholders.py</span></div>
+<pre><code>trail_name = <span class="c-str">"Sunrise Loop"</span>
+elevation = <span class="c-num">1240</span>
+<span class="c-fn">print</span>(f<span class="c-str">"The {trail_name} climbs {elevation} feet."</span>)
+<span class="c-com"># Output: The Sunrise Loop climbs 1240 feet.</span></code></pre>
+    </div>
+
+    <div class="keypt"><b>Compare the two styles.</b> With <span class="mono">print</span> arguments you write <span class="mono">print("The", trail_name, "climbs", elevation, "feet.")</span> and rely on Python to insert the spaces. With an f-string you write the sentence exactly as it should appear and drop the values into it. The f-string version is usually easier to read and gives you complete control over spacing.</div>
+
+    <h3>Placeholder Expressions</h3>
+    <p>A placeholder is not limited to a variable name — it may contain any valid expression, which is evaluated when the statement runs.</p>
+
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">expressions.py</span></div>
+<pre><code>miles = <span class="c-num">5</span>
+<span class="c-fn">print</span>(f<span class="c-str">"Half of that is {miles / 2} miles."</span>)
+<span class="c-com"># Output: Half of that is 2.5 miles.</span>
+
+<span class="c-fn">print</span>(f<span class="c-str">"Two more would be {miles + 2}."</span>)
+<span class="c-com"># Output: Two more would be 7.</span></code></pre>
+    </div>
+
+    <div class="note"><b>The variable is not changed.</b> Writing <span class="mono">{miles + 2}</span> simply produces the value 7 for display. The <span class="mono">miles</span> variable still references 5 afterward.</div>
+
+    <h3>Format Specifiers</h3>
+    <p>A placeholder can carry a <span class="term">format specifier</span> that controls how its value is displayed. Write a colon after the expression, then the specifier:</p>
+
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">general form</span></div>
+<pre><code>{expression:format-specifier}</code></pre>
+    </div>
+
+    <p>The specifiers are the same ones the <span class="mono">format</span> function accepts, so everything you learned in Section 8 carries straight over.</p>
+
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">specifiers.py</span></div>
+<pre><code>total = <span class="c-num">12345.6789</span>
+<span class="c-fn">print</span>(f<span class="c-str">"Total: {total:.2f}"</span>)      <span class="c-com"># Total: 12345.68</span>
+<span class="c-fn">print</span>(f<span class="c-str">"Total: {total:,.2f}"</span>)     <span class="c-com"># Total: 12,345.68</span>
+<span class="c-fn">print</span>(f<span class="c-str">"Total: {total:.2e}"</span>)      <span class="c-com"># Total: 1.23e+04</span>
+
+rate = <span class="c-num">0.0825</span>
+<span class="c-fn">print</span>(f<span class="c-str">"Tax rate: {rate:.2%}"</span>)     <span class="c-com"># Tax rate: 8.25%</span></code></pre>
+    </div>
+
+    <h3>Formatting Integers</h3>
+    <p>Integers follow the same pattern, with two differences: use <span class="mono">d</span> as the type designator, and do <em>not</em> specify a precision.</p>
+
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">integers.py</span></div>
+<pre><code>count = <span class="c-num">123456</span>
+<span class="c-fn">print</span>(f<span class="c-str">"{count:d}"</span>)      <span class="c-com"># 123456</span>
+<span class="c-fn">print</span>(f<span class="c-str">"{count:,d}"</span>)     <span class="c-com"># 123,456</span></code></pre>
+    </div>
+
+    <h3>Field Width and Alignment</h3>
+    <p>A number in the specifier sets a <span class="term">minimum field width</span> — the smallest number of character positions the value may occupy. This is how you line values up in columns.</p>
+
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">field_width.py</span></div>
+<pre><code>number = <span class="c-num">99</span>
+<span class="c-fn">print</span>(f<span class="c-str">"The number is {number:10}"</span>)
+<span class="c-com"># Output: The number is         99</span></code></pre>
+    </div>
+
+    <p>By default numbers are right-aligned in their field and strings are left-aligned. Three designators override that:</p>
+
+    <table class="ctable">
+      <thead><tr><th>Designator</th><th>Effect</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mono">&lt;</span></td><td>Left-aligns the value</td><td><span class="mono">f"{name:&lt;10}"</span></td></tr>
+        <tr><td><span class="mono">&gt;</span></td><td>Right-aligns the value</td><td><span class="mono">f"{total:&gt;12.2f}"</span></td></tr>
+        <tr><td><span class="mono">^</span></td><td>Center-aligns the value</td><td><span class="mono">f"{title:^20}"</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">alignment.py</span></div>
+<pre><code><span class="c-com"># A two-column report, aligned without a single tab character</span>
+<span class="c-fn">print</span>(f<span class="c-str">"{'Item':&lt;12}{'Cost':&gt;8}"</span>)
+<span class="c-fn">print</span>(f<span class="c-str">"{'Boots':&lt;12}{129.5:&gt;8.2f}"</span>)
+<span class="c-fn">print</span>(f<span class="c-str">"{'Pack':&lt;12}{89.99:&gt;8.2f}"</span>)
+<span class="c-com"># Output:</span>
+<span class="c-com"># Item            Cost</span>
+<span class="c-com"># Boots         129.50</span>
+<span class="c-com"># Pack           89.99</span></code></pre>
+    </div>
+
+    <div class="note"><b>Watch your quote marks.</b> If the f-string is written with double quotes, any string inside a placeholder must use single quotes — and the other way around. Mixing the same kind ends the literal early and produces a syntax error.</div>
+  </section>
+
+  <section id="s10">
+    <div class="sec-head"><span class="sec-num">10</span><h2>Named Constants</h2></div>
+    <p class="lead">Give every meaningful number a name.</p>
+    <div class="wrap-note">
+    <p>A <span class="term">magic number</span> is an unexplained numeric value sitting in a program's code. Consider this line:</p>
+    </div>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">magic_number.py</span></div>
+<pre><code>total = subtotal * <span class="c-num">0.0725</span></code></pre>
+    </div>
+    <p>What is <span class="mono">0.0725</span>? A sales-tax rate? A discount? Only whoever wrote the line knows for sure. Magic numbers cause three problems: their purpose is hard to determine; if the same value appears in many places, changing it means hunting down every copy; and you risk a typo every time you retype it (intending <span class="mono">0.0725</span> but typing <span class="mono">0.725</span> produces errors that are very hard to track down).</p>
+
+    <p>The fix is a <span class="term">named constant</span>: a name that represents a value that does not change while the program runs. By convention its name is written in all capitals.</p>
+    <div class="code">
+      <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">named_constant.py</span></div>
+<pre><code>SALES_TAX = <span class="c-num">0.0725</span>
+
+total = subtotal * SALES_TAX</code></pre>
+    </div>
+    <div class="keypt"><b>Why this is better.</b> Named constants make code self-documenting (the name explains the value); easier to maintain (change the value in one place and it updates everywhere the constant is used); and less error-prone (you type the actual number only once).</div>
+  </section>
+
+  <!-- ============ SUMMARY ============ -->
+  <section id="summary">
+    <div class="sec-head"><span class="sec-num">✓</span><h2>Summary &amp; Self-Check</h2></div>
+    <p class="lead">The building blocks of every program you'll write from here on.</p>
+    <div class="keypt" style="margin-bottom:24px;">
+      This module covered the <strong>program development cycle</strong> and design tools (algorithms, pseudocode, flowcharts); the <strong>input–processing–output</strong> model; displaying and formatting <strong>output</strong> with <span class="mono">print</span>, <span class="mono">format</span>, and <strong>f-strings</strong>; <strong>comments</strong>; <strong>variables</strong>, naming rules, reassignment, and the <span class="mono">int</span>/<span class="mono">float</span>/<span class="mono">str</span> data types; <strong>reading input</strong> and converting it with <span class="mono">int()</span> and <span class="mono">float()</span>; and <strong>performing calculations</strong> with operators, precedence, and named constants.
+    </div>
+
+    <div class="check">
+      <h3>Check your understanding</h3>
+      <details class="q"><summary><span class="qmark">Q1.</span> Why is design considered the most important stage of the development cycle?</summary><div class="ans">Because the rest of the work depends on it. A clear understanding of the task and a well-thought-out algorithm prevent expensive mistakes later; writing code before you understand the problem usually means rewriting it.</div></details>
+      <details class="q"><summary><span class="qmark">Q2.</span> The <span class="mono">input</span> function returns the value <span class="mono">"50"</span>, but you need to add 10 to it. What goes wrong, and how do you fix it?</summary><div class="ans"><span class="mono">input</span> always returns a string, and you cannot do arithmetic on a string. Convert it first with <span class="mono">int()</span> (or <span class="mono">float()</span>): <span class="mono">amount = int(input("...")) + 10</span>.</div></details>
+      <details class="q"><summary><span class="qmark">Q3.</span> What does <span class="mono">7 / 2</span> produce, and how does <span class="mono">7 // 2</span> differ?</summary><div class="ans"><span class="mono">7 / 2</span> is floating-point division and gives <span class="mono">3.5</span>. <span class="mono">7 // 2</span> is integer division and gives <span class="mono">3</span> — the result is truncated toward zero rather than keeping the fraction.</div></details>
+      <details class="q"><summary><span class="qmark">Q4.</span> Evaluate <span class="mono">2 + 3 * 4</span> and <span class="mono">(2 + 3) * 4</span>. Why are they different?</summary><div class="ans"><span class="mono">2 + 3 * 4</span> is 14, because <span class="mono">*</span> has higher precedence than <span class="mono">+</span> and runs first. <span class="mono">(2 + 3) * 4</span> is 20, because parentheses force the addition to happen before the multiplication.</div></details>
+      <details class="q"><summary><span class="qmark">Q5.</span> Give two reasons to replace a magic number with a named constant.</summary><div class="ans">Any two of: it makes the code self-documenting (the name explains what the value means); it makes maintenance easier (change one line and every use updates); and it prevents typos from repeatedly retyping the number.</div></details>
+      <details class="q"><summary><span class="qmark">Q6.</span> Which of these are valid variable names: <span class="mono">2nd_place</span>, <span class="mono">total_cost</span>, <span class="mono">final score</span>, <span class="mono">_count</span>?</summary><div class="ans"><span class="mono">total_cost</span> and <span class="mono">_count</span> are valid. <span class="mono">2nd_place</span> is invalid (starts with a digit). <span class="mono">final score</span> is invalid (contains a space).</div></details>
+    </div>
+
+    <div class="practice">
+      <div class="ptxt">
+        <div class="plabel">Next step</div>
+        <h3>Week 2 Review Questions</h3>
+        <p>Multiple choice, true/false, short answer, and an algorithm workbench covering everything above &mdash; plus two programming exercises you build at the <span class="mono">&gt;&gt;&gt;</span> prompt in the Interactive Python Console.</p>
+      </div>
+      <a class="pbtn" href="python-wk02-review-questions.html">Start the review <span class="arrow">&rarr;</span></a>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Week 02 — Concepts reference</span>
+    <span>Original examples &amp; figures · for classroom use</span>
+  </div>
+</footer>
+
+<script>
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
+    bar.style.width = Math.min(100, Math.max(0, scrolled * 100)) + '%';
+  };
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  const links = Array.from(document.querySelectorAll('nav.toc a'));
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('main section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

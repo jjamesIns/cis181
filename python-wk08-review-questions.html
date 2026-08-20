@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 08 · Review Questions — Lists and Tuples</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;
+    --py-blue-dk:#306998;
+    --py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;
+    --py-yellow-dk:#E5A800;
+    --ink:#2b303b;
+    --ink-soft:#5b6470;
+    --ink-faint:#8a929d;
+    --page:#f6f8fa;
+    --surface:#ffffff;
+    --border:#e1e4e8;
+    --border-strong:#cfd6dd;
+    --code-bg:#1e2530;
+    --code-bg2:#262f3d;
+    --code-text:#e6edf3;
+    --code-comment:#7d8893;
+    --shadow:0 1px 2px rgba(27,40,55,.06),0 6px 22px rgba(27,40,55,.07);
+    --shadow-lift:0 8px 30px rgba(27,40,55,.13);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:88px;}
+  body{
+    margin:0;background:var(--page);color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:"Space Grotesk","Inter",sans-serif;line-height:1.18;margin:0;}
+  code,kbd,pre,.mono{font-family:"Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;}
+  a{color:var(--py-blue-dk);}
+
+  /* ---------- scroll progress ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:4px;width:0%;z-index:60;
+    background:linear-gradient(90deg,var(--py-blue) 0%,var(--py-blue) 55%,var(--py-yellow) 100%);
+    transition:width .08s linear;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:
+      radial-gradient(1100px 380px at 82% -40%,rgba(255,212,59,.20),transparent 60%),
+      linear-gradient(160deg,var(--py-blue-deep) 0%,var(--py-blue-dk) 52%,var(--py-blue) 120%);
+    color:#fff;padding:64px 24px 54px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"?";position:absolute;right:5%;bottom:-58px;
+    font-family:"Fira Code",monospace;font-size:210px;font-weight:600;
+    color:rgba(255,255,255,.07);pointer-events:none;
+  }
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:2;}
+  .brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .brand .mark{
+    font-family:"Fira Code",monospace;font-weight:600;font-size:15px;
+    color:var(--py-blue-deep);background:var(--py-yellow);
+    padding:4px 10px;border-radius:7px;letter-spacing:1px;
+  }
+  .brand .brand-txt{font-family:"Space Grotesk";font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.82);}
+  .eyebrow{font-family:"Fira Code",monospace;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--py-yellow);margin-bottom:14px;}
+  .hero h1{font-size:clamp(30px,5vw,52px);font-weight:700;letter-spacing:-.5px;max-width:20ch;}
+  .hero .sub{margin-top:18px;font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.9);max-width:64ch;}
+  .topics{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px;}
+  .topics a{
+    text-decoration:none;color:#fff;font-size:14.5px;font-weight:500;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);
+    padding:8px 14px;border-radius:999px;transition:.18s;backdrop-filter:blur(2px);
+  }
+  .topics a:hover{background:var(--py-yellow);color:var(--py-blue-deep);border-color:var(--py-yellow);transform:translateY(-1px);}
+  .topics a .n{font-family:"Fira Code";color:var(--py-yellow);margin-right:7px;font-size:13px;}
+  .topics a:hover .n{color:var(--py-blue-deep);}
+  .topics a.topic-out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  .grid{display:grid;grid-template-columns:232px minmax(0,1fr);gap:40px;align-items:start;padding:40px 24px 80px;max-width:var(--maxw);margin:0 auto;}
+
+  /* ---------- side nav ---------- */
+  nav.toc{position:sticky;top:24px;align-self:start;}
+  nav.toc .toc-title{font-family:"Fira Code";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);margin:0 0 12px 14px;}
+  nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border);}
+  nav.toc a{
+    display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink-soft);
+    font-size:14.5px;font-weight:500;padding:8px 14px;margin-left:-2px;
+    border-left:2px solid transparent;transition:.16s;line-height:1.35;
+  }
+  nav.toc a .num{font-family:"Fira Code";font-size:12px;color:var(--py-blue);opacity:.8;}
+  nav.toc a:hover{color:var(--ink);background:#eef2f6;}
+  nav.toc a.active{color:var(--py-blue-dk);border-left-color:var(--py-blue);background:#eaf2f9;font-weight:600;}
+  nav.toc a.active .num{opacity:1;}
+  nav.toc .toc-out{
+    display:flex;gap:9px;align-items:baseline;margin:14px 0 0;padding:9px 14px;
+    text-decoration:none;font-size:14.5px;font-weight:600;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:9px;transition:.16s;
+  }
+  nav.toc .toc-out:hover{background:var(--py-blue-dk);color:#fff;border-color:var(--py-blue-dk);}
+  nav.toc .toc-out .num{font-family:"Fira Code";font-size:12px;color:inherit;opacity:1;}
+
+  /* ---------- sections ---------- */
+  main{min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:84px;}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;flex-wrap:wrap;}
+  .sec-num{
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:#fff;
+    background:var(--py-blue-dk);min-width:34px;height:34px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  section h2{font-size:clamp(23px,3vw,31px);font-weight:700;letter-spacing:-.3px;}
+  .pts{
+    font-family:"Fira Code";font-size:12.5px;letter-spacing:.5px;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:999px;padding:3px 11px;white-space:nowrap;
+  }
+  .lead{color:var(--ink-soft);font-size:18px;margin:6px 0 22px;}
+  section h3{font-size:20px;font-weight:600;margin:30px 0 10px;color:var(--py-blue-deep);}
+  p{margin:0 0 15px;}
+  .wrap-note{max-width:74ch;}
+  strong{font-weight:600;}
+  .term{font-weight:600;color:var(--py-blue-deep);}
+
+  /* ---------- callouts ---------- */
+  .note{
+    border:1px solid var(--border);border-left:4px solid var(--py-yellow);
+    background:#fffdf3;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .note b{color:var(--py-yellow-dk);}
+  .keypt{
+    border:1px solid var(--border);border-left:4px solid var(--py-blue);
+    background:#f3f8fc;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .keypt b{color:var(--py-blue-dk);}
+
+  /* ---------- question lists ---------- */
+  .qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:8px 26px;}
+  ol.qs{list-style:none;counter-reset:q;margin:0;padding:0;}
+  ol.qs > li{
+    counter-increment:q;position:relative;padding:18px 0 18px 46px;
+    border-bottom:1px solid var(--border);break-inside:avoid;
+  }
+  ol.qs > li:last-child{border-bottom:none;}
+  ol.qs > li::before{
+    content:counter(q) ".";position:absolute;left:0;top:17px;
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);
+  }
+  ol.qs > li .stem{margin:0;font-size:16.5px;}
+  .opts{list-style:none;margin:11px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:5px 22px;}
+  .opts li{font-size:16px;color:var(--ink-soft);}
+  .opts .lbl{font-family:"Fira Code";font-weight:600;color:var(--py-blue);margin-right:9px;}
+  .blank{display:inline-block;min-width:70px;border-bottom:1.5px solid var(--border-strong);}
+  ol.qs.tf > li{padding-left:78px;}
+  ol.qs.tf > li::before{top:18px;}
+  .tfbox{
+    position:absolute;left:32px;top:18px;font-family:"Fira Code";font-size:14px;
+    color:var(--ink-faint);letter-spacing:1px;
+  }
+  ol.qs.sa > li{padding-bottom:22px;}
+  ol.qs.sa .hint{display:block;margin-top:6px;font-size:14.5px;color:var(--ink-faint);font-style:italic;}
+
+  /* ---------- code blocks ---------- */
+  .code{
+    background:var(--code-bg);border-radius:11px;margin:16px 0;overflow:hidden;
+    border:1px solid #2c3645;box-shadow:var(--shadow);
+  }
+  .code .bar{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--code-bg2);border-bottom:1px solid #313c4c;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .d1{background:#ff5f56;}.code .bar .d2{background:#ffbd2e;}.code .bar .d3{background:#27c93f;}
+  .code .bar .fname{margin-left:8px;font-family:"Fira Code";font-size:12.5px;color:#9aa6b2;}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;}
+  .code code{font-size:14.5px;color:var(--code-text);line-height:1.65;display:block;white-space:pre;}
+  .c-kw{color:#ff9d6b;}
+  .c-fn{color:#7cc4ff;}
+  .c-str{color:#9ae26b;}
+  .c-num{color:#f7c873;}
+  .c-com{color:var(--code-comment);font-style:italic;}
+  .c-prompt{color:#6fae4f;}
+  .c-out{color:#cbd3dc;}
+  .c-err{color:#ff7b72;}
+  kbd{font-size:13px;background:#eef2f6;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;padding:1px 7px;color:var(--ink);}
+
+  /* ---------- exercise cards ---------- */
+  .ex{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    box-shadow:var(--shadow);padding:24px 26px;margin:22px 0;break-inside:avoid;
+  }
+  .ex-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .ex-tag{
+    font-family:"Fira Code";font-size:12.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+    color:var(--py-blue-deep);background:var(--py-yellow);padding:3px 10px;border-radius:6px;
+  }
+  .ex h3{margin:0;font-size:21px;color:var(--ink);}
+  .ex .why{color:var(--ink-soft);font-size:15.5px;margin:6px 0 14px;}
+  .ex ol.steps{margin:0 0 4px;padding-left:22px;}
+  .ex ol.steps > li{margin-bottom:11px;padding-left:4px;}
+  .ex ol.steps code{
+    background:#eef2f6;border:1px solid var(--border);border-radius:5px;
+    padding:1px 7px;font-size:14.5px;color:var(--py-blue-deep);white-space:nowrap;
+  }
+  .console-btn{
+    display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+    background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;font-size:15px;
+    padding:10px 20px;border-radius:999px;margin:6px 0 2px;transition:.18s;box-shadow:var(--shadow);
+  }
+  .console-btn:hover{background:var(--py-blue-deep);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+  .console-btn .arrow{font-family:"Fira Code";color:var(--py-yellow);}
+
+  /* ---------- answer key ---------- */
+  .keybreak{
+    border-top:2px dashed var(--border-strong);margin:0 0 40px;padding-top:26px;
+    text-align:center;color:var(--ink-faint);font-family:"Fira Code";font-size:13px;letter-spacing:2px;text-transform:uppercase;
+  }
+  #answers{break-before:page;}
+  .akey{background:linear-gradient(160deg,#f3f8fc,#fffdf3);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin-bottom:26px;}
+  .akey h3{margin-top:0;}
+  .agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:8px 26px;margin:0;padding:0;list-style:none;}
+  .agrid li{font-size:16px;padding:5px 0;border-bottom:1px dotted var(--border-strong);}
+  .agrid .n{font-family:"Fira Code";color:var(--py-blue-dk);font-weight:600;margin-right:10px;}
+  .agrid .v{font-weight:600;color:var(--py-blue-deep);}
+  ol.akeys{list-style:none;counter-reset:ak;margin:0;padding:0;}
+  ol.akeys > li{counter-increment:ak;position:relative;padding:14px 0 14px 46px;border-bottom:1px solid var(--border);break-inside:avoid;}
+  ol.akeys > li:last-child{border-bottom:none;}
+  ol.akeys > li::before{content:counter(ak) ".";position:absolute;left:0;top:14px;font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);}
+  ol.akeys .qtext{display:block;font-weight:600;color:var(--ink);margin-bottom:5px;}
+  ol.akeys .atext{color:var(--ink-soft);font-size:16px;}
+
+  /* ---------- rubric table ---------- */
+  .ctable{width:100%;border-collapse:collapse;margin:20px 0;font-size:15.5px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .ctable th,.ctable td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .ctable thead th{background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td:first-child{font-weight:600;color:var(--py-blue-deep);}
+  .ctable tbody tr:nth-child(even){background:#f9fbfc;}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:26px 24px;color:var(--ink-faint);font-size:13.5px;}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:880px){
+    .grid{grid-template-columns:1fr;gap:0;padding-top:0;}
+    nav.toc{position:sticky;top:0;z-index:40;background:var(--page);margin:0 -24px 24px;padding:10px 0;border-bottom:1px solid var(--border);}
+    nav.toc .toc-title{display:none;}
+    nav.toc ol{display:flex;overflow-x:auto;border-left:none;padding:0 18px;gap:4px;}
+    nav.toc a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent;border-radius:8px 8px 0 0;}
+    nav.toc a.active{border-left:none;border-bottom-color:var(--py-blue);}
+    nav.toc .toc-out{display:none;}
+    .hero::after{font-size:120px;bottom:-30px;}
+    .qcard{padding:6px 16px;}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none!important;}}
+  :focus-visible{outline:3px solid var(--py-yellow);outline-offset:2px;border-radius:4px;}
+
+  /* ---------- print: answer key starts on its own page ---------- */
+  @media print{
+    body{background:#fff;font-size:11.5pt;line-height:1.5;}
+    #progress,nav.toc,.home-link,.topics,.console-btn{display:none!important;}
+    .hero{background:none;color:var(--ink);padding:0 0 14px;border-bottom:2px solid var(--py-blue-dk);}
+    .hero::after{display:none;}
+    .hero .brand .mark{background:none;color:var(--ink);padding:0;}
+    .hero .brand .brand-txt,.hero .sub{color:var(--ink-soft);}
+    .eyebrow{color:var(--py-blue-dk);}
+    .grid{display:block;padding:14px 0 0;max-width:100%;}
+    .qcard,.ex,.akey,.keypt,.note{box-shadow:none;}
+    section{margin-bottom:26px;}
+    #answers{page-break-before:always;break-before:page;}
+    .keybreak{display:none;}
+    footer{page-break-before:avoid;}
+    a{color:var(--ink);text-decoration:none;}
+  }
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:880px){ nav.toc{ top:48px; } }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+<div id="progress"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand">
+      <span class="mark">&gt;&gt;&gt;</span>
+      <span class="brand-txt">CIS181 · Python Programming</span>
+    </div>
+    <div class="eyebrow">Week 08 · Review Questions</div>
+    <h1>Lists and Tuples</h1>
+    <p class="sub">Five sections: Multiple Choice, True or False, Short Answer, Algorithm Workbench, and Programming Exercises. The workbench and exercise items are all done in the browser-based Interactive Python Console. Total: 100 points.</p>
+    <div class="topics">
+      <a href="#mc"><span class="n">01</span>Multiple Choice</a>
+      <a href="#tf"><span class="n">02</span>True or False</a>
+      <a href="#sa"><span class="n">03</span>Short Answer</a>
+      <a href="#aw"><span class="n">04</span>Algorithm Workbench</a>
+      <a href="#pe"><span class="n">05</span>Programming Exercises</a>
+      <a href="#answers"><span class="n">✓</span>Answer Key</a>
+      <a href="python-wk08-lists-and-tuples.html" class="topic-out"><span class="n">&larr;</span>Week 08 Concepts</a>
+    </div>
+  </div>
+</header>
+
+<div class="grid">
+  <nav class="toc" aria-label="Section navigation">
+    <p class="toc-title">On this page</p>
+    <ol>
+      <li><a href="#mc"><span class="num">1</span>Multiple Choice</a></li>
+      <li><a href="#tf"><span class="num">2</span>True or False</a></li>
+      <li><a href="#sa"><span class="num">3</span>Short Answer</a></li>
+      <li><a href="#aw"><span class="num">4</span>Algorithm Workbench</a></li>
+      <li><a href="#pe"><span class="num">5</span>Programming Exercises</a></li>
+      <li><a href="#answers"><span class="num">✓</span>Answer Key</a></li>
+    </ol>
+    <a class="toc-out" href="python-wk08-lists-and-tuples.html">
+      <span class="num">&larr;</span>Week 08 Concepts
+    </a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 1 · MULTIPLE CHOICE ============ -->
+  <section id="mc">
+    <div class="sec-head"><span class="sec-num">1</span><h2>Multiple Choice</h2><span class="pts">24 × 1 pt = 24</span></div>
+    <p class="lead">Choose the one best answer for each question.</p>
+
+    <div class="qcard">
+    <ol class="qs">
+      <li>
+        <p class="stem">An object that holds multiple items of data, stored one after another in a definite order, is called a <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>sequence</li>
+          <li><span class="lbl">b.</span>method</li>
+          <li><span class="lbl">c.</span>index</li>
+          <li><span class="lbl">d.</span>slice</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The single most important difference between a list and a tuple is that a list is <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>immutable</li>
+          <li><span class="lbl">b.</span>mutable</li>
+          <li><span class="lbl">c.</span>faster</li>
+          <li><span class="lbl">d.</span>limited to numbers</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Each item stored in a list is called a(n) <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>field</li>
+          <li><span class="lbl">b.</span>record</li>
+          <li><span class="lbl">c.</span>element</li>
+          <li><span class="lbl">d.</span>attribute</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which punctuation encloses the elements of a list?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>parentheses</li>
+          <li><span class="lbl">b.</span>square brackets</li>
+          <li><span class="lbl">c.</span>curly braces</li>
+          <li><span class="lbl">d.</span>angle brackets</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What is the index of the <em>first</em> element of a list?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>1</li>
+          <li><span class="lbl">b.</span>0</li>
+          <li><span class="lbl">c.</span>-1</li>
+          <li><span class="lbl">d.</span>the list's length</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which index refers to the <em>last</em> element of any list?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">0</span></li>
+          <li><span class="lbl">b.</span><span class="mono">len(list)</span></li>
+          <li><span class="lbl">c.</span><span class="mono">-1</span></li>
+          <li><span class="lbl">d.</span><span class="mono">-0</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Using an index that does not exist raises <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">ValueError</span></li>
+          <li><span class="lbl">b.</span><span class="mono">IndexError</span></li>
+          <li><span class="lbl">c.</span><span class="mono">KeyError</span></li>
+          <li><span class="lbl">d.</span><span class="mono">TypeError</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which function returns the number of elements in a sequence?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">size</span></li>
+          <li><span class="lbl">b.</span><span class="mono">count</span></li>
+          <li><span class="lbl">c.</span><span class="mono">len</span></li>
+          <li><span class="lbl">d.</span><span class="mono">total</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Applied to a list and an integer, the <span class="mono">*</span> symbol acts as the <span class="blank"></span> operator.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>concatenation</li>
+          <li><span class="lbl">b.</span>repetition</li>
+          <li><span class="lbl">c.</span>membership</li>
+          <li><span class="lbl">d.</span>slicing</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What does the expression <span class="mono">data[1:4]</span> produce, given <span class="mono">data = [10, 20, 30, 40, 50]</span>?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">[20, 30, 40]</span></li>
+          <li><span class="lbl">b.</span><span class="mono">[20, 30, 40, 50]</span></li>
+          <li><span class="lbl">c.</span><span class="mono">[10, 20, 30, 40]</span></li>
+          <li><span class="lbl">d.</span><span class="mono">[30, 40]</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">In a slice expression, leaving out the <span class="mono">start</span> value means Python uses <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>0</li>
+          <li><span class="lbl">b.</span>1</li>
+          <li><span class="lbl">c.</span>-1</li>
+          <li><span class="lbl">d.</span>the list's length</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which operator tests whether an item appears in a list?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">has</span></li>
+          <li><span class="lbl">b.</span><span class="mono">in</span></li>
+          <li><span class="lbl">c.</span><span class="mono">==</span></li>
+          <li><span class="lbl">d.</span><span class="mono">find</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which method adds an item to the <em>end</em> of a list?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">insert</span></li>
+          <li><span class="lbl">b.</span><span class="mono">add</span></li>
+          <li><span class="lbl">c.</span><span class="mono">append</span></li>
+          <li><span class="lbl">d.</span><span class="mono">extend</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The <span class="mono">index</span> method raises this exception when the item is not found.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">IndexError</span></li>
+          <li><span class="lbl">b.</span><span class="mono">ValueError</span></li>
+          <li><span class="lbl">c.</span><span class="mono">KeyError</span></li>
+          <li><span class="lbl">d.</span><span class="mono">NameError</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The <span class="mono">remove</span> method removes <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>every occurrence of the item</li>
+          <li><span class="lbl">b.</span>only the first occurrence of the item</li>
+          <li><span class="lbl">c.</span>the element at a given index</li>
+          <li><span class="lbl">d.</span>the last element</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What does <span class="mono">counts.sort()</span> return?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>a new sorted list</li>
+          <li><span class="lbl">b.</span><span class="mono">None</span></li>
+          <li><span class="lbl">c.</span>the number of elements</li>
+          <li><span class="lbl">d.</span>the first element</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which statement removes the element at a specific index?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">del</span></li>
+          <li><span class="lbl">b.</span><span class="mono">remove</span></li>
+          <li><span class="lbl">c.</span><span class="mono">drop</span></li>
+          <li><span class="lbl">d.</span><span class="mono">pop</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">After <span class="mono">alias = original</span>, where <span class="mono">original</span> is a list, <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>there are two independent lists</li>
+          <li><span class="lbl">b.</span>both names reference the same list</li>
+          <li><span class="lbl">c.</span><span class="mono">alias</span> is a copy that cannot be changed</li>
+          <li><span class="lbl">d.</span>a <span class="mono">TypeError</span> occurs</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which expression creates a genuine copy of the list <span class="mono">original</span>?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">original</span></li>
+          <li><span class="lbl">b.</span><span class="mono">original[:]</span></li>
+          <li><span class="lbl">c.</span><span class="mono">original[0]</span></li>
+          <li><span class="lbl">d.</span><span class="mono">original * 0</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A single-line expression that builds a new list by looping over an existing sequence is called a <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>slice</li>
+          <li><span class="lbl">b.</span>list comprehension</li>
+          <li><span class="lbl">c.</span>nested list</li>
+          <li><span class="lbl">d.</span>repetition expression</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">In the comprehension <span class="mono">[n * 2 for n in nums]</span>, which part is evaluated first?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">n * 2</span></li>
+          <li><span class="lbl">b.</span><span class="mono">for n in nums</span></li>
+          <li><span class="lbl">c.</span>the square brackets</li>
+          <li><span class="lbl">d.</span>they are simultaneous</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">What does <span class="mono">[d for d in donations if d &gt; 30]</span> do?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>transforms every element</li>
+          <li><span class="lbl">b.</span>filters, keeping only elements over 30</li>
+          <li><span class="lbl">c.</span>changes <span class="mono">donations</span> in place</li>
+          <li><span class="lbl">d.</span>returns <span class="mono">True</span> or <span class="mono">False</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">To reach a single value in a two-dimensional list you need <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>one index</li>
+          <li><span class="lbl">b.</span>two indexes — row then column</li>
+          <li><span class="lbl">c.</span>a slice</li>
+          <li><span class="lbl">d.</span>the <span class="mono">in</span> operator</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Attempting to assign a new value to an element of a tuple raises <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">ValueError</span></li>
+          <li><span class="lbl">b.</span><span class="mono">IndexError</span></li>
+          <li><span class="lbl">c.</span><span class="mono">TypeError</span></li>
+          <li><span class="lbl">d.</span>no error — it succeeds</li>
+        </ul>
+      </li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 2 · TRUE OR FALSE ============ -->
+  <section id="tf">
+    <div class="sec-head"><span class="sec-num">2</span><h2>True or False</h2><span class="pts">10 × 1 pt = 10</span></div>
+
+    <div class="qcard">
+    <ol class="qs tf">
+      <li><span class="tfbox">T / F</span><p class="stem">A list may hold items of different data types.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The last valid index of a list is <span class="mono">len(list)</span>.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A slice expression creates a new list rather than modifying the original.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The expression <span class="mono">day + 5</span>, where <span class="mono">day</span> is a list, appends 5 to the list.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The <span class="mono">append</span>, <span class="mono">sort</span>, and <span class="mono">reverse</span> methods all change a list in place and return <span class="mono">None</span>.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Assigning one list variable to another creates a second, independent list.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A list comprehension modifies the sequence it loops over.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A list comprehension may include an <span class="mono">if</span> clause to filter which items are kept.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Tuples support slicing, the <span class="mono">in</span> operator, and the <span class="mono">len</span> function.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The <span class="mono">tuple()</span> function converts a list into a tuple.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 3 · SHORT ANSWER ============ -->
+  <section id="sa">
+    <div class="sec-head"><span class="sec-num">3</span><h2>Short Answer</h2><span class="pts">11 × 2 pts = 22</span></div>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li><p class="stem">What is a sequence? Name the two sequence types covered in this module and state the essential difference between them.</p></li>
+      <li><p class="stem">Explain what an index is. What is the index of the first element, the last element, and what do negative indexes mean?</p></li>
+      <li><p class="stem">What does it mean to say a list is <em>mutable</em>? Give one example of an operation that demonstrates it.</p></li>
+      <li><p class="stem">Describe what a slice expression produces. What happens when the <span class="mono">start</span> or the <span class="mono">end</span> value is left out?</p></li>
+      <li><p class="stem">Explain the difference between the <span class="mono">remove</span> method and the <span class="mono">del</span> statement.</p></li>
+      <li><p class="stem">Which list methods change the list in place and return <span class="mono">None</span>? Why does that make <span class="mono">counts = counts.sort()</span> a bug?</p></li>
+      <li><p class="stem">Why does assigning one list variable to another fail to produce a copy? Describe two ways to make a genuine copy.</p></li>
+      <li><p class="stem">Describe the accumulator pattern for totaling a list, and explain how you would then compute the average.</p></li>
+      <li><p class="stem">Write the general form of a list comprehension and describe what each of its three parts does.</p></li>
+      <li><p class="stem">Give one situation where a list comprehension improves a program and one situation where an ordinary loop is the better choice.</p></li>
+      <li><p class="stem">Give two reasons a programmer might choose a tuple over a list, and name the functions that convert between the two.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 4 · ALGORITHM WORKBENCH ============ -->
+  <section id="aw">
+    <div class="sec-head"><span class="sec-num">4</span><h2>Algorithm Workbench</h2><span class="pts">16 × 1 pt = 16</span></div>
+    <p class="lead">Short code-writing and code-tracing items. Write your answer first, <em>then</em> check it in the console — the prediction is the part that teaches.</p>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li><p class="stem">Write a statement that creates a list named <span class="mono">trails</span> holding the four strings <span class="mono">Switchback</span>, <span class="mono">Ridgeline</span>, <span class="mono">Lakeshore</span>, and <span class="mono">Summit</span>.</p></li>
+      <li><p class="stem">Write a statement that creates a list named <span class="mono">counts</span> containing seven copies of the value 0, using the repetition operator.</p></li>
+      <li>
+        <p class="stem">Assume <span class="mono">data = [10, 20, 30, 40, 50, 60]</span>. Give the value of each expression.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">data[2]</span></li>
+          <li><span class="lbl">b.</span><span class="mono">data[-1]</span></li>
+          <li><span class="lbl">c.</span><span class="mono">data[1:4]</span></li>
+          <li><span class="lbl">d.</span><span class="mono">data[:3]</span></li>
+          <li><span class="lbl">e.</span><span class="mono">data[::2]</span></li>
+        </ul>
+      </li>
+      <li><p class="stem">Write an <span class="mono">if</span> statement that displays <span class="mono">'On the map'</span> when the string <span class="mono">'Summit'</span> appears in the list <span class="mono">trails</span>.</p></li>
+      <li><p class="stem">Write a loop that displays every element of the list <span class="mono">trails</span>, one per line.</p></li>
+      <li>
+        <p class="stem">Assume <span class="mono">counts = [12, 5, 9, 5, 21]</span>. Show the contents of the list after each statement executes in sequence.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">counts.append(8)</span></li>
+          <li><span class="lbl">b.</span><span class="mono">counts.insert(0, 30)</span></li>
+          <li><span class="lbl">c.</span><span class="mono">counts.remove(5)</span></li>
+          <li><span class="lbl">d.</span><span class="mono">counts.sort()</span></li>
+          <li><span class="lbl">e.</span><span class="mono">counts.reverse()</span></li>
+        </ul>
+      </li>
+      <li><p class="stem">Write statements that display the lowest and the highest values in a list named <span class="mono">readings</span>.</p></li>
+      <li>
+        <p class="stem">What does the following display, and why?</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">trace_1.py</span></div>
+<pre><code>original = [<span class="c-num">1</span>, <span class="c-num">2</span>, <span class="c-num">3</span>]
+alias = original
+alias[<span class="c-num">0</span>] = <span class="c-num">99</span>
+<span class="c-fn">print</span>(original)</code></pre>
+        </div>
+      </li>
+      <li>
+        <p class="stem">What does the following display?</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">trace_2.py</span></div>
+<pre><code>numbers = [<span class="c-num">3</span>, <span class="c-num">1</span>, <span class="c-num">2</span>]
+result = numbers.<span class="c-fn">sort</span>()
+<span class="c-fn">print</span>(result)</code></pre>
+        </div>
+      </li>
+      <li><p class="stem">Write a loop that totals the values in a list named <span class="mono">donations</span> into a variable named <span class="mono">total</span>, then displays the average.</p></li>
+      <li><p class="stem">Rewrite the following as a list comprehension:<br><span class="mono">squares = []</span> · <span class="mono">for n in range(1, 7):</span> · <span class="mono">&nbsp;&nbsp;&nbsp;&nbsp;squares.append(n ** 2)</span></p></li>
+      <li><p class="stem">Write a list comprehension that builds a list of every element of <span class="mono">prices</span> that is less than 20.</p></li>
+      <li><p class="stem">Write a list comprehension that builds a list of the lengths of every string in <span class="mono">trails</span>.</p></li>
+      <li>
+        <p class="stem">Assume <span class="mono">grid = [[88, 91, 77], [64, 82, 95], [70, 73, 68]]</span>. Give the value of each.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">grid[1][2]</span></li>
+          <li><span class="lbl">b.</span><span class="mono">grid[0]</span></li>
+          <li><span class="lbl">c.</span><span class="mono">len(grid)</span></li>
+          <li><span class="lbl">d.</span><span class="mono">len(grid[0])</span></li>
+        </ul>
+      </li>
+      <li><p class="stem">Write nested loops that total every value in the two-dimensional list <span class="mono">grid</span> and display the result.</p></li>
+      <li><p class="stem">Write a statement that creates a tuple named <span class="mono">point</span> holding the values 3 and 7. Then state what happens if you attempt <span class="mono">point[0] = 9</span>, naming the exception.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 5 · PROGRAMMING EXERCISES ============ -->
+  <section id="pe">
+    <div class="sec-head"><span class="sec-num">5</span><h2>Programming Exercises</h2><span class="pts">2 × 14 pts = 28</span></div>
+    <p class="lead">Build each program one statement at a time at the <span class="mono">&gt;&gt;&gt;</span> prompt.</p>
+
+    <a class="console-btn" href="python-interactive-console.html"><span class="arrow">&gt;&gt;&gt;</span> Open the Interactive Python Console</a>
+
+    <div class="note"><b>How to submit.</b> Paste your full console session into the Canvas submission box, followed by your written answers to the items marked <strong>Explain</strong>. Your transcript must show every line you typed and every line Python printed back — including any tracebacks.</div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 1</span><h3>The Trail Elevation Analyzer</h3></div>
+      <p class="why">Build a list, reshape it with methods, summarize it with a loop, then do the same work again with comprehensions and compare.</p>
+      <ol class="steps">
+        <li>Create <code>elevations = [120, 340, 980, 1520, 1750, 610]</code>. Display its length, its first element, its last element using a negative index, and the slice <code>elevations[1:4]</code>.</li>
+        <li>Reshape the list: append <strong>2100</strong>, insert <strong>55</strong> at the front, then remove the value <strong>610</strong>. Display the list after each step. <strong>Explain:</strong> <code>insert</code> and <code>remove</code> both take one number, but they mean different things. What does each number represent?</li>
+        <li>Use a loop with an accumulator to compute the total, then display the total, the average to two decimal places, and the lowest and highest values.</li>
+        <li>Now sort the list and display it. Then try <code>elevations = elevations.sort()</code> and display <code>elevations</code> again. <strong>Explain:</strong> record exactly what happened and why this is a bug rather than a shortcut.</li>
+        <li>Recreate the list, then use a <strong>list comprehension</strong> to build <code>feet</code>, converting each elevation to feet with <code>round(m * 3.28)</code>. Display it.</li>
+        <li>Use a second comprehension with an <code>if</code> clause to build a list of only the elevations above 1000, and display how many there are. <strong>Explain:</strong> one of your two comprehensions transforms and the other filters. Identify which is which, and say which part of the syntax does each job.</li>
+        <li><strong>Explain:</strong> rewrite your step 6 comprehension as an ordinary loop with an empty list and <code>append</code>. Which version would you rather read six months from now, and why?</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–7, plus your written answers for steps 2, 4, 6, and 7.</div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 2</span><h3>The Gradebook Grid</h3></div>
+      <p class="why">Work with a two-dimensional list, then investigate what copying really does — and finish with tuples.</p>
+      <ol class="steps">
+        <li>Create <code>scores = [[88, 91, 77], [64, 82, 95], [70, 73, 68]]</code>, where each inner list is one student's three test scores. Display <code>scores[1][2]</code>, <code>len(scores)</code>, and <code>len(scores[0])</code>. <strong>Explain:</strong> what does each of those two lengths tell you about the table?</li>
+        <li>Use nested loops to total every value and display the overall average to two decimal places.</li>
+        <li>Use a loop over the rows to display each student's total and average on its own line.</li>
+        <li>Now the columns. For test 0, build the list of all three students' first scores using a comprehension — <code>[row[0] for row in scores]</code> — and display its average. Repeat for tests 1 and 2. <strong>Explain:</strong> why is a comprehension a natural fit for pulling out a column?</li>
+        <li>Investigate aliasing. Type <code>alias = scores</code>, then <code>alias[0][0] = 0</code>, then display <code>scores[0]</code>. <strong>Explain:</strong> what happened to <code>scores</code>, and why?</li>
+        <li>Set <code>scores[0][0]</code> back to 88. Now try a slice copy: <code>copy = scores[:]</code>, then <code>copy[0][0] = 999</code>, then display <code>scores[0]</code>. <strong>Explain:</strong> the slice made a copy — so why did <code>scores</code> change anyway? What exactly did the slice copy?</li>
+        <li>Finish with tuples. Create <code>point = (3, 7)</code>. Show that <code>point[0]</code>, <code>len(point)</code>, and <code>7 in point</code> all work. Then attempt <code>point[0] = 9</code> and record the exception exactly. Finally, convert <code>point</code> to a list and back to a tuple. <strong>Explain:</strong> name two reasons a programmer would choose a tuple here instead of a list.</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–7, plus your written answers for steps 1, 4, 5, 6, and 7.</div>
+    </div>
+
+    <div class="note"><b>Tip.</b> Press the <kbd>↑</kbd> arrow key to bring back a line you already typed. If a list stops behaving the way you expect, display it on its own line to see exactly what it holds.</div>
+  </section>
+
+  <div class="keybreak">Answer key begins on the next page</div>
+
+  <!-- ============ ANSWER KEY ============ -->
+  <section id="answers">
+    <div class="sec-head"><span class="sec-num">✓</span><h2>Week 08 Answer Key</h2><span class="pts">Instructor copy</span></div>
+    <p class="lead">Lists and Tuples — 100 points total.</p>
+
+    <div class="note"><b>Do not distribute with the question set.</b> When printed, this key starts on its own page. To post the questions to students without the key, delete everything from this section to the end of the page.</div>
+
+    <div class="akey">
+      <h3>Multiple Choice · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">a</span> — sequence</li>
+        <li><span class="n">2.</span><span class="v">b</span> — mutable</li>
+        <li><span class="n">3.</span><span class="v">c</span> — element</li>
+        <li><span class="n">4.</span><span class="v">b</span> — square brackets</li>
+        <li><span class="n">5.</span><span class="v">b</span> — 0</li>
+        <li><span class="n">6.</span><span class="v">c</span> — -1</li>
+        <li><span class="n">7.</span><span class="v">b</span> — IndexError</li>
+        <li><span class="n">8.</span><span class="v">c</span> — len</li>
+        <li><span class="n">9.</span><span class="v">b</span> — repetition</li>
+        <li><span class="n">10.</span><span class="v">a</span> — [20, 30, 40]</li>
+        <li><span class="n">11.</span><span class="v">a</span> — 0</li>
+        <li><span class="n">12.</span><span class="v">b</span> — in</li>
+        <li><span class="n">13.</span><span class="v">c</span> — append</li>
+        <li><span class="n">14.</span><span class="v">b</span> — ValueError</li>
+        <li><span class="n">15.</span><span class="v">b</span> — only the first</li>
+        <li><span class="n">16.</span><span class="v">b</span> — None</li>
+        <li><span class="n">17.</span><span class="v">a</span> — del</li>
+        <li><span class="n">18.</span><span class="v">b</span> — same list</li>
+        <li><span class="n">19.</span><span class="v">b</span> — original[:]</li>
+        <li><span class="n">20.</span><span class="v">b</span> — list comprehension</li>
+        <li><span class="n">21.</span><span class="v">b</span> — the for clause</li>
+        <li><span class="n">22.</span><span class="v">b</span> — filters</li>
+        <li><span class="n">23.</span><span class="v">b</span> — two indexes</li>
+        <li><span class="n">24.</span><span class="v">c</span> — TypeError</li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>True or False · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">True</span></li>
+        <li><span class="n">2.</span><span class="v">False</span> — it is len - 1</li>
+        <li><span class="n">3.</span><span class="v">True</span></li>
+        <li><span class="n">4.</span><span class="v">False</span> — raises TypeError</li>
+        <li><span class="n">5.</span><span class="v">True</span></li>
+        <li><span class="n">6.</span><span class="v">False</span> — it makes an alias</li>
+        <li><span class="n">7.</span><span class="v">False</span> — it builds a new list</li>
+        <li><span class="n">8.</span><span class="v">True</span></li>
+        <li><span class="n">9.</span><span class="v">True</span></li>
+        <li><span class="n">10.</span><span class="v">True</span></li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>Short Answer · 2 points each</h3>
+      <ol class="akeys">
+        <li><span class="qtext">Sequences.</span><span class="atext">A sequence is an object that holds multiple items of data stored one after another in a definite order, so every item has a position. The two covered here are the <strong>list</strong> and the <strong>tuple</strong>; the essential difference is mutability — a list can be changed after creation, a tuple cannot.</span></li>
+        <li><span class="qtext">Indexes.</span><span class="atext">An index is a number identifying an element's position. The first element's index is <span class="mono">0</span> and the last is <span class="mono">len(list) - 1</span>. Negative indexes count backward from the end: <span class="mono">-1</span> is the last element, <span class="mono">-2</span> the next-to-last, and so on.</span></li>
+        <li><span class="qtext">Mutable.</span><span class="atext">A mutable sequence is one whose items can be changed after it is created. Assigning to a valid index replaces that element in place — <span class="mono">trails[1] = "Gorge"</span>. <em>Accept also append, remove, insert, sort, or reverse.</em></span></li>
+        <li><span class="qtext">Slices.</span><span class="atext">A slice produces a <em>new</em> list containing copies of the elements from <span class="mono">start</span> up to but not including <span class="mono">end</span>. Omitting <span class="mono">start</span> makes Python use 0; omitting <span class="mono">end</span> makes it use <span class="mono">len(list)</span>.</span></li>
+        <li><span class="qtext">remove vs. del.</span><span class="atext"><span class="mono">remove(item)</span> searches by <em>value</em> and deletes the first occurrence, raising <span class="mono">ValueError</span> if the value isn't present. <span class="mono">del list[i]</span> deletes by <em>position</em>, raising <span class="mono">IndexError</span> if the index is invalid.</span></li>
+        <li><span class="qtext">In-place methods.</span><span class="atext"><span class="mono">append</span>, <span class="mono">insert</span>, <span class="mono">remove</span>, <span class="mono">sort</span>, and <span class="mono">reverse</span> all modify the list in place and return <span class="mono">None</span>. So <span class="mono">counts = counts.sort()</span> sorts the list and then immediately overwrites the variable with <span class="mono">None</span> — the sorted data is lost and the next operation on <span class="mono">counts</span> fails.</span></li>
+        <li><span class="qtext">Copying.</span><span class="atext">Assignment copies the <em>reference</em>, not the list, so both names end up referring to the one and only list object and a change through either is visible through both. Two ways to make a real copy: a full slice <span class="mono">original[:]</span>, or the <span class="mono">list(original)</span> function. <em>Accept also an empty list plus a loop that appends each element, or <span class="mono">[] + original</span>.</em></span></li>
+        <li><span class="qtext">Accumulator pattern.</span><span class="atext">Create a variable set to 0 before the loop, then loop over the list adding each element to it. After the loop the variable holds the total; divide it by <span class="mono">len(list)</span> for the average.</span></li>
+        <li><span class="qtext">Comprehension form.</span><span class="atext"><span class="mono">[expression for variable in iterable]</span>. The <em>expression</em> determines what goes into the new list; the <em>variable</em> is the target that receives one item per pass; the <em>iterable</em> is the source being walked. An optional <span class="mono">if</span> clause may follow to filter.</span></li>
+        <li><span class="qtext">When to use which.</span><span class="atext">A comprehension is better when the body is a single expression — transforming or filtering every item — because it states the intent in one readable line. An ordinary loop is better when the body needs several statements, nested decisions, or line-by-line comments; if the comprehension can't be said aloud in one breath, write the loop.</span></li>
+        <li><span class="qtext">Why tuples.</span><span class="atext">Any two of: processing a tuple is somewhat faster than an equivalent list; immutability guarantees the data cannot be altered by accident; and some Python operations require tuples specifically. Convert with <span class="mono">list()</span> and <span class="mono">tuple()</span>.</span></li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Algorithm Workbench · 1 point each</h3>
+      <ol class="akeys">
+        <li><span class="qtext">Create trails.</span><span class="atext"><span class="mono">trails = ["Switchback", "Ridgeline", "Lakeshore", "Summit"]</span></span></li>
+        <li><span class="qtext">Repetition operator.</span><span class="atext"><span class="mono">counts = [0] * 7</span></span></li>
+        <li><span class="qtext">Slice values.</span><span class="atext"><strong>a.</strong> 30 · <strong>b.</strong> 60 · <strong>c.</strong> [20, 30, 40] · <strong>d.</strong> [10, 20, 30] · <strong>e.</strong> [10, 30, 50]</span></li>
+        <li><span class="qtext">Membership test.</span><span class="atext"><span class="mono">if "Summit" in trails:</span> then indented <span class="mono">print("On the map")</span></span></li>
+        <li><span class="qtext">Display every element.</span><span class="atext"><span class="mono">for trail in trails:</span> then indented <span class="mono">print(trail)</span></span></li>
+        <li><span class="qtext">Method sequence.</span><span class="atext"><strong>a.</strong> [12, 5, 9, 5, 21, 8] · <strong>b.</strong> [30, 12, 5, 9, 5, 21, 8] · <strong>c.</strong> [30, 12, 9, 5, 21, 8] — only the first 5 goes · <strong>d.</strong> [5, 8, 9, 12, 21, 30] · <strong>e.</strong> [30, 21, 12, 9, 8, 5]</span></li>
+        <li><span class="qtext">Lowest and highest.</span><span class="atext"><span class="mono">print(min(readings))</span> and <span class="mono">print(max(readings))</span></span></li>
+        <li><span class="qtext">Trace 1.</span><span class="atext"><span class="mono">[99, 2, 3]</span> — <span class="mono">alias = original</span> copied the reference, not the list, so both names refer to the same object and the change is visible through either.</span></li>
+        <li><span class="qtext">Trace 2.</span><span class="atext"><span class="mono">None</span> — <span class="mono">sort</span> reorders the list in place and returns nothing. The list itself is now sorted, but <span class="mono">result</span> holds <span class="mono">None</span>.</span></li>
+        <li><span class="qtext">Total and average.</span><span class="atext"><span class="mono">total = 0</span> before the loop, then <span class="mono">for amount in donations:</span> with <span class="mono">total += amount</span>, then <span class="mono">print(total / len(donations))</span>.</span></li>
+        <li><span class="qtext">Squares comprehension.</span><span class="atext"><span class="mono">squares = [n ** 2 for n in range(1, 7)]</span> → [1, 4, 9, 16, 25, 36]</span></li>
+        <li><span class="qtext">Filtering comprehension.</span><span class="atext"><span class="mono">[p for p in prices if p &lt; 20]</span> — the expression is just the variable, so this filters without transforming.</span></li>
+        <li><span class="qtext">Lengths comprehension.</span><span class="atext"><span class="mono">[len(t) for t in trails]</span> → [10, 9, 9, 6] for the four trail names.</span></li>
+        <li><span class="qtext">Two-dimensional values.</span><span class="atext"><strong>a.</strong> 95 · <strong>b.</strong> [88, 91, 77] · <strong>c.</strong> 3 (rows) · <strong>d.</strong> 3 (columns in row 0)</span></li>
+        <li><span class="qtext">Nested total.</span><span class="atext"><span class="mono">total = 0</span>, then <span class="mono">for row in grid:</span> containing <span class="mono">for value in row:</span> with <span class="mono">total += value</span>, then <span class="mono">print(total)</span> → 708.</span></li>
+        <li><span class="qtext">Tuple.</span><span class="atext"><span class="mono">point = (3, 7)</span>. Assigning to <span class="mono">point[0]</span> raises <span class="mono">TypeError: 'tuple' object does not support item assignment</span>, because tuples are immutable.</span></li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Exercise 1 · The Trail Elevation Analyzer — 14 points</h3>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> elevations = [<span class="c-num">120</span>, <span class="c-num">340</span>, <span class="c-num">980</span>, <span class="c-num">1520</span>, <span class="c-num">1750</span>, <span class="c-num">610</span>]
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">len</span>(elevations), elevations[<span class="c-num">0</span>], elevations[-<span class="c-num">1</span>], elevations[<span class="c-num">1</span>:<span class="c-num">4</span>]
+<span class="c-out">(6, 120, 610, [340, 980, 1520])</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> elevations.<span class="c-fn">append</span>(<span class="c-num">2100</span>); elevations.<span class="c-fn">insert</span>(<span class="c-num">0</span>, <span class="c-num">55</span>); elevations.<span class="c-fn">remove</span>(<span class="c-num">610</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> elevations
+<span class="c-out">[55, 120, 340, 980, 1520, 1750, 2100]</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> total = <span class="c-num">0</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">for</span> e <span class="c-kw">in</span> elevations:
+<span class="c-prompt">...</span>     total += e
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">print</span>(f<span class="c-str">"total {total}  avg {total/len(elevations):.2f}  min {min(elevations)}  max {max(elevations)}"</span>)
+<span class="c-out">total 6865  avg 980.71  min 55  max 2100</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> elevations = elevations.<span class="c-fn">sort</span>()
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">print</span>(elevations)
+<span class="c-out">None</span>
+<span class="c-com"># recreate the list, then the comprehensions</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> feet = [<span class="c-fn">round</span>(m * <span class="c-num">3.28</span>) <span class="c-kw">for</span> m <span class="c-kw">in</span> elevations]
+<span class="c-prompt">&gt;&gt;&gt;</span> feet
+<span class="c-out">[180, 394, 1115, 3214, 4986, 5740, 6888]</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> high = [m <span class="c-kw">for</span> m <span class="c-kw">in</span> elevations <span class="c-kw">if</span> m &gt; <span class="c-num">1000</span>]
+<span class="c-prompt">&gt;&gt;&gt;</span> high, <span class="c-fn">len</span>(high)
+<span class="c-out">([1520, 1750, 2100], 3)</span></code></pre>
+      </div>
+      <ol class="akeys">
+        <li><span class="qtext">Step 2 — insert vs. remove.</span><span class="atext">The number given to <span class="mono">insert</span> is a <strong>position</strong> — <span class="mono">insert(0, 55)</span> puts 55 at index 0 and shifts everything right. The number given to <span class="mono">remove</span> is a <strong>value</strong> — <span class="mono">remove(610)</span> searches for the element equal to 610 and deletes the first match, wherever it happens to be. Confusing the two is a common bug: <span class="mono">remove(0)</span> does not remove the first element.</span></li>
+        <li><span class="qtext">Step 4 — the sort bug.</span><span class="atext"><span class="mono">elevations</span> displays as <span class="mono">None</span>. <span class="mono">sort</span> reorders the list in place and returns <span class="mono">None</span>, so assigning its result overwrites the variable and the entire list is lost. The correct usage is <span class="mono">elevations.sort()</span> as a statement on its own line. <em>Accept mention of <span class="mono">sorted()</span> as the function that <em>does</em> return a new list.</em></span></li>
+        <li><span class="qtext">Step 6 — transform vs. filter.</span><span class="atext">The <span class="mono">feet</span> comprehension <strong>transforms</strong>: the expression <span class="mono">round(m * 3.28)</span> changes each value, and every element of the source appears in the result. The <span class="mono">high</span> comprehension <strong>filters</strong>: its expression is just <span class="mono">m</span>, so nothing changes, and the <span class="mono">if</span> clause decides which items are kept. The <em>expression</em> does transforming; the <em>if clause</em> does filtering.</span></li>
+        <li><span class="qtext">Step 7 — comprehension vs. loop.</span><span class="atext">The loop version is four lines: an empty list, a <span class="mono">for</span>, an <span class="mono">if</span>, and an <span class="mono">append</span>. The comprehension is one line that reads as a sentence. Either answer earns credit if justified — the comprehension for stating intent concisely, or the loop for being easier to extend and debug. What is graded is a reason, not a preference.</span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>Steps 1–2: indexing, negative index, slice, and all three reshaping methods correct.</td></tr>
+          <tr><td>2</td><td>Step 3: accumulator loop with correct total, average, min, and max.</td></tr>
+          <tr><td>2</td><td>Step 2 explanation — position versus value.</td></tr>
+          <tr><td>3</td><td>Step 4 — <span class="mono">None</span> reproduced and correctly diagnosed as an in-place method returning nothing.</td></tr>
+          <tr><td>2</td><td>Steps 5–6: both comprehensions correct, with the count of high elevations.</td></tr>
+          <tr><td>2</td><td>Steps 6–7 explanations — transform vs. filter identified, and a reasoned comparison to the loop.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="akey">
+      <h3>Exercise 2 · The Gradebook Grid — 14 points</h3>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> scores = [[<span class="c-num">88</span>, <span class="c-num">91</span>, <span class="c-num">77</span>], [<span class="c-num">64</span>, <span class="c-num">82</span>, <span class="c-num">95</span>], [<span class="c-num">70</span>, <span class="c-num">73</span>, <span class="c-num">68</span>]]
+<span class="c-prompt">&gt;&gt;&gt;</span> scores[<span class="c-num">1</span>][<span class="c-num">2</span>], <span class="c-fn">len</span>(scores), <span class="c-fn">len</span>(scores[<span class="c-num">0</span>])
+<span class="c-out">(95, 3, 3)</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> total = <span class="c-num">0</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">for</span> row <span class="c-kw">in</span> scores:
+<span class="c-prompt">...</span>     <span class="c-kw">for</span> value <span class="c-kw">in</span> row:
+<span class="c-prompt">...</span>         total += value
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">print</span>(total, f<span class="c-str">"{total/9:.2f}"</span>)
+<span class="c-out">708 78.67</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">for</span> row <span class="c-kw">in</span> scores:
+<span class="c-prompt">...</span>     <span class="c-fn">print</span>(<span class="c-fn">sum</span>(row), f<span class="c-str">"{sum(row)/len(row):.2f}"</span>)
+<span class="c-prompt">...</span>
+<span class="c-out">256 85.33
+241 80.33
+211 70.33</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> [row[<span class="c-num">0</span>] <span class="c-kw">for</span> row <span class="c-kw">in</span> scores]
+<span class="c-out">[88, 64, 70]</span>
+<span class="c-com"># test averages: test 0 -> 74.00, test 1 -> 82.00, test 2 -> 80.00</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> alias = scores
+<span class="c-prompt">&gt;&gt;&gt;</span> alias[<span class="c-num">0</span>][<span class="c-num">0</span>] = <span class="c-num">0</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> scores[<span class="c-num">0</span>]
+<span class="c-out">[0, 91, 77]</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> scores[<span class="c-num">0</span>][<span class="c-num">0</span>] = <span class="c-num">88</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> copy = scores[:]
+<span class="c-prompt">&gt;&gt;&gt;</span> copy[<span class="c-num">0</span>][<span class="c-num">0</span>] = <span class="c-num">999</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> scores[<span class="c-num">0</span>]
+<span class="c-out">[999, 91, 77]</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> point = (<span class="c-num">3</span>, <span class="c-num">7</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> point[<span class="c-num">0</span>], <span class="c-fn">len</span>(point), <span class="c-num">7</span> <span class="c-kw">in</span> point
+<span class="c-out">(3, 2, True)</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> point[<span class="c-num">0</span>] = <span class="c-num">9</span>
+<span class="c-err">TypeError: 'tuple' object does not support item assignment</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">list</span>(point), <span class="c-fn">tuple</span>([<span class="c-num">1</span>, <span class="c-num">2</span>, <span class="c-num">3</span>])
+<span class="c-out">([3, 7], (1, 2, 3))</span></code></pre>
+      </div>
+      <table class="ctable">
+        <thead><tr><th>Test</th><th>Column</th><th>Average</th></tr></thead>
+        <tbody>
+          <tr><td>Test 0</td><td>[88, 64, 70]</td><td>74.00</td></tr>
+          <tr><td>Test 1</td><td>[91, 82, 73]</td><td>82.00</td></tr>
+          <tr><td>Test 2</td><td>[77, 95, 68]</td><td>80.00</td></tr>
+        </tbody>
+      </table>
+      <ol class="akeys">
+        <li><span class="qtext">Step 1 — the two lengths.</span><span class="atext"><span class="mono">len(scores)</span> is 3, the number of <em>rows</em> — how many students. <span class="mono">len(scores[0])</span> is 3, the number of <em>columns</em> in the first row — how many tests each student took. The outer length counts inner lists; the inner length counts values within one of them.</span></li>
+        <li><span class="qtext">Step 4 — why a comprehension fits a column.</span><span class="atext">A column isn't stored anywhere — the data is grouped by row, so every row must be visited and one element pulled from each. That is exactly the shape of a comprehension: walk a sequence, take one value per item. <span class="mono">[row[0] for row in scores]</span> says "the first score from every student" in one readable line, where a loop would need an empty list and an <span class="mono">append</span>.</span></li>
+        <li><span class="qtext">Step 5 — aliasing.</span><span class="atext"><span class="mono">scores[0]</span> becomes <span class="mono">[0, 91, 77]</span>. <span class="mono">alias = scores</span> copied the reference, not the data, so both names refer to the same list object and a change made through one is visible through the other. There was never a second list.</span></li>
+        <li>
+          <span class="qtext">Step 6 — why the slice copy still changed the original.</span>
+          <span class="atext"><span class="mono">scores[0]</span> becomes <span class="mono">[999, 91, 77]</span> even though a copy was made. The slice <em>did</em> create a new outer list — but the elements it copied are themselves <em>references</em> to the three inner lists. So <span class="mono">copy</span> is a new list pointing at the very same rows. Changing <span class="mono">copy[0][0]</span> reaches through that shared reference into the original row. <em>The slice copied the outer list only — this is called a shallow copy.</em> Appending a whole new row to <span class="mono">copy</span> would <em>not</em> affect <span class="mono">scores</span>, because that changes the outer list; it is only edits reaching <em>into</em> a row that are shared.</span>
+        </li>
+        <li><span class="qtext">Step 7 — why a tuple.</span><span class="atext">Any two of: immutability guarantees the coordinate cannot be altered by accident, which suits a fixed pair of values; processing a tuple is somewhat faster than an equivalent list; and some Python operations require tuples specifically. The exception raised is <span class="mono">TypeError: 'tuple' object does not support item assignment</span>.</span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>Steps 1–3: two-index access, both lengths, nested-loop total of 708, and per-student rows.</td></tr>
+          <tr><td>2</td><td>Step 4: all three column comprehensions with correct averages.</td></tr>
+          <tr><td>2</td><td>Step 1 and 4 explanations — rows vs. columns, and why a comprehension suits a column.</td></tr>
+          <tr><td>2</td><td>Step 5: aliasing reproduced and correctly explained as a shared reference.</td></tr>
+          <tr><td>3</td><td>Step 6: shallow-copy result reproduced, with the inner lists identified as still shared.</td></tr>
+          <tr><td>2</td><td>Step 7: tuple operations shown, <span class="mono">TypeError</span> recorded verbatim, conversions both directions, two reasons given.</td></tr>
+        </tbody>
+      </table>
+      <div class="keypt"><b>Note on step 6.</b> Shallow copying goes one step beyond the module, which covers copying only for flat lists. Students are not expected to know the term in advance — the step is written as a discovery. Award credit for observing that the inner lists are still shared, whether or not they produce the phrase "shallow copy." The takeaway that matters: <span class="mono">[:]</span> makes a real copy of a flat list, but only of the outer level in a nested one.</div>
+    </div>
+
+    <div class="akey">
+      <h3>Point Summary</h3>
+      <table class="ctable">
+        <thead><tr><th>Section</th><th>Items</th><th>Points</th></tr></thead>
+        <tbody>
+          <tr><td>Multiple Choice</td><td>24 × 1 pt</td><td>24</td></tr>
+          <tr><td>True or False</td><td>10 × 1 pt</td><td>10</td></tr>
+          <tr><td>Short Answer</td><td>11 × 2 pts</td><td>22</td></tr>
+          <tr><td>Algorithm Workbench</td><td>16 × 1 pt</td><td>16</td></tr>
+          <tr><td>Programming Exercises</td><td>2 × 14 pts</td><td>28</td></tr>
+          <tr><td>Total</td><td>—</td><td>100</td></tr>
+        </tbody>
+      </table>
+      <div class="keypt"><b>Canvas note.</b> Multiple Choice and True/False convert directly into an auto-graded Canvas quiz. Short Answer and Algorithm Workbench work well as essay questions; the two Programming Exercises are best set up as a text-entry assignment so students can paste their console transcripts.</div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>CIS181 · Python Programming · Week 08 — Review Questions &amp; Answer Key</span>
+    <span>Original questions &amp; exercises · for classroom use</span>
+  </div>
+</footer>
+
+<script>
+  // scroll progress bar
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
+    bar.style.width = Math.min(100, Math.max(0, scrolled * 100)) + '%';
+  };
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // scrollspy active section
+  const links = Array.from(document.querySelectorAll('nav.toc a'));
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('main section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

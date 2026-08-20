@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 09 — More About Strings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;--py-blue-dark:#306998;--py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;--py-yellow-deep:#f0b400;
+    --slate-900:#0f172a;--slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;
+    --slate-500:#64748b;--slate-400:#94a3b8;--slate-300:#cbd5e1;--slate-200:#e2e8f0;
+    --slate-100:#f1f5f9;--slate-50:#f8fafc;
+    --good:#15803d;--good-bg:#dcfce7;--bad:#b91c1c;--bad-bg:#fee2e2;
+    --display:'Space Grotesk',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'Fira Code',ui-monospace,monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;font-size:17px;}
+  body{margin:0;font-family:var(--body);color:#2b303b;background:var(--slate-50);line-height:1.7;-webkit-font-smoothing:antialiased;}
+  a{color:var(--py-blue-dark);}
+  code{font-family:var(--mono);font-size:.92em;}
+  .hero{background:linear-gradient(150deg,var(--py-blue-deep) 0%,var(--py-blue-dark) 55%,var(--py-blue) 100%);color:#fff;padding:64px 24px 0;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;background:radial-gradient(circle,rgba(255,212,59,.22),transparent 70%);}
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{font-family:var(--mono);letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:var(--py-yellow);font-weight:600;margin-bottom:14px;}
+  .hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:0 0 18px;letter-spacing:-.02em;}
+  .hero h1 .accent{background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p.lede{font-size:1.12rem;max-width:60ch;color:#e0ecf5;margin:0 0 26px;}
+  .hero-bar{display:flex;flex-wrap:wrap;gap:8px;padding:18px 0 22px;}
+  .hero-bar a{font-size:.82rem;font-weight:600;color:#fff;text-decoration:none;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);padding:7px 13px;border-radius:999px;transition:.18s;}
+  .hero-bar a:hover{background:var(--py-yellow);color:var(--slate-900);border-color:var(--py-yellow);}
+  .hero-bar a.out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+  .toc-out{display:block;margin:14px 0 0;padding:9px 13px;text-decoration:none;font-size:.86rem;
+    font-weight:600;color:var(--py-blue-deep);background:#eaf2f9;border:1px solid #cfe0ee;
+    border-radius:9px;transition:.16s;}
+  .toc-out:hover{background:var(--py-blue-deep);color:#fff;border-color:var(--py-blue-deep);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:grid;grid-template-columns:232px 1fr;gap:42px;align-items:start;}
+  .toc{position:sticky;top:18px;padding:28px 0;align-self:start;}
+  .toc h2{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-500);margin:0 0 12px;}
+  .toc ol{list-style:none;margin:0;padding:0;counter-reset:t;}
+  .toc li{counter-increment:t;}
+  .toc a{display:block;text-decoration:none;color:var(--slate-600);font-size:.9rem;font-weight:500;padding:6px 10px 6px 34px;border-left:2px solid var(--slate-200);position:relative;transition:.16s;}
+  .toc a::before{content:counter(t,decimal-leading-zero);position:absolute;left:8px;top:6px;font-family:var(--mono);font-size:.68rem;color:var(--slate-400);}
+  .toc a:hover{color:var(--py-blue-dark);border-left-color:var(--py-blue);}
+  .toc a.active{color:var(--py-blue-deep);border-left-color:var(--py-yellow-deep);background:#fff;font-weight:600;}
+  main{padding:34px 0 60px;min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:18px;}
+  .sec-tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--py-blue);font-weight:600;margin-bottom:6px;}
+  h2.title{font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.12;margin:0 0 6px;color:var(--slate-900);letter-spacing:-.015em;}
+  h2.title .bar{display:block;width:54px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));margin-top:12px;}
+  h3{font-family:var(--display);font-weight:600;font-size:1.18rem;color:var(--slate-900);margin:30px 0 10px;}
+  p{margin:0 0 14px;}
+  .lead{font-size:1.06rem;color:var(--slate-700);}
+  .code{background:var(--slate-900);border-radius:12px;margin:16px 0;overflow:hidden;border:1px solid #0b1220;box-shadow:0 10px 30px -16px rgba(15,23,42,.5);}
+  .code-top{display:flex;align-items:center;gap:7px;padding:11px 15px;background:#0b1220;border-bottom:1px solid #1e293b;}
+  .code-top .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+  .code-top .dot.r{background:#f87171;}.code-top .dot.y{background:#fbbf24;}.code-top .dot.g{background:#34d399;}
+  .code-top .fn{margin-left:8px;font-family:var(--mono);font-size:.74rem;color:var(--slate-400);}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.7;color:#e2e8f0;}
+  .kw{color:#ff9d6f;}.bif{color:#7cc3ff;}.str{color:#ffd87a;}.num{color:#a5f3a0;}.com{color:#64748b;font-style:italic;}.op{color:#f0abfc;}.out{color:#94a3b8;}
+  .cards{display:grid;gap:12px;margin:18px 0;}
+  details.card{background:#fff;border:1px solid var(--slate-200);border-radius:12px;box-shadow:0 1px 2px rgba(15,23,42,.04);overflow:hidden;}
+  details.card>summary{cursor:pointer;list-style:none;padding:15px 18px;font-weight:600;color:var(--slate-900);display:flex;align-items:center;gap:12px;font-family:var(--display);}
+  details.card>summary::-webkit-details-marker{display:none;}
+  details.card>summary .ix{font-family:var(--mono);font-size:.72rem;color:var(--py-blue-dark);background:#e8f1f8;border-radius:6px;padding:3px 7px;font-weight:600;flex:none;}
+  details.card>summary .chev{margin-left:auto;color:var(--slate-400);transition:.2s;flex:none;}
+  details.card[open]>summary .chev{transform:rotate(90deg);color:var(--py-blue);}
+  details.card .body{padding:0 18px 17px;color:var(--slate-700);}
+  details.card .body>*:first-child{margin-top:0;}
+  .call{border-radius:11px;padding:14px 16px;margin:16px 0;border:1px solid;font-size:.95rem;}
+  .call .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:5px;}
+  .call.good{background:var(--good-bg);border-color:#86efac;color:#14532d;}
+  .call.good .lbl{background:var(--good);color:#fff;}
+  .call.bad{background:var(--bad-bg);border-color:#fca5a5;color:#7f1d1d;}
+  .call.bad .lbl{background:var(--bad);color:#fff;}
+  .call.note{background:#fff8e1;border-color:#fde68a;color:#713f12;}
+  .call.note .lbl{background:var(--py-yellow-deep);color:var(--slate-900);}
+  .call p:last-child{margin-bottom:0;}
+  .call code{background:rgba(15,23,42,.07);padding:1px 5px;border-radius:4px;}
+  .tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--slate-200);}
+  .tbl th{background:var(--py-blue-dark);color:#fff;text-align:left;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:.88rem;}
+  .tbl td{padding:9px 14px;border-top:1px solid var(--slate-200);vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:var(--slate-50);}
+  .tbl td code{color:var(--py-blue-deep);font-weight:600;}
+  figure{margin:22px 0;background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px 16px 8px;text-align:center;}
+  figure svg{max-width:100%;height:auto;}
+  figcaption{font-size:.84rem;color:var(--slate-500);margin-top:8px;padding-bottom:8px;}
+  figcaption b{color:var(--slate-700);font-family:var(--display);}
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.reveal{opacity:1;transform:none;transition:none;}}
+  @media (max-width:880px){.wrap{grid-template-columns:1fr;gap:0;}.toc{display:none;}main{padding-top:24px;}}
+  :focus-visible{outline:3px solid var(--py-yellow-deep);outline-offset:2px;border-radius:4px;}
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Week 09</div>
+    <h1>More About <span class="accent">Strings</span></h1>
+    <p class="lede">You've used strings since your very first program, but they have far more to offer than just holding text. Because a string is a <b>sequence</b> of characters, the indexing and slicing you learned for lists work here too — and on top of that, strings carry a deep toolbox of methods for testing, searching, cleaning, and transforming text.</p>
+    <nav class="hero-bar" aria-label="Module topics">
+      <a href="#basics">Strings as Sequences</a>
+      <a href="#access">Accessing Characters</a>
+      <a href="#concat">Concatenation</a>
+      <a href="#immutable">Immutability</a>
+      <a href="#slice">Slicing</a>
+      <a href="#find">The in Operator</a>
+      <a href="#testmethods">Testing Methods</a>
+      <a href="#modify">Modification Methods</a>
+      <a href="#searchrepl">Search &amp; Replace</a>
+      <a href="#repeatsplit">Repeat &amp; Split</a>
+      <a href="#console">Practice Console</a>
+      <a href="python-wk09-review-questions.html" class="out">&#10003;&nbsp; Review Questions</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="toc">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#basics">Strings are sequences</a></li>
+      <li><a href="#access">Accessing characters</a></li>
+      <li><a href="#concat">Concatenation</a></li>
+      <li><a href="#immutable">Strings are immutable</a></li>
+      <li><a href="#slice">String slicing</a></li>
+      <li><a href="#find">Searching with in</a></li>
+      <li><a href="#testmethods">Testing methods</a></li>
+      <li><a href="#modify">Modification methods</a></li>
+      <li><a href="#searchrepl">Searching &amp; replacing</a></li>
+      <li><a href="#repeatsplit">Repetition &amp; splitting</a></li>
+      <li><a href="#console">Practice console</a></li>
+      <li><a href="#check">Check yourself</a></li>
+      <li><a href="#glossary">Key terms</a></li>
+    </ol>
+    <a class="toc-out" href="python-wk09-review-questions.html">&rarr;&nbsp; Review Questions</a>
+  </aside>
+
+  <main>
+    <!-- 1. STRINGS ARE SEQUENCES -->
+    <section id="basics" class="reveal">
+      <div class="sec-tag">Foundation</div>
+      <h2 class="title">Strings are sequences<span class="bar"></span></h2>
+      <p class="lead">A huge share of real programs spend their time examining and reshaping text — names, codes, messages, user input. Python gives strings a rich set of tools for exactly that. The key insight that unlocks most of them: a <b>string is a sequence of characters</b>, so the same indexing, slicing, <code>in</code> testing, and <code>len</code> you used with lists all work on strings too.</p>
+      <div class="call note">
+        <span class="lbl">One big difference</span>
+        <p>Lists are mutable; strings are <em>not</em>. Everything that looks like "changing" a string actually builds a brand-new string. Keep that in mind — it explains a lot of how the string methods behave.</p>
+      </div>
+    </section>
+
+    <!-- 2. ACCESSING CHARACTERS -->
+    <section id="access" class="reveal">
+      <div class="sec-tag">Basic operations</div>
+      <h2 class="title">Accessing the individual characters<span class="bar"></span></h2>
+      <p class="lead">There are two everyday ways to reach the characters of a string: walk through them with a <code>for</code> loop, or jump straight to one by its index.</p>
+
+      <h3>Iterating with a <code>for</code> loop</h3>
+      <p>A <code>for</code> loop over a string hands you one character per pass — perfect when you need to look at every character, such as counting how many times a letter appears.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">iterate.py</span></div>
+<pre><span class="n">word</span> <span class="op">=</span> <span class="str">"Falcon"</span>
+<span class="kw">for</span> ch <span class="kw">in</span> word<span class="op">:</span>
+    <span class="bif">print</span>(ch)        <span class="out"># F, then a, l, c, o, n on its own line</span></pre>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 460 120" role="img" aria-label="A for loop over the string Falcon, with the variable ch taking each character in turn">
+          <defs>
+            <marker id="ah_s1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#475569"/></marker>
+          </defs>
+          <text x="48" y="40" text-anchor="middle" fill="#475569" font-family="Fira Code,monospace" font-size="13">word</text>
+          <line x1="78" y1="36" x2="124" y2="36" stroke="#306998" stroke-width="2" marker-end="url(#ah_s1)"/>
+          <g font-family="Fira Code,monospace" font-size="13">
+            <rect x="128" y="18" width="40" height="36" fill="#fff" stroke="#4B8BBE" stroke-width="1.4"/><text x="148" y="42" text-anchor="middle" fill="#1f4d72">F</text>
+            <rect x="168" y="18" width="40" height="36" fill="#fff" stroke="#4B8BBE" stroke-width="1.4"/><text x="188" y="42" text-anchor="middle" fill="#1f4d72">a</text>
+            <rect x="208" y="18" width="40" height="36" fill="#fff" stroke="#4B8BBE" stroke-width="1.4"/><text x="228" y="42" text-anchor="middle" fill="#1f4d72">l</text>
+            <rect x="248" y="18" width="40" height="36" fill="#fff" stroke="#4B8BBE" stroke-width="1.4"/><text x="268" y="42" text-anchor="middle" fill="#1f4d72">c</text>
+            <rect x="288" y="18" width="40" height="36" fill="#fff" stroke="#4B8BBE" stroke-width="1.4"/><text x="308" y="42" text-anchor="middle" fill="#1f4d72">o</text>
+            <rect x="328" y="18" width="40" height="36" fill="#fff" stroke="#4B8BBE" stroke-width="1.4"/><text x="348" y="42" text-anchor="middle" fill="#1f4d72">n</text>
+          </g>
+          <text x="48" y="92" text-anchor="middle" fill="#475569" font-family="Fira Code,monospace" font-size="13">ch</text>
+          <line x1="62" y1="88" x2="148" y2="60" stroke="#15803d" stroke-width="2" marker-end="url(#ah_s1)"/>
+          <text x="300" y="92" text-anchor="middle" fill="#15803d" font-family="Inter,sans-serif" font-size="11">on each pass, ch becomes the next character</text>
+        </svg>
+        <figcaption><b>Figure 9-1.</b> Iterating over <code>"Falcon"</code>. Each time through the loop, <code>ch</code> refers to the next character in order.</figcaption>
+      </figure>
+
+      <h3>Indexing</h3>
+      <p>Every character has an <b>index</b> giving its position, starting at <code>0</code>. Read one with <code>word[i]</code>, which hands back a one-character string. Negative indexes count from the end, exactly as with lists.</p>
+
+      <figure>
+        <svg viewBox="0 0 500 150" role="img" aria-label="The string Stay curious with each character's positive index on top and negative index below">
+          <g font-family="Inter,sans-serif" font-size="11" fill="#15803d" font-weight="600">
+            <text x="52" y="24" text-anchor="middle">0</text><text x="88" y="24" text-anchor="middle">1</text><text x="124" y="24" text-anchor="middle">2</text><text x="160" y="24" text-anchor="middle">3</text><text x="196" y="24" text-anchor="middle">4</text><text x="232" y="24" text-anchor="middle">5</text><text x="268" y="24" text-anchor="middle">6</text><text x="304" y="24" text-anchor="middle">7</text><text x="340" y="24" text-anchor="middle">8</text><text x="376" y="24" text-anchor="middle">9</text><text x="412" y="24" text-anchor="middle">10</text><text x="448" y="24" text-anchor="middle">11</text>
+          </g>
+          <g font-family="Fira Code,monospace" font-size="14">
+            <rect x="36" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="52" y="58" text-anchor="middle" fill="#1f4d72">S</text>
+            <rect x="72" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="88" y="58" text-anchor="middle" fill="#1f4d72">t</text>
+            <rect x="108" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="124" y="58" text-anchor="middle" fill="#1f4d72">a</text>
+            <rect x="144" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="160" y="58" text-anchor="middle" fill="#1f4d72">y</text>
+            <rect x="180" y="32" width="32" height="38" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.3"/><text x="196" y="58" text-anchor="middle" fill="#94a3b8">&middot;</text>
+            <rect x="216" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="232" y="58" text-anchor="middle" fill="#1f4d72">c</text>
+            <rect x="252" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="268" y="58" text-anchor="middle" fill="#1f4d72">u</text>
+            <rect x="288" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="304" y="58" text-anchor="middle" fill="#1f4d72">r</text>
+            <rect x="324" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="340" y="58" text-anchor="middle" fill="#1f4d72">i</text>
+            <rect x="360" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="376" y="58" text-anchor="middle" fill="#1f4d72">o</text>
+            <rect x="396" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="412" y="58" text-anchor="middle" fill="#1f4d72">u</text>
+            <rect x="432" y="32" width="32" height="38" fill="#fff" stroke="#4B8BBE" stroke-width="1.3"/><text x="448" y="58" text-anchor="middle" fill="#1f4d72">s</text>
+          </g>
+          <g font-family="Inter,sans-serif" font-size="11" fill="#b91c1c" font-weight="600">
+            <text x="52" y="88" text-anchor="middle">-12</text><text x="88" y="88" text-anchor="middle">-11</text><text x="124" y="88" text-anchor="middle">-10</text><text x="160" y="88" text-anchor="middle">-9</text><text x="196" y="88" text-anchor="middle">-8</text><text x="232" y="88" text-anchor="middle">-7</text><text x="268" y="88" text-anchor="middle">-6</text><text x="304" y="88" text-anchor="middle">-5</text><text x="340" y="88" text-anchor="middle">-4</text><text x="376" y="88" text-anchor="middle">-3</text><text x="412" y="88" text-anchor="middle">-2</text><text x="448" y="88" text-anchor="middle">-1</text>
+          </g>
+          <text x="250" y="120" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="11">The space at index 4 is a character too. (motto = "Stay curious")</text>
+        </svg>
+        <figcaption><b>Figure 9-2.</b> Every character — even the space — occupies a numbered position. Positive indexes count from the front; negative indexes from the back.</figcaption>
+      </figure>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">indexing.py</span></div>
+<pre><span class="n">motto</span> <span class="op">=</span> <span class="str">"Stay curious"</span>
+<span class="bif">print</span>(motto[<span class="num">0</span>])      <span class="out"># S</span>
+<span class="bif">print</span>(motto[-<span class="num">1</span>])     <span class="out"># s  (last character)</span>
+<span class="bif">print</span>(<span class="bif">len</span>(motto))    <span class="out"># 12</span>
+<span class="bif">print</span>(motto[<span class="num">12</span>])     <span class="out"># IndexError: valid indexes are 0..11</span></pre>
+      </div>
+      <p>Going past the end raises an <b>IndexError</b>. The <code>len</code> function returns the character count, so the last valid index is always <code>len(string) - 1</code> — handy for keeping an index-based loop in bounds.</p>
+    </section>
+
+    <!-- 3. CONCATENATION -->
+    <section id="concat" class="reveal">
+      <div class="sec-tag">Basic operations</div>
+      <h2 class="title">String concatenation<span class="bar"></span></h2>
+      <p class="lead">To <b>concatenate</b> is to append one string to the end of another. The <code>+</code> operator joins two strings into a new one, and <code>+=</code> tacks a string onto the end of an existing variable.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">concatenation.py</span></div>
+<pre><span class="n">first</span> <span class="op">=</span> <span class="str">"Nova"</span>
+<span class="n">last</span>  <span class="op">=</span> <span class="str">"Vega"</span>
+
+<span class="n">full</span> <span class="op">=</span> first <span class="op">+</span> <span class="str">" "</span> <span class="op">+</span> last
+<span class="bif">print</span>(full)        <span class="out"># Nova Vega</span>
+
+<span class="n">greeting</span> <span class="op">=</span> <span class="str">"Hi"</span>
+<span class="n">greeting</span> <span class="op">+=</span> <span class="str">" there"</span>   <span class="com"># greeting is now "Hi there"</span></pre>
+      </div>
+      <div class="call bad">
+        <span class="lbl">Watch the left side of +=</span>
+        <p>With <code>+=</code>, the variable on the left must already exist — otherwise Python raises a <code>NameError</code>. And <code>+</code> only joins string to string; <code>"Age: " + 25</code> raises a <code>TypeError</code>. Convert the number first: <code>"Age: " + str(25)</code>.</p>
+      </div>
+    </section>
+
+    <!-- 4. IMMUTABILITY -->
+    <section id="immutable" class="reveal">
+      <div class="sec-tag">A defining property</div>
+      <h2 class="title">Strings are immutable<span class="bar"></span></h2>
+      <p class="lead">Once a string is created, it cannot be changed. This surprises people, because concatenation <em>looks</em> like editing. What really happens is that Python builds a <b>new</b> string and points the variable at it — the original is left untouched.</p>
+
+      <figure>
+        <svg viewBox="0 0 460 160" role="img" aria-label="The variable greeting first points to Hi, then after concatenation points to a new string Hi there while the old string remains">
+          <defs>
+            <marker id="ah_s3" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#475569"/></marker>
+          </defs>
+          <text x="60" y="58" text-anchor="middle" fill="#475569" font-family="Fira Code,monospace" font-size="13">greeting</text>
+          <!-- old string, now orphaned -->
+          <rect x="200" y="20" width="120" height="34" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="4 3"/>
+          <text x="260" y="42" text-anchor="middle" fill="#94a3b8" font-family="Fira Code,monospace" font-size="12">"Hi"</text>
+          <text x="386" y="42" text-anchor="middle" fill="#94a3b8" font-family="Inter,sans-serif" font-size="10">left behind</text>
+          <!-- new string -->
+          <rect x="200" y="86" width="160" height="34" rx="4" fill="#fff8e1" stroke="#f0b400" stroke-width="1.5"/>
+          <text x="280" y="108" text-anchor="middle" fill="#7c2d12" font-family="Fira Code,monospace" font-size="12">"Hi there"</text>
+          <!-- arrow now points to new -->
+          <line x1="108" y1="58" x2="196" y2="100" stroke="#306998" stroke-width="2" marker-end="url(#ah_s3)"/>
+          <text x="150" y="92" text-anchor="middle" fill="#306998" font-family="Inter,sans-serif" font-size="10">rebound</text>
+        </svg>
+        <figcaption><b>Figure 9-3.</b> After <code>greeting += " there"</code>, the variable is rebound to a new string. The original <code>"Hi"</code> isn't edited — it's simply no longer referenced.</figcaption>
+      </figure>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">immutable.py</span></div>
+<pre><span class="n">tag</span> <span class="op">=</span> <span class="str">"hello"</span>
+<span class="n">tag</span>[<span class="num">0</span>] <span class="op">=</span> <span class="str">"H"</span>     <span class="out"># TypeError: strings can't be changed in place</span></pre>
+      </div>
+      <p>Because of immutability, you can't assign to <code>string[index]</code>. To get a modified version, you build a new string — which is exactly what the string methods coming up do: they return a fresh copy and leave the original alone.</p>
+    </section>
+
+    <!-- 5. SLICING -->
+    <section id="slice" class="reveal">
+      <div class="sec-tag">Substrings</div>
+      <h2 class="title">String slicing<span class="bar"></span></h2>
+      <p class="lead">A <b>slice</b> is a span of characters taken from a string — a <b>substring</b>. The expression <code>string[start:end]</code> returns a new string with copies of the characters from <code>start</code> up to, but not including, <code>end</code>.</p>
+
+      <figure>
+        <svg viewBox="0 0 500 150" role="img" aria-label="The string ORD-48715 with the slice from index 4 to the end highlighted">
+          <g font-family="Inter,sans-serif" font-size="11" fill="#94a3b8">
+            <text x="52" y="22" text-anchor="middle">0</text><text x="100" y="22" text-anchor="middle">1</text><text x="148" y="22" text-anchor="middle">2</text><text x="196" y="22" text-anchor="middle">3</text><text x="244" y="22" text-anchor="middle">4</text><text x="292" y="22" text-anchor="middle">5</text><text x="340" y="22" text-anchor="middle">6</text><text x="388" y="22" text-anchor="middle">7</text><text x="436" y="22" text-anchor="middle">8</text>
+          </g>
+          <g font-family="Fira Code,monospace" font-size="14">
+            <rect x="30" y="30" width="44" height="40" fill="#fff" stroke="#94a3b8" stroke-width="1.2"/><text x="52" y="57" text-anchor="middle" fill="#475569">O</text>
+            <rect x="78" y="30" width="44" height="40" fill="#fff" stroke="#94a3b8" stroke-width="1.2"/><text x="100" y="57" text-anchor="middle" fill="#475569">R</text>
+            <rect x="126" y="30" width="44" height="40" fill="#fff" stroke="#94a3b8" stroke-width="1.2"/><text x="148" y="57" text-anchor="middle" fill="#475569">D</text>
+            <rect x="174" y="30" width="44" height="40" fill="#fff" stroke="#94a3b8" stroke-width="1.2"/><text x="196" y="57" text-anchor="middle" fill="#475569">-</text>
+            <rect x="222" y="30" width="44" height="40" fill="#fff8e1" stroke="#f0b400" stroke-width="1.6"/><text x="244" y="57" text-anchor="middle" fill="#7c2d12">4</text>
+            <rect x="270" y="30" width="44" height="40" fill="#fff8e1" stroke="#f0b400" stroke-width="1.6"/><text x="292" y="57" text-anchor="middle" fill="#7c2d12">8</text>
+            <rect x="318" y="30" width="44" height="40" fill="#fff8e1" stroke="#f0b400" stroke-width="1.6"/><text x="340" y="57" text-anchor="middle" fill="#7c2d12">7</text>
+            <rect x="366" y="30" width="44" height="40" fill="#fff8e1" stroke="#f0b400" stroke-width="1.6"/><text x="388" y="57" text-anchor="middle" fill="#7c2d12">1</text>
+            <rect x="414" y="30" width="44" height="40" fill="#fff8e1" stroke="#f0b400" stroke-width="1.6"/><text x="436" y="57" text-anchor="middle" fill="#7c2d12">5</text>
+          </g>
+          <path d="M222,86 L458,86" stroke="#d97706" stroke-width="2"/>
+          <path d="M222,82 L222,90 M458,82 L458,90" stroke="#d97706" stroke-width="2"/>
+          <text x="340" y="108" text-anchor="middle" fill="#7c2d12" font-family="Fira Code,monospace" font-size="12">code[4:]</text>
+          <text x="340" y="130" text-anchor="middle" fill="#475569" font-family="Inter,sans-serif" font-size="11">&rarr; "48715"   (end defaults to the length)</text>
+        </svg>
+        <figcaption><b>Figure 9-4.</b> Slicing pulls a substring. With the end omitted, <code>code[4:]</code> runs to the end of the string.</figcaption>
+      </figure>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">slicing.py</span></div>
+<pre><span class="n">code</span> <span class="op">=</span> <span class="str">"ORD-48715"</span>
+
+<span class="bif">print</span>(code[<span class="num">0</span>:<span class="num">3</span>])   <span class="out"># ORD     start up to (not including) 3</span>
+<span class="bif">print</span>(code[<span class="num">4</span>:])    <span class="out"># 48715   end defaults to len(code)</span>
+<span class="bif">print</span>(code[:<span class="num">3</span>])    <span class="out"># ORD     start defaults to 0</span>
+<span class="bif">print</span>(code[-<span class="num">2</span>:])   <span class="out"># 15      negative start</span>
+<span class="bif">print</span>(code[::<span class="num">2</span>])   <span class="out"># OD475   step of 2</span></pre>
+      </div>
+      <p>Omit <code>start</code> and Python uses <code>0</code>; omit <code>end</code> and it uses <code>len(string)</code>. A third value sets the <b>step</b>, and negative indexes work just as they do for single characters.</p>
+    </section>
+    <!-- 6. THE IN OPERATOR -->
+    <section id="find" class="reveal">
+      <div class="sec-tag">Testing &amp; searching</div>
+      <h2 class="title">Searching with the <code>in</code> operator<span class="bar"></span></h2>
+      <p class="lead">The <code>in</code> operator tells you whether one string appears inside another. The expression <code>string1 in string2</code> is <code>True</code> when <code>string1</code> is found somewhere in <code>string2</code>, and <code>False</code> otherwise. Its partner <code>not in</code> asks the opposite.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">contains.py</span></div>
+<pre><span class="n">sentence</span> <span class="op">=</span> <span class="str">"the quick brown fox"</span>
+
+<span class="kw">if</span> <span class="str">"quick"</span> <span class="kw">in</span> sentence<span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"found it"</span>)        <span class="out"># found it</span>
+
+<span class="bif">print</span>(<span class="str">"slow"</span> <span class="kw">not</span> <span class="kw">in</span> sentence)   <span class="out"># True</span></pre>
+      </div>
+    </section>
+
+    <!-- 7. TESTING METHODS -->
+    <section id="testmethods" class="reveal">
+      <div class="sec-tag">Testing &amp; searching</div>
+      <h2 class="title">String testing methods<span class="bar"></span></h2>
+      <p class="lead">A <b>method</b> is a function attached to an object; you call it as <code>mystring.method(arguments)</code>. One family of string methods <em>tests</em> a string for some characteristic and returns a Boolean — <code>True</code> if the condition holds, <code>False</code> if not.</p>
+
+      <table class="tbl">
+        <thead><tr><th>Method</th><th>Returns <code>True</code> when&hellip;</th></tr></thead>
+        <tbody>
+          <tr><td><code>isalnum()</code></td><td>the string is non-empty and every character is a letter or digit.</td></tr>
+          <tr><td><code>isalpha()</code></td><td>the string is non-empty and every character is a letter.</td></tr>
+          <tr><td><code>isdigit()</code></td><td>the string is non-empty and every character is a digit.</td></tr>
+          <tr><td><code>islower()</code></td><td>every letter is lowercase (and there's at least one letter).</td></tr>
+          <tr><td><code>isupper()</code></td><td>every letter is uppercase (and there's at least one letter).</td></tr>
+          <tr><td><code>isspace()</code></td><td>the string is non-empty and every character is whitespace (space, <code>\n</code>, or <code>\t</code>).</td></tr>
+        </tbody>
+      </table>
+      <figcaption style="text-align:left;color:var(--slate-500);font-size:.84rem;margin:-6px 0 14px;"><b style="font-family:var(--display);color:var(--slate-700);">Table 9-1.</b> Some string testing methods.</figcaption>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">testing.py</span></div>
+<pre><span class="bif">print</span>(<span class="str">"2026"</span>.<span class="bif">isdigit</span>())     <span class="out"># True</span>
+<span class="bif">print</span>(<span class="str">"Falcon"</span>.<span class="bif">isalpha</span>())   <span class="out"># True</span>
+<span class="bif">print</span>(<span class="str">"Bay12"</span>.<span class="bif">isalnum</span>())    <span class="out"># True</span>
+<span class="bif">print</span>(<span class="str">"   "</span>.<span class="bif">isspace</span>())      <span class="out"># True</span>
+<span class="bif">print</span>(<span class="str">"Falcon"</span>.<span class="bif">isupper</span>())   <span class="out"># False</span></pre>
+      </div>
+      <div class="call good">
+        <span class="lbl">A common use</span>
+        <p>Testing methods make input validation tidy. Before converting typed text to a number, check <code>user_text.isdigit()</code> — if it's <code>False</code>, you can ask again instead of letting <code>int()</code> raise an exception.</p>
+      </div>
+    </section>
+
+    <!-- 8. MODIFICATION METHODS -->
+    <section id="modify" class="reveal">
+      <div class="sec-tag">Testing &amp; searching</div>
+      <h2 class="title">Modification methods<span class="bar"></span></h2>
+      <p class="lead">Another family <em>returns a copy</em> of the string with some change applied. Because strings are immutable, these never alter the original — they hand back a new string. That makes them feel like they "modify" a string while honoring immutability.</p>
+
+      <table class="tbl">
+        <thead><tr><th>Method</th><th>Returns a copy with&hellip;</th></tr></thead>
+        <tbody>
+          <tr><td><code>lower()</code></td><td>every letter converted to lowercase.</td></tr>
+          <tr><td><code>upper()</code></td><td>every letter converted to uppercase.</td></tr>
+          <tr><td><code>strip()</code></td><td>leading and trailing whitespace removed.</td></tr>
+          <tr><td><code>lstrip()</code></td><td>leading (left-side) whitespace removed.</td></tr>
+          <tr><td><code>rstrip()</code></td><td>trailing (right-side) whitespace removed.</td></tr>
+          <tr><td><code>strip(char)</code></td><td>the given character removed from both ends (also <code>lstrip(char)</code>, <code>rstrip(char)</code>).</td></tr>
+        </tbody>
+      </table>
+      <figcaption style="text-align:left;color:var(--slate-500);font-size:.84rem;margin:-6px 0 14px;"><b style="font-family:var(--display);color:var(--slate-700);">Table 9-2.</b> Some string modification methods.</figcaption>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">modifying.py</span></div>
+<pre><span class="n">label</span> <span class="op">=</span> <span class="str">"   Falcon Ridge   "</span>
+<span class="bif">print</span>(label.<span class="bif">strip</span>())     <span class="out"># "Falcon Ridge"</span>
+<span class="bif">print</span>(label.<span class="bif">upper</span>())     <span class="out"># "   FALCON RIDGE   "</span>
+<span class="bif">print</span>(label)             <span class="out"># unchanged: "   Falcon Ridge   "</span></pre>
+      </div>
+
+      <h3>Case-insensitive comparison</h3>
+      <p>String comparisons are <b>case-sensitive</b>: <code>"Yes"</code> and <code>"yes"</code> are not equal. To compare regardless of case, convert both sides with <code>lower</code> (or <code>upper</code>) first:</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">case_insensitive.py</span></div>
+<pre><span class="n">answer</span> <span class="op">=</span> <span class="str">"YES"</span>
+<span class="kw">if</span> answer.<span class="bif">lower</span>() <span class="op">==</span> <span class="str">"yes"</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"confirmed"</span>)      <span class="out"># confirmed — matches "yes", "Yes", "YES", ...</span></pre>
+      </div>
+    </section>
+
+    <!-- 9. SEARCH & REPLACE -->
+    <section id="searchrepl" class="reveal">
+      <div class="sec-tag">Testing &amp; searching</div>
+      <h2 class="title">Searching and replacing<span class="bar"></span></h2>
+      <p class="lead">Programs constantly look for substrings and swap them out. Four methods cover most of that work.</p>
+
+      <table class="tbl">
+        <thead><tr><th>Method</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>startswith(sub)</code></td><td>returns <code>True</code> if the string begins with <code>sub</code>.</td></tr>
+          <tr><td><code>endswith(sub)</code></td><td>returns <code>True</code> if the string ends with <code>sub</code>.</td></tr>
+          <tr><td><code>find(sub)</code></td><td>returns the lowest index where <code>sub</code> appears, or <code>-1</code> if it isn't found.</td></tr>
+          <tr><td><code>replace(old, new)</code></td><td>returns a copy with every occurrence of <code>old</code> replaced by <code>new</code>.</td></tr>
+        </tbody>
+      </table>
+      <figcaption style="text-align:left;color:var(--slate-500);font-size:.84rem;margin:-6px 0 14px;"><b style="font-family:var(--display);color:var(--slate-700);">Table 9-3.</b> Search and replace methods.</figcaption>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">search_replace.py</span></div>
+<pre><span class="n">sku</span> <span class="op">=</span> <span class="str">"BOLT-22-MM"</span>
+<span class="bif">print</span>(sku.<span class="bif">startswith</span>(<span class="str">"BOLT"</span>))   <span class="out"># True</span>
+<span class="bif">print</span>(sku.<span class="bif">endswith</span>(<span class="str">"MM"</span>))       <span class="out"># True</span>
+
+<span class="n">sentence</span> <span class="op">=</span> <span class="str">"the quick brown fox"</span>
+<span class="bif">print</span>(sentence.<span class="bif">find</span>(<span class="str">"brown"</span>))   <span class="out"># 10  (index where it starts)</span>
+<span class="bif">print</span>(sentence.<span class="bif">find</span>(<span class="str">"cat"</span>))     <span class="out"># -1  (not found)</span>
+<span class="bif">print</span>(sentence.<span class="bif">replace</span>(<span class="str">"fox"</span>, <span class="str">"cat"</span>))
+<span class="out"># the quick brown cat</span></pre>
+      </div>
+      <div class="call note">
+        <span class="lbl">find vs. in</span>
+        <p>Use <code>in</code> when you only need a yes/no answer about whether a substring is present. Use <code>find</code> when you also need to know <em>where</em> it is — remembering that a missing substring comes back as <code>-1</code>, not an exception.</p>
+      </div>
+    </section>
+
+    <!-- 10. REPETITION & SPLIT -->
+    <section id="repeatsplit" class="reveal">
+      <div class="sec-tag">Testing &amp; searching</div>
+      <h2 class="title">Repetition and splitting<span class="bar"></span></h2>
+
+      <h3>The repetition operator</h3>
+      <p>Applied to a string and an integer, <code>*</code> is a <b>repetition operator</b>: it makes that many copies of the string and joins them. The string is the left operand, the count the right (<code>string * n</code>).</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">repetition.py</span></div>
+<pre><span class="n">divider</span> <span class="op">=</span> <span class="str">"="</span> <span class="op">*</span> <span class="num">20</span>
+<span class="bif">print</span>(divider)        <span class="out"># ====================</span>
+<span class="bif">print</span>(<span class="str">"ab"</span> <span class="op">*</span> <span class="num">3</span>)        <span class="out"># ababab</span></pre>
+      </div>
+
+      <h3>Splitting a string</h3>
+      <p>The <code>split</code> method breaks a string into a <b>list</b> of pieces. With no argument it splits on whitespace, giving you the words; pass a <b>separator</b> to split on something else, like a comma.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">splitting.py</span></div>
+<pre><span class="n">sentence</span> <span class="op">=</span> <span class="str">"the quick brown fox"</span>
+<span class="bif">print</span>(sentence.<span class="bif">split</span>())
+<span class="out"># ['the', 'quick', 'brown', 'fox']</span>
+
+<span class="n">data</span> <span class="op">=</span> <span class="str">"red,green,blue"</span>
+<span class="bif">print</span>(data.<span class="bif">split</span>(<span class="str">","</span>))
+<span class="out"># ['red', 'green', 'blue']</span></pre>
+      </div>
+      <div class="call good">
+        <span class="lbl">A natural pairing</span>
+        <p><code>split</code> is the bridge from text to data: take a line a person typed or a comma-separated record and turn it into a list you can loop over, index, and process with everything you learned about lists.</p>
+      </div>
+    </section>
+    <style>
+      .repl{background:#0b1220;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 14px 40px -20px rgba(15,23,42,.6);margin:18px 0;}
+      .repl-head{display:flex;align-items:center;gap:8px;padding:11px 15px;background:#111c30;border-bottom:1px solid #1e293b;}
+      .repl-head .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+      .repl-head .r{background:#f87171;}.repl-head .y{background:#fbbf24;}.repl-head .g{background:#34d399;}
+      .repl-head .ttl{margin-left:6px;font-family:var(--mono);font-size:.76rem;color:#94a3b8;}
+      .repl-head .rst{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:4px 10px;cursor:pointer;}
+      .repl-head .rst:hover{background:#334155;color:#fff;}
+      .repl-start{padding:40px 24px;text-align:center;}
+      .repl-start p{color:#94a3b8;font-size:.92rem;max-width:48ch;margin:0 auto 18px;}
+      .repl-start button{font-family:var(--display);font-weight:600;font-size:.95rem;cursor:pointer;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));color:#1f2937;border:none;border-radius:10px;padding:12px 22px;transition:.18s;}
+      .repl-start button:hover{filter:brightness(1.05);transform:translateY(-1px);}
+      .repl-start button:disabled{opacity:.6;cursor:wait;transform:none;}
+      .repl-status{font-family:var(--mono);font-size:.78rem;color:var(--py-yellow);margin-top:14px;min-height:1em;}
+      .repl-screen{display:none;}
+      .repl-out{font-family:var(--mono);font-size:.85rem;line-height:1.55;color:#e2e8f0;padding:14px 16px 4px;max-height:340px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}
+      .repl-out .echo{color:#cbd5e1;}.repl-out .ps{color:#7cc3ff;}.repl-out .res{color:#a5f3a0;}.repl-out .err{color:#fca5a5;}
+      .repl-line{display:flex;align-items:flex-start;gap:8px;padding:4px 16px 14px;}
+      .repl-line .ps{font-family:var(--mono);font-size:.85rem;color:#7cc3ff;padding-top:2px;flex:none;}
+      .repl-line input{flex:1;background:transparent;border:none;outline:none;color:#e2e8f0;font-family:var(--mono);font-size:.85rem;padding:2px 0;}
+      .chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px;}
+      .chips button{font-family:var(--mono);font-size:.76rem;cursor:pointer;background:#fff;border:1px solid var(--slate-300);border-radius:7px;padding:6px 10px;transition:.15s;color:var(--slate-700);}
+      .chips button:hover{border-color:var(--py-blue);background:#eff6fc;color:var(--py-blue-deep);}
+      .chips .lbl-mini{width:100%;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-400);margin-bottom:2px;}
+    </style>    <!-- PRACTICE CONSOLE -->
+    <section id="console" class="reveal">
+      <div class="sec-tag">Hands-on</div>
+      <h2 class="title">Practice in the console<span class="bar"></span></h2>
+      <p class="lead">A real Python interpreter, running entirely in your browser. Click <b>Start</b> to load it (about a 10&nbsp;MB one-time download), then type at the <code>&gt;&gt;&gt;</code> prompt. Index a string, slice it, call its methods, and split it into a list. Caught in a loop? Hit <b>Reset session</b>.</p>
+
+      <div class="chips">
+        <span class="lbl-mini">Tap a sample to drop it at the prompt:</span>
+        <button data-code="word = 'Falcon'">make a string</button>
+        <button data-code="word[0]">word[0]</button>
+        <button data-code="word[-1]">word[-1]</button>
+        <button data-code="len(word)">len(word)</button>
+        <button data-code="word[1:4]">slice word[1:4]</button>
+        <button data-code="word.upper()">.upper()</button>
+        <button data-code="'2026'.isdigit()">'2026'.isdigit()</button>
+        <button data-code="'the quick brown fox'.find('brown')">.find('brown')</button>
+        <button data-code="'red,green,blue'.split(',')">.split(',')</button>
+        <button data-code="'=' * 10">'=' * 10</button>
+        <button data-code="for ch in word:&#10;    print(ch)">loop the characters</button>
+      </div>
+      <div class="repl" id="repl">
+        <div class="repl-head">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="ttl">Python &mdash; interactive mode</span>
+          <button class="rst" id="replReset" style="display:none;">Reset session</button>
+        </div>
+        <div class="repl-start" id="replStart">
+          <p>A genuine CPython interpreter (via Pyodide) loads on demand, so pages you're only reading stay light.</p>
+          <button id="replStartBtn">&#9654;&nbsp; Start the Python interpreter</button>
+          <div class="repl-status" id="replStatus"></div>
+        </div>
+        <div class="repl-screen" id="replScreen">
+          <div class="repl-out" id="replOut"></div>
+          <div class="repl-line">
+            <span class="ps" id="replPrompt">&gt;&gt;&gt;</span>
+            <input id="replInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Python prompt">
+          </div>
+        </div>
+      </div>      <div class="call note">
+        <span class="lbl">Heads up</span>
+        <p>The interpreter needs an internet connection to download the first time, and works best in an up-to-date browser. Use the up and down arrows to recall previous commands. Remember that string methods return a <em>new</em> string — inspect the returned value, since the original never changes.</p>
+      </div>
+    </section>
+
+    <!-- CHECK YOURSELF -->
+    <section id="check" class="reveal">
+      <div class="sec-tag">Review</div>
+      <h2 class="title">Check yourself<span class="bar"></span></h2>
+      <p class="lead">Predict each answer, then open the card. Even better, try it in the console above.</p>
+      <div class="cards">
+        <details class="card">
+          <summary><span class="ix">Q1</span>Given <code>word = "Falcon"</code>, what are <code>word[0]</code> and <code>word[-1]</code>?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>word[0]</code> is <code>"F"</code> and <code>word[-1]</code> is <code>"n"</code>. Indexing starts at 0, and negative indexes count back from the end.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q2</span>Why does <code>greeting[0] = "H"</code> raise an error?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Strings are immutable — you can't change a character in place. To get a changed version you must build a new string (for example with slicing and concatenation, or a method that returns a copy).</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q3</span>What does concatenation really do to the original string, given strings are immutable?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Nothing — it leaves the original untouched. <code>+</code> and <code>+=</code> build a brand-new string and rebind the variable to it; the old string is simply no longer referenced.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q4</span>What does <code>"ORD-48715"[4:]</code> return, and why?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>"48715"</code>. With the end omitted, the slice runs from index 4 to the end of the string.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q5</span>How do you compare two strings without caring about case?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Convert both with the same method before comparing — e.g. <code>answer.lower() == "yes"</code>. Comparisons are case-sensitive by default, so <code>"YES" == "yes"</code> is <code>False</code>.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q6</span>What's the difference between <code>find</code> and the <code>in</code> operator?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>in</code> gives a Boolean: is the substring present? <code>find</code> gives the index where it starts, or <code>-1</code> if it isn't there. Use <code>in</code> for yes/no, <code>find</code> when you need the position.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q7</span>What does <code>"red,green,blue".split(",")</code> produce, and of what type?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>A list: <code>['red', 'green', 'blue']</code>. <code>split</code> returns a list of the pieces between the separator — with no argument it splits on whitespace instead.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- GLOSSARY -->
+    <section id="glossary" class="reveal">
+      <div class="sec-tag">Reference</div>
+      <h2 class="title">Key terms<span class="bar"></span></h2>
+      <dl class="gloss">
+        <div><dt>string</dt><dd>A sequence of characters.</dd></div>
+        <div><dt>character</dt><dd>A single element of a string.</dd></div>
+        <div><dt>index</dt><dd>A number giving a character's position; the first is 0.</dd></div>
+        <div><dt>negative index</dt><dd>An index counting from the end; <code>-1</code> is the last character.</dd></div>
+        <div><dt>IndexError</dt><dd>Raised when a string index is out of range.</dd></div>
+        <div><dt>len function</dt><dd>Returns the number of characters in a string.</dd></div>
+        <div><dt>concatenation</dt><dd>Joining strings end to end with <code>+</code> or <code>+=</code>.</dd></div>
+        <div><dt>immutable</dt><dd>Describes an object that cannot be changed after creation.</dd></div>
+        <div><dt>rebinding</dt><dd>Pointing a variable at a new string rather than editing the old one.</dd></div>
+        <div><dt>slice</dt><dd>A span of characters copied with <code>[start:end]</code>.</dd></div>
+        <div><dt>substring</dt><dd>A string that is part of a larger string; the result of a slice.</dd></div>
+        <div><dt>step</dt><dd>The optional stride in a slice, as in <code>[::2]</code>.</dd></div>
+        <div><dt>in operator</dt><dd>Tests whether one string occurs within another.</dd></div>
+        <div><dt>not in operator</dt><dd>Tests whether one string is absent from another.</dd></div>
+        <div><dt>method</dt><dd>A function that belongs to an object, called with dot notation.</dd></div>
+        <div><dt>Boolean method</dt><dd>A method that returns <code>True</code> or <code>False</code>.</dd></div>
+        <div><dt>isalpha / isdigit / isalnum</dt><dd>Tests for all-letters, all-digits, or letters-and-digits.</dd></div>
+        <div><dt>isspace</dt><dd>Tests whether a string is all whitespace.</dd></div>
+        <div><dt>islower / isupper</dt><dd>Tests whether letters are all lower- or uppercase.</dd></div>
+        <div><dt>lower / upper</dt><dd>Return a copy converted to lower- or uppercase.</dd></div>
+        <div><dt>strip / lstrip / rstrip</dt><dd>Return a copy with whitespace (or a given character) removed.</dd></div>
+        <div><dt>case-sensitive</dt><dd>Treating upper- and lowercase letters as different.</dd></div>
+        <div><dt>startswith / endswith</dt><dd>Test whether a string begins or ends with a substring.</dd></div>
+        <div><dt>find</dt><dd>Returns the lowest index of a substring, or <code>-1</code> if absent.</dd></div>
+        <div><dt>replace</dt><dd>Returns a copy with every occurrence of one substring swapped for another.</dd></div>
+        <div><dt>repetition operator</dt><dd><code>*</code> applied to a string and an integer; copies and joins.</dd></div>
+        <div><dt>split</dt><dd>Returns a list of a string's pieces, divided on a separator.</dd></div>
+        <div><dt>separator</dt><dd>The character(s) <code>split</code> divides a string on.</dd></div>
+        <div><dt>whitespace</dt><dd>Spaces, tabs (<code>\t</code>), and newlines (<code>\n</code>).</dd></div>
+      </dl>
+    </section>
+
+
+    <section>
+      <div style="background:linear-gradient(160deg,var(--py-blue-deep),var(--py-blue));
+                  border-radius:16px;padding:28px 30px;color:#fff;margin-top:8px;
+                  box-shadow:0 18px 45px -22px rgba(15,23,42,.75);
+                  display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+        <div style="flex:1 1 320px;min-width:0;">
+          <div style="font-family:var(--mono);font-size:.72rem;letter-spacing:2.5px;
+                      text-transform:uppercase;color:var(--py-yellow);margin-bottom:8px;">Next step</div>
+          <h2 style="margin:0 0 7px;font-size:1.4rem;color:#fff;">Week 09 Review Questions</h2>
+          <p style="margin:0;color:rgba(255,255,255,.88);font-size:.95rem;max-width:58ch;">
+            Multiple choice, true/false, short answer, and an algorithm workbench covering everything above &mdash;
+            plus two programming exercises you build at the <code style="background:rgba(255,255,255,.14);
+            color:#fff;padding:1px 5px;border-radius:4px;">&gt;&gt;&gt;</code> prompt.</p>
+        </div>
+        <a href="python-wk09-review-questions.html"
+           style="flex:none;background:var(--py-yellow);color:var(--slate-900);
+                  font-family:var(--display);font-weight:600;font-size:1rem;text-decoration:none;
+                  padding:12px 24px;border-radius:999px;white-space:nowrap;">Start the review &rarr;</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer style="background:var(--slate-900);color:#94a3b8;padding:30px 24px;text-align:center;font-size:.85rem;">
+  <div style="max-width:var(--maxw);margin:0 auto;">
+    <span style="font-family:var(--mono);color:var(--py-yellow);">Week 09</span> &middot; More About Strings &middot; original course materials, concepts only
+  </div>
+</footer>
+<style>
+  dl.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;background:#fff;border:1px solid var(--slate-200);border-radius:12px;overflow:hidden;}
+  dl.gloss>div{padding:13px 16px;border-bottom:1px solid var(--slate-100);border-right:1px solid var(--slate-100);}
+  dl.gloss dt{font-family:var(--mono);font-weight:600;color:var(--py-blue-deep);font-size:.86rem;margin-bottom:3px;}
+  dl.gloss dd{margin:0;color:var(--slate-600);font-size:.9rem;line-height:1.5;}
+  dl.gloss code{background:rgba(15,23,42,.06);padding:1px 4px;border-radius:4px;}
+</style><script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var spy = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map[e.target.id]; if(a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin:'-10% 0px -75% 0px', threshold:0 });
+  document.querySelectorAll('main section[id]').forEach(function(s){ spy.observe(s); });
+
+  var rev = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } });
+  }, { threshold:0.08 });
+  document.querySelectorAll('.reveal').forEach(function(s){ rev.observe(s); });
+
+  var PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.4/full/";
+  var startBtn = document.getElementById('replStartBtn');
+  var startBox = document.getElementById('replStart');
+  var statusEl = document.getElementById('replStatus');
+  var screenEl = document.getElementById('replScreen');
+  var outEl    = document.getElementById('replOut');
+  var inputEl  = document.getElementById('replInput');
+  var promptEl = document.getElementById('replPrompt');
+  var resetBtn = document.getElementById('replReset');
+
+  var pyodide=null, pushLine=null, resetConsole=null, loading=false;
+  var history=[], hIdx=0, contMode=false;
+
+  window._webInput = function(p){ var v = window.prompt(p || ""); return v===null ? "" : v; };
+
+  function append(text, cls){
+    if(text===undefined || text===null || text==="") return;
+    var span=document.createElement('span');
+    if(cls) span.className=cls;
+    span.textContent=text;
+    outEl.appendChild(span);
+    outEl.scrollTop=outEl.scrollHeight;
+  }
+  function echoLine(promptStr, code){ append(promptStr+' ', 'ps'); append(code+'\n', 'echo'); }
+
+  var SETUP = [
+    "import sys, io, code, builtins",
+    "from js import _webInput",
+    "class WebConsole(code.InteractiveConsole):",
+    "    def write(self, data):",
+    "        sys.stdout.write(data)",
+    "_ns = {'__name__': '__main__'}",
+    "_console = WebConsole(locals=_ns)",
+    "def _web_input(prompt=''):",
+    "    sys.stdout.write(str(prompt))",
+    "    val = _webInput(str(prompt))",
+    "    sys.stdout.write(str(val) + chr(10))",
+    "    return val",
+    "builtins.input = _web_input",
+    "def push_line(line):",
+    "    buf = io.StringIO()",
+    "    old = sys.stdout",
+    "    sys.stdout = buf",
+    "    try:",
+    "        more = _console.push(line)",
+    "    finally:",
+    "        sys.stdout = old",
+    "    return [bool(more), buf.getvalue()]",
+    "def reset_console():",
+    "    global _console",
+    "    _console = WebConsole(locals={'__name__': '__main__'})"
+  ].join("\n");
+
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s=document.createElement('script'); s.src=src;
+      s.onload=res; s.onerror=function(){ rej(new Error('Could not load '+src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function start(){
+    if(loading || pyodide) return;
+    loading=true; startBtn.disabled=true;
+    statusEl.textContent='Downloading the Python runtime…';
+    try{
+      await loadScript(PYODIDE_URL+'pyodide.js');
+      statusEl.textContent='Starting Python…';
+      pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
+      pyodide.runPython(SETUP);
+      pushLine = pyodide.globals.get('push_line');
+      resetConsole = pyodide.globals.get('reset_console');
+      var ver = pyodide.runPython("sys.version.split()[0]");
+      startBox.style.display='none';
+      screenEl.style.display='block';
+      resetBtn.style.display='inline-block';
+      append('Python '+ver+' (Pyodide) — type a statement and press Enter.\n', 'res');
+      inputEl.focus();
+    }catch(err){
+      statusEl.textContent='Could not start: '+err.message+'  (check your connection and try again)';
+      startBtn.disabled=false; loading=false;
+    }
+  }
+
+  function process(line){
+    var shownPrompt = contMode ? '...' : '>>>';
+    echoLine(shownPrompt, line);
+    var res = pushLine(line);
+    var arr = res.toJs(); res.destroy();
+    var more = arr[0], output = arr[1];
+    if(output){
+      var cls = /(^|\n)\s*(Traceback|[A-Za-z]*Error|[A-Za-z]*Warning)/.test(output) ? 'err' : 'res';
+      append(output, cls);
+    }
+    contMode = more;
+    promptEl.textContent = contMode ? '...' : '>>>';
+  }
+
+  function runChip(code){
+    if(!pyodide){ return; }
+    var lines = code.split('\n');
+    for(var i=0;i<lines.length;i++){ process(lines[i]); }
+    if(contMode){ process(''); }
+    inputEl.focus();
+  }
+
+  inputEl && inputEl.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      var line = inputEl.value;
+      if(line.trim()!=='') { history.push(line); }
+      hIdx = history.length;
+      inputEl.value='';
+      process(line);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      if(hIdx>0){ hIdx--; inputEl.value=history[hIdx]||''; }
+    } else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(hIdx<history.length-1){ hIdx++; inputEl.value=history[hIdx]||''; }
+      else { hIdx=history.length; inputEl.value=''; }
+    }
+  });
+
+  startBtn && startBtn.addEventListener('click', start);
+  resetBtn && resetBtn.addEventListener('click', function(){
+    if(resetConsole){ resetConsole(); }
+    outEl.innerHTML=''; contMode=false; promptEl.textContent='>>>';
+    append('Session reset.\n', 'res'); inputEl.focus();
+  });
+
+  document.querySelectorAll('.chips button[data-code]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var code = b.getAttribute('data-code');
+      if(pyodide){ runChip(code); }
+      else { if(code.indexOf('\n')===-1){ inputEl.value=code; } start(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>

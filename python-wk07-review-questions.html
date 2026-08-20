@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 07 · Review Questions — Files and Exceptions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;
+    --py-blue-dk:#306998;
+    --py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;
+    --py-yellow-dk:#E5A800;
+    --ink:#2b303b;
+    --ink-soft:#5b6470;
+    --ink-faint:#8a929d;
+    --page:#f6f8fa;
+    --surface:#ffffff;
+    --border:#e1e4e8;
+    --border-strong:#cfd6dd;
+    --code-bg:#1e2530;
+    --code-bg2:#262f3d;
+    --code-text:#e6edf3;
+    --code-comment:#7d8893;
+    --shadow:0 1px 2px rgba(27,40,55,.06),0 6px 22px rgba(27,40,55,.07);
+    --shadow-lift:0 8px 30px rgba(27,40,55,.13);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:88px;}
+  body{
+    margin:0;background:var(--page);color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:"Space Grotesk","Inter",sans-serif;line-height:1.18;margin:0;}
+  code,kbd,pre,.mono{font-family:"Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;}
+  a{color:var(--py-blue-dk);}
+
+  /* ---------- scroll progress ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:4px;width:0%;z-index:60;
+    background:linear-gradient(90deg,var(--py-blue) 0%,var(--py-blue) 55%,var(--py-yellow) 100%);
+    transition:width .08s linear;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:
+      radial-gradient(1100px 380px at 82% -40%,rgba(255,212,59,.20),transparent 60%),
+      linear-gradient(160deg,var(--py-blue-deep) 0%,var(--py-blue-dk) 52%,var(--py-blue) 120%);
+    color:#fff;padding:64px 24px 54px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"?";position:absolute;right:5%;bottom:-58px;
+    font-family:"Fira Code",monospace;font-size:210px;font-weight:600;
+    color:rgba(255,255,255,.07);pointer-events:none;
+  }
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:2;}
+  .brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .brand .mark{
+    font-family:"Fira Code",monospace;font-weight:600;font-size:15px;
+    color:var(--py-blue-deep);background:var(--py-yellow);
+    padding:4px 10px;border-radius:7px;letter-spacing:1px;
+  }
+  .brand .brand-txt{font-family:"Space Grotesk";font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.82);}
+  .eyebrow{font-family:"Fira Code",monospace;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--py-yellow);margin-bottom:14px;}
+  .hero h1{font-size:clamp(30px,5vw,52px);font-weight:700;letter-spacing:-.5px;max-width:20ch;}
+  .hero .sub{margin-top:18px;font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.9);max-width:64ch;}
+  .topics{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px;}
+  .topics a{
+    text-decoration:none;color:#fff;font-size:14.5px;font-weight:500;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);
+    padding:8px 14px;border-radius:999px;transition:.18s;backdrop-filter:blur(2px);
+  }
+  .topics a:hover{background:var(--py-yellow);color:var(--py-blue-deep);border-color:var(--py-yellow);transform:translateY(-1px);}
+  .topics a .n{font-family:"Fira Code";color:var(--py-yellow);margin-right:7px;font-size:13px;}
+  .topics a:hover .n{color:var(--py-blue-deep);}
+  .topics a.topic-out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  .grid{display:grid;grid-template-columns:232px minmax(0,1fr);gap:40px;align-items:start;padding:40px 24px 80px;max-width:var(--maxw);margin:0 auto;}
+
+  /* ---------- side nav ---------- */
+  nav.toc{position:sticky;top:24px;align-self:start;}
+  nav.toc .toc-title{font-family:"Fira Code";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);margin:0 0 12px 14px;}
+  nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border);}
+  nav.toc a{
+    display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink-soft);
+    font-size:14.5px;font-weight:500;padding:8px 14px;margin-left:-2px;
+    border-left:2px solid transparent;transition:.16s;line-height:1.35;
+  }
+  nav.toc a .num{font-family:"Fira Code";font-size:12px;color:var(--py-blue);opacity:.8;}
+  nav.toc a:hover{color:var(--ink);background:#eef2f6;}
+  nav.toc a.active{color:var(--py-blue-dk);border-left-color:var(--py-blue);background:#eaf2f9;font-weight:600;}
+  nav.toc a.active .num{opacity:1;}
+  nav.toc .toc-out{
+    display:flex;gap:9px;align-items:baseline;margin:14px 0 0;padding:9px 14px;
+    text-decoration:none;font-size:14.5px;font-weight:600;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:9px;transition:.16s;
+  }
+  nav.toc .toc-out:hover{background:var(--py-blue-dk);color:#fff;border-color:var(--py-blue-dk);}
+  nav.toc .toc-out .num{font-family:"Fira Code";font-size:12px;color:inherit;opacity:1;}
+
+  /* ---------- sections ---------- */
+  main{min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:84px;}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;flex-wrap:wrap;}
+  .sec-num{
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:#fff;
+    background:var(--py-blue-dk);min-width:34px;height:34px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  section h2{font-size:clamp(23px,3vw,31px);font-weight:700;letter-spacing:-.3px;}
+  .pts{
+    font-family:"Fira Code";font-size:12.5px;letter-spacing:.5px;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:999px;padding:3px 11px;white-space:nowrap;
+  }
+  .lead{color:var(--ink-soft);font-size:18px;margin:6px 0 22px;}
+  section h3{font-size:20px;font-weight:600;margin:30px 0 10px;color:var(--py-blue-deep);}
+  p{margin:0 0 15px;}
+  .wrap-note{max-width:74ch;}
+  strong{font-weight:600;}
+  .term{font-weight:600;color:var(--py-blue-deep);}
+
+  /* ---------- callouts ---------- */
+  .note{
+    border:1px solid var(--border);border-left:4px solid var(--py-yellow);
+    background:#fffdf3;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .note b{color:var(--py-yellow-dk);}
+  .keypt{
+    border:1px solid var(--border);border-left:4px solid var(--py-blue);
+    background:#f3f8fc;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .keypt b{color:var(--py-blue-dk);}
+
+  /* ---------- question lists ---------- */
+  .qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:8px 26px;}
+  ol.qs{list-style:none;counter-reset:q;margin:0;padding:0;}
+  ol.qs > li{
+    counter-increment:q;position:relative;padding:18px 0 18px 46px;
+    border-bottom:1px solid var(--border);break-inside:avoid;
+  }
+  ol.qs > li:last-child{border-bottom:none;}
+  ol.qs > li::before{
+    content:counter(q) ".";position:absolute;left:0;top:17px;
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);
+  }
+  ol.qs > li .stem{margin:0;font-size:16.5px;}
+  .opts{list-style:none;margin:11px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:5px 22px;}
+  .opts li{font-size:16px;color:var(--ink-soft);}
+  .opts .lbl{font-family:"Fira Code";font-weight:600;color:var(--py-blue);margin-right:9px;}
+  .blank{display:inline-block;min-width:70px;border-bottom:1.5px solid var(--border-strong);}
+  ol.qs.tf > li{padding-left:78px;}
+  ol.qs.tf > li::before{top:18px;}
+  .tfbox{
+    position:absolute;left:32px;top:18px;font-family:"Fira Code";font-size:14px;
+    color:var(--ink-faint);letter-spacing:1px;
+  }
+  ol.qs.sa > li{padding-bottom:22px;}
+  ol.qs.sa .hint{display:block;margin-top:6px;font-size:14.5px;color:var(--ink-faint);font-style:italic;}
+
+  /* ---------- code blocks ---------- */
+  .code{
+    background:var(--code-bg);border-radius:11px;margin:16px 0;overflow:hidden;
+    border:1px solid #2c3645;box-shadow:var(--shadow);
+  }
+  .code .bar{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--code-bg2);border-bottom:1px solid #313c4c;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .d1{background:#ff5f56;}.code .bar .d2{background:#ffbd2e;}.code .bar .d3{background:#27c93f;}
+  .code .bar .fname{margin-left:8px;font-family:"Fira Code";font-size:12.5px;color:#9aa6b2;}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;}
+  .code code{font-size:14.5px;color:var(--code-text);line-height:1.65;display:block;white-space:pre;}
+  .c-kw{color:#ff9d6b;}
+  .c-fn{color:#7cc4ff;}
+  .c-str{color:#9ae26b;}
+  .c-num{color:#f7c873;}
+  .c-com{color:var(--code-comment);font-style:italic;}
+  .c-prompt{color:#6fae4f;}
+  .c-out{color:#cbd3dc;}
+  .c-err{color:#ff7b72;}
+  kbd{font-size:13px;background:#eef2f6;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;padding:1px 7px;color:var(--ink);}
+
+  /* ---------- exercise cards ---------- */
+  .ex{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    box-shadow:var(--shadow);padding:24px 26px;margin:22px 0;break-inside:avoid;
+  }
+  .ex-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .ex-tag{
+    font-family:"Fira Code";font-size:12.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+    color:var(--py-blue-deep);background:var(--py-yellow);padding:3px 10px;border-radius:6px;
+  }
+  .ex h3{margin:0;font-size:21px;color:var(--ink);}
+  .ex .why{color:var(--ink-soft);font-size:15.5px;margin:6px 0 14px;}
+  .ex ol.steps{margin:0 0 4px;padding-left:22px;}
+  .ex ol.steps > li{margin-bottom:11px;padding-left:4px;}
+  .ex ol.steps code{
+    background:#eef2f6;border:1px solid var(--border);border-radius:5px;
+    padding:1px 7px;font-size:14.5px;color:var(--py-blue-deep);white-space:nowrap;
+  }
+  .console-btn{
+    display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+    background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;font-size:15px;
+    padding:10px 20px;border-radius:999px;margin:6px 0 2px;transition:.18s;box-shadow:var(--shadow);
+  }
+  .console-btn:hover{background:var(--py-blue-deep);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+  .console-btn .arrow{font-family:"Fira Code";color:var(--py-yellow);}
+
+  /* ---------- answer key ---------- */
+  .keybreak{
+    border-top:2px dashed var(--border-strong);margin:0 0 40px;padding-top:26px;
+    text-align:center;color:var(--ink-faint);font-family:"Fira Code";font-size:13px;letter-spacing:2px;text-transform:uppercase;
+  }
+  #answers{break-before:page;}
+  .akey{background:linear-gradient(160deg,#f3f8fc,#fffdf3);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin-bottom:26px;}
+  .akey h3{margin-top:0;}
+  .agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:8px 26px;margin:0;padding:0;list-style:none;}
+  .agrid li{font-size:16px;padding:5px 0;border-bottom:1px dotted var(--border-strong);}
+  .agrid .n{font-family:"Fira Code";color:var(--py-blue-dk);font-weight:600;margin-right:10px;}
+  .agrid .v{font-weight:600;color:var(--py-blue-deep);}
+  ol.akeys{list-style:none;counter-reset:ak;margin:0;padding:0;}
+  ol.akeys > li{counter-increment:ak;position:relative;padding:14px 0 14px 46px;border-bottom:1px solid var(--border);break-inside:avoid;}
+  ol.akeys > li:last-child{border-bottom:none;}
+  ol.akeys > li::before{content:counter(ak) ".";position:absolute;left:0;top:14px;font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);}
+  ol.akeys .qtext{display:block;font-weight:600;color:var(--ink);margin-bottom:5px;}
+  ol.akeys .atext{color:var(--ink-soft);font-size:16px;}
+
+  /* ---------- rubric table ---------- */
+  .ctable{width:100%;border-collapse:collapse;margin:20px 0;font-size:15.5px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .ctable th,.ctable td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .ctable thead th{background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td:first-child{font-weight:600;color:var(--py-blue-deep);}
+  .ctable tbody tr:nth-child(even){background:#f9fbfc;}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:26px 24px;color:var(--ink-faint);font-size:13.5px;}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:880px){
+    .grid{grid-template-columns:1fr;gap:0;padding-top:0;}
+    nav.toc{position:sticky;top:0;z-index:40;background:var(--page);margin:0 -24px 24px;padding:10px 0;border-bottom:1px solid var(--border);}
+    nav.toc .toc-title{display:none;}
+    nav.toc ol{display:flex;overflow-x:auto;border-left:none;padding:0 18px;gap:4px;}
+    nav.toc a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent;border-radius:8px 8px 0 0;}
+    nav.toc a.active{border-left:none;border-bottom-color:var(--py-blue);}
+    nav.toc .toc-out{display:none;}
+    .hero::after{font-size:120px;bottom:-30px;}
+    .qcard{padding:6px 16px;}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none!important;}}
+  :focus-visible{outline:3px solid var(--py-yellow);outline-offset:2px;border-radius:4px;}
+
+  /* ---------- print: answer key starts on its own page ---------- */
+  @media print{
+    body{background:#fff;font-size:11.5pt;line-height:1.5;}
+    #progress,nav.toc,.home-link,.topics,.console-btn{display:none!important;}
+    .hero{background:none;color:var(--ink);padding:0 0 14px;border-bottom:2px solid var(--py-blue-dk);}
+    .hero::after{display:none;}
+    .hero .brand .mark{background:none;color:var(--ink);padding:0;}
+    .hero .brand .brand-txt,.hero .sub{color:var(--ink-soft);}
+    .eyebrow{color:var(--py-blue-dk);}
+    .grid{display:block;padding:14px 0 0;max-width:100%;}
+    .qcard,.ex,.akey,.keypt,.note{box-shadow:none;}
+    section{margin-bottom:26px;}
+    #answers{page-break-before:always;break-before:page;}
+    .keybreak{display:none;}
+    footer{page-break-before:avoid;}
+    a{color:var(--ink);text-decoration:none;}
+  }
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:880px){ nav.toc{ top:48px; } }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+<div id="progress"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand">
+      <span class="mark">&gt;&gt;&gt;</span>
+      <span class="brand-txt">CIS181 · Python Programming</span>
+    </div>
+    <div class="eyebrow">Week 07 · Review Questions</div>
+    <h1>Files and Exceptions</h1>
+    <p class="sub">Five sections, following the structure of the text: Multiple Choice, True or False, Short Answer, Algorithm Workbench, and Programming Exercises. The workbench and exercise items are all done in the browser-based Interactive Python Console. Total: 100 points.</p>
+    <div class="topics">
+      <a href="#mc"><span class="n">01</span>Multiple Choice</a>
+      <a href="#tf"><span class="n">02</span>True or False</a>
+      <a href="#sa"><span class="n">03</span>Short Answer</a>
+      <a href="#aw"><span class="n">04</span>Algorithm Workbench</a>
+      <a href="#pe"><span class="n">05</span>Programming Exercises</a>
+      <a href="#answers"><span class="n">✓</span>Answer Key</a>
+      <a href="python-wk07-files-and-exceptions.html" class="topic-out"><span class="n">&larr;</span>Week 7 Concepts</a>
+    </div>
+  </div>
+</header>
+
+<div class="grid">
+  <nav class="toc" aria-label="Section navigation">
+    <p class="toc-title">On this page</p>
+    <ol>
+      <li><a href="#mc"><span class="num">1</span>Multiple Choice</a></li>
+      <li><a href="#tf"><span class="num">2</span>True or False</a></li>
+      <li><a href="#sa"><span class="num">3</span>Short Answer</a></li>
+      <li><a href="#aw"><span class="num">4</span>Algorithm Workbench</a></li>
+      <li><a href="#pe"><span class="num">5</span>Programming Exercises</a></li>
+      <li><a href="#answers"><span class="num">✓</span>Answer Key</a></li>
+    </ol>
+    <a class="toc-out" href="python-wk07-files-and-exceptions.html">
+      <span class="num">&larr;</span>Week 7 Concepts
+    </a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 1 · MULTIPLE CHOICE ============ -->
+  <section id="mc">
+    <div class="sec-head"><span class="sec-num">1</span><h2>Multiple Choice</h2><span class="pts">24 × 1 pt = 24</span></div>
+    <p class="lead">Choose the one best answer for each question.</p>
+
+    <div class="qcard">
+    <ol class="qs">
+      <li>
+        <p class="stem">A file that a program writes data to is called a(n) <span class="blank"></span> file.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>input</li>
+          <li><span class="lbl">b.</span>output</li>
+          <li><span class="lbl">c.</span>binary</li>
+          <li><span class="lbl">d.</span>direct access</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The three steps for working with a file, in order, are <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>read, write, close</li>
+          <li><span class="lbl">b.</span>open, process, close</li>
+          <li><span class="lbl">c.</span>create, open, delete</li>
+          <li><span class="lbl">d.</span>open, close, process</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A file containing data encoded as readable characters is called a <span class="blank"></span> file.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>binary</li>
+          <li><span class="lbl">b.</span>text</li>
+          <li><span class="lbl">c.</span>record</li>
+          <li><span class="lbl">d.</span>direct</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Reading a file straight through from beginning to end, without skipping ahead, is called <span class="blank"></span> access.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>direct</li>
+          <li><span class="lbl">b.</span>random</li>
+          <li><span class="lbl">c.</span>sequential</li>
+          <li><span class="lbl">d.</span>indexed</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The object that represents an open file and provides the methods used to work with it is a <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>file object</li>
+          <li><span class="lbl">b.</span>filename extension</li>
+          <li><span class="lbl">c.</span>record</li>
+          <li><span class="lbl">d.</span>file handle string</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which built-in function connects a program to a file and returns a file object?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">read</span></li>
+          <li><span class="lbl">b.</span><span class="mono">open</span></li>
+          <li><span class="lbl">c.</span><span class="mono">file</span></li>
+          <li><span class="lbl">d.</span><span class="mono">load</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which mode opens a file for writing and <em>erases</em> its existing contents?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">'r'</span></li>
+          <li><span class="lbl">b.</span><span class="mono">'w'</span></li>
+          <li><span class="lbl">c.</span><span class="mono">'a'</span></li>
+          <li><span class="lbl">d.</span><span class="mono">'x'</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which mode keeps a file's existing contents and adds new data at the end?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">'r'</span></li>
+          <li><span class="lbl">b.</span><span class="mono">'w'</span></li>
+          <li><span class="lbl">c.</span><span class="mono">'a'</span></li>
+          <li><span class="lbl">d.</span><span class="mono">'e'</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A function that belongs to an object and operates on it is called a <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>method</li>
+          <li><span class="lbl">b.</span>parameter</li>
+          <li><span class="lbl">c.</span>field</li>
+          <li><span class="lbl">d.</span>mode</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which method writes a string to a file?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">print</span></li>
+          <li><span class="lbl">b.</span><span class="mono">write</span></li>
+          <li><span class="lbl">c.</span><span class="mono">put</span></li>
+          <li><span class="lbl">d.</span><span class="mono">send</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The <span class="mono">write</span> method <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>adds a newline after each item automatically</li>
+          <li><span class="lbl">b.</span>adds no line breaks — you must supply <span class="mono">'\n'</span> yourself</li>
+          <li><span class="lbl">c.</span>adds a space after each item</li>
+          <li><span class="lbl">d.</span>closes the file when finished</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which method reads the entire contents of a file into memory as one string?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">readline</span></li>
+          <li><span class="lbl">b.</span><span class="mono">read</span></li>
+          <li><span class="lbl">c.</span><span class="mono">readall</span></li>
+          <li><span class="lbl">d.</span><span class="mono">input</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The string returned by <span class="mono">readline</span> normally ends with <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>a space</li>
+          <li><span class="lbl">b.</span>a period</li>
+          <li><span class="lbl">c.</span>a newline character</li>
+          <li><span class="lbl">d.</span>nothing extra</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Which string method removes the trailing newline from a line that was read?</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">strip_newline</span></li>
+          <li><span class="lbl">b.</span><span class="mono">rstrip</span></li>
+          <li><span class="lbl">c.</span><span class="mono">chop</span></li>
+          <li><span class="lbl">d.</span><span class="mono">trim</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The marker showing where the next read operation will begin is the <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>read position</li>
+          <li><span class="lbl">b.</span>file mode</li>
+          <li><span class="lbl">c.</span>sentinel</li>
+          <li><span class="lbl">d.</span>record pointer</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Before writing a number to a text file, you must convert it with <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">int</span></li>
+          <li><span class="lbl">b.</span><span class="mono">float</span></li>
+          <li><span class="lbl">c.</span><span class="mono">str</span></li>
+          <li><span class="lbl">d.</span>no conversion is needed</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Every value read from a text file arrives as a <span class="blank"></span>, even if it looks like a number.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>string</li>
+          <li><span class="lbl">b.</span>int</li>
+          <li><span class="lbl">c.</span>float</li>
+          <li><span class="lbl">d.</span>file object</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">When <span class="mono">readline</span> reaches the end of a file, it returns <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">None</span></li>
+          <li><span class="lbl">b.</span>an empty string</li>
+          <li><span class="lbl">c.</span><span class="mono">-1</span></li>
+          <li><span class="lbl">d.</span><span class="mono">False</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Writing <span class="mono">for line in infile:</span> is preferred over a <span class="mono">while</span> loop with <span class="mono">readline</span> because it <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>reads the file backward</li>
+          <li><span class="lbl">b.</span>needs no priming read and stops at end-of-file automatically</li>
+          <li><span class="lbl">c.</span>removes newline characters for you</li>
+          <li><span class="lbl">d.</span>closes the file for you</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A complete set of data describing one item is called a <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>field</li>
+          <li><span class="lbl">b.</span>record</li>
+          <li><span class="lbl">c.</span>mode</li>
+          <li><span class="lbl">d.</span>method</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A single piece of data within a record is called a <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>field</li>
+          <li><span class="lbl">b.</span>record</li>
+          <li><span class="lbl">c.</span>literal</li>
+          <li><span class="lbl">d.</span>extension</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Opening a file for reading when the file does not exist raises <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">ValueError</span></li>
+          <li><span class="lbl">b.</span><span class="mono">FileNotFoundError</span></li>
+          <li><span class="lbl">c.</span><span class="mono">IndexError</span></li>
+          <li><span class="lbl">d.</span><span class="mono">TypeError</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Reading the text <span class="mono">N/A</span> from a file and passing it to <span class="mono">int()</span> raises <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">FileNotFoundError</span></li>
+          <li><span class="lbl">b.</span><span class="mono">ValueError</span></li>
+          <li><span class="lbl">c.</span><span class="mono">KeyError</span></li>
+          <li><span class="lbl">d.</span><span class="mono">OSError</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">To guarantee a file is closed whether or not an exception occurs, put <span class="mono">close()</span> in a <span class="blank"></span> suite.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">try</span></li>
+          <li><span class="lbl">b.</span><span class="mono">except</span></li>
+          <li><span class="lbl">c.</span><span class="mono">else</span></li>
+          <li><span class="lbl">d.</span><span class="mono">finally</span></li>
+        </ul>
+      </li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 2 · TRUE OR FALSE ============ -->
+  <section id="tf">
+    <div class="sec-head"><span class="sec-num">2</span><h2>True or False</h2><span class="pts">10 × 1 pt = 10</span></div>
+
+    <div class="qcard">
+    <ol class="qs tf">
+      <li><span class="tfbox">T / F</span><p class="stem">Data stored in variables survives after the program ends.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Opening an existing file in <span class="mono">'w'</span> mode erases its contents immediately.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Opening a file in <span class="mono">'a'</span> mode raises an error if the file does not already exist.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The <span class="mono">write</span> method automatically places each item on its own line.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">The expression <span class="mono">"95" + 5</span> produces the value 100.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A <span class="mono">for</span> loop can iterate directly over a file object, one line per iteration.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A record is made up of one or more fields.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Checking whether a file exists before opening it is a completely reliable way to avoid <span class="mono">FileNotFoundError</span>.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem"><span class="mono">FileNotFoundError</span> is a kind of <span class="mono">OSError</span>.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">If a statement early in a <span class="mono">try</span> suite raises an exception, a <span class="mono">close()</span> written at the end of that same suite still runs.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 3 · SHORT ANSWER ============ -->
+  <section id="sa">
+    <div class="sec-head"><span class="sec-num">3</span><h2>Short Answer</h2><span class="pts">11 × 2 pts = 22</span></div>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li><p class="stem">Why do programs need files at all? What happens to the data in variables when a program ends?</p></li>
+      <li><p class="stem">Name the three steps for working with a file and state what each accomplishes.</p></li>
+      <li><p class="stem">Explain the difference between a text file and a binary file, and between sequential and direct access.</p></li>
+      <li><p class="stem">What is a file object, and what is its relationship to the actual file on disk?</p></li>
+      <li><p class="stem">Describe the difference between opening a file in <span class="mono">'w'</span> mode and <span class="mono">'a'</span> mode. What do both have in common when the file does not yet exist?</p></li>
+      <li><p class="stem">Why must you concatenate <span class="mono">'\n'</span> when writing items to a file, and how do you remove it after reading a line back?</p></li>
+      <li><p class="stem">Explain the two conversions required when storing numbers in a text file — one going out, one coming in — and name the functions used for each.</p></li>
+      <li><p class="stem">How does <span class="mono">readline</span> signal that the end of the file has been reached, and how is that value used in a loop?</p></li>
+      <li><p class="stem">Give one advantage of using <span class="mono">for line in infile:</span> instead of a <span class="mono">while</span> loop with <span class="mono">readline</span>.</p></li>
+      <li><p class="stem">Define <em>record</em> and <em>field</em>, and describe one common way to store a record in a sequential text file.</p></li>
+      <li><p class="stem">Why is handling <span class="mono">FileNotFoundError</span> more reliable than checking whether a file exists before opening it?</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 4 · ALGORITHM WORKBENCH ============ -->
+  <section id="aw">
+    <div class="sec-head"><span class="sec-num">4</span><h2>Algorithm Workbench</h2><span class="pts">16 × 1 pt = 16</span></div>
+    <p class="lead">Short code-writing and code-tracing items. Write your answer first, <em>then</em> check it in the console — the prediction is the part that teaches.</p>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li><p class="stem">Write a statement that opens a file named <span class="mono">notes.txt</span> for writing and assigns the file object to a variable named <span class="mono">outfile</span>.</p></li>
+      <li><p class="stem">Write a statement that opens <span class="mono">notes.txt</span> for reading, and a second statement that closes it.</p></li>
+      <li><p class="stem">Write statements that write the three strings <span class="mono">Tokyo</span>, <span class="mono">Cairo</span>, and <span class="mono">Lima</span> to an open file object named <span class="mono">outfile</span>, each on its own line.</p></li>
+      <li><p class="stem">Assume the variable <span class="mono">level</span> references the integer 7. Write a statement that writes it to an open file object named <span class="mono">outfile</span> on its own line.</p></li>
+      <li><p class="stem">Write statements that read one line from an open file object named <span class="mono">infile</span>, remove its trailing newline, and display it.</p></li>
+      <li><p class="stem">Assume a file contains one number per line. Write a <span class="mono">for</span> loop that reads the file object <span class="mono">infile</span> and accumulates the total of all the numbers into a variable named <span class="mono">total</span>.</p></li>
+      <li><p class="stem">Rewrite the loop from question 6 using a <span class="mono">while</span> loop with <span class="mono">readline</span>, including the priming read and the end-of-file test.</p></li>
+      <li>
+        <p class="stem">Given a file named <span class="mono">cities.txt</span> containing the four lines Tokyo, Cairo, Lima, Oslo, what does the following display?</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">trace_1.py</span></div>
+<pre><code>infile = <span class="c-fn">open</span>(<span class="c-str">"cities.txt"</span>, <span class="c-str">"r"</span>)
+line = infile.<span class="c-fn">readline</span>()
+<span class="c-fn">print</span>(<span class="c-fn">repr</span>(line))
+infile.<span class="c-fn">close</span>()</code></pre>
+        </div>
+      </li>
+      <li>
+        <p class="stem">Starting again from the same four-line <span class="mono">cities.txt</span>, what does the file contain after this runs?</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">trace_2.py</span></div>
+<pre><code>outfile = <span class="c-fn">open</span>(<span class="c-str">"cities.txt"</span>, <span class="c-str">"w"</span>)
+outfile.<span class="c-fn">write</span>(<span class="c-str">"Oslo\n"</span>)
+outfile.<span class="c-fn">close</span>()</code></pre>
+        </div>
+      </li>
+      <li>
+        <p class="stem">What does the following display, and why is it not 100?</p>
+        <div class="code">
+          <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">trace_3.py</span></div>
+<pre><code>value = <span class="c-str">"95"</span>
+<span class="c-fn">print</span>(value + <span class="c-str">"5"</span>)</code></pre>
+        </div>
+      </li>
+      <li><p class="stem">Write a <span class="mono">try / except</span> statement that opens <span class="mono">data.txt</span> for reading and displays <span class="mono">That file isn't there.</span> if the file does not exist.</p></li>
+      <li><p class="stem">Extend your answer to question 11 with a second <span class="mono">except</span> clause that handles a <span class="mono">ValueError</span> raised while converting a line to an integer.</p></li>
+      <li><p class="stem">Rewrite the following so the file is closed whether or not the conversion succeeds:<br><span class="mono">infile = open("scores.txt", "r")</span> · <span class="mono">score = int(infile.readline())</span> · <span class="mono">infile.close()</span></p></li>
+      <li><p class="stem">Write statements that store a record for a player named <span class="mono">Rey</span> at level 7 with a score of 2480 in a file named <span class="mono">players.txt</span>, one field per line.</p></li>
+      <li><p class="stem">Write statements that read that record back from <span class="mono">players.txt</span> into three variables with the correct data types.</p></li>
+      <li><p class="stem">Name the exception each of the following would raise: <strong>a.</strong> opening a missing file with <span class="mono">'r'</span> · <strong>b.</strong> <span class="mono">int("N/A")</span> · <strong>c.</strong> <span class="mono">"95" + 5</span></p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 5 · PROGRAMMING EXERCISES ============ -->
+  <section id="pe">
+    <div class="sec-head"><span class="sec-num">5</span><h2>Programming Exercises</h2><span class="pts">2 × 14 pts = 28</span></div>
+    <p class="lead">Build each program one statement at a time at the <span class="mono">&gt;&gt;&gt;</span> prompt.</p>
+
+    <a class="console-btn" href="python-interactive-console.html"><span class="arrow">&gt;&gt;&gt;</span> Open the Interactive Python Console</a>
+
+    <div class="note"><b>About the files you create.</b> The console has its own in-browser filesystem. Files you write are real while the page is open, and they disappear when you reload it — so finish each exercise in one sitting, and don't reload between steps.</div>
+
+    <div class="note"><b>How to submit.</b> Paste your full console session into the Canvas submission box, followed by your written answers to the items marked <strong>Explain</strong>. Your transcript must show every line you typed and every line Python printed back — including any tracebacks.</div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 1</span><h3>The Sensor Readings File</h3></div>
+      <p class="why">Write numeric data to a file, append to it, read it back, and compute statistics — exercising both conversions and the difference between <code>'w'</code> and <code>'a'</code>.</p>
+      <ol class="steps">
+        <li>Open <code>readings.txt</code> for writing. Write the three values <strong>18.5</strong>, <strong>22.0</strong>, and <strong>19.75</strong>, each on its own line, then close the file. <strong>Explain:</strong> your <code>write</code> call needed two things the values didn't already have. What were they, and what happens if you omit each?</li>
+        <li>Re-open the file in append mode, add <strong>24.5</strong> on its own line, and close it.</li>
+        <li>Open the file for reading, display the whole thing with <code>read()</code>, and close it. Confirm all four values are present. <strong>Explain:</strong> what would have happened in step 2 if you had used <code>'w'</code> instead of <code>'a'</code>?</li>
+        <li>Now open it again and use a <code>for line in infile:</code> loop to accumulate a total and a count. Display the count, the total, and the average, each to two decimal places.</li>
+        <li><strong>Explain:</strong> inside the loop you had to convert each line before adding it. Which function did you use, and what error appears if you leave the conversion out? Try it and record the message.</li>
+        <li>Rewrite the same loop as a <code>while</code> loop using <code>readline</code>, with a priming read and an end-of-file test. <strong>Explain:</strong> what exact value does <code>readline</code> return at the end of the file, and which loop version would you rather maintain?</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–6, plus your written answers for steps 1, 3, 5, and 6.</div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 2</span><h3>The Player Records File</h3></div>
+      <p class="why">Store structured records, read them back in a loop, then make the program survive a missing file and a corrupted value.</p>
+      <ol class="steps">
+        <li>Write three player records to <code>players.txt</code>, one field per line in the order name, level, score: <strong>Rey / 7 / 2480</strong>, <strong>Finn / 4 / 1120</strong>, <strong>Poe / 9 / 3050</strong>. Remember which fields need <code>str()</code>.</li>
+        <li>Read the file back with a loop that reads <em>three</em> lines per pass and displays one line per player, such as <code>Rey — level 7 — score 2480</code>. Use the empty string from <code>readline</code> to stop. <strong>Explain:</strong> why can't you use <code>for line in infile:</code> here as easily as in Exercise 1?</li>
+        <li>Now break it on purpose. Try to open a file named <code>missing.txt</code> for reading with no <code>try</code> around it. Record the exception type and message exactly.</li>
+        <li>Wrap that same open in a <code>try / except FileNotFoundError</code> that displays <code>That file isn't there.</code> Confirm the program continues instead of stopping.</li>
+        <li>Append a fourth record to <code>players.txt</code> whose level is the text <strong>N/A</strong> instead of a number. Re-run your reading loop with no protection and record what happens. <strong>Explain:</strong> name the exception, and say why this one is <em>not</em> a file error even though it happened while reading a file.</li>
+        <li>Add a second <code>except ValueError</code> clause so the program reports a bad record instead of crashing. <strong>Explain:</strong> why does this <code>try</code> statement need two <code>except</code> clauses rather than one?</li>
+        <li>Finally, move <code>infile.close()</code> into a <code>finally</code> suite. <strong>Explain:</strong> with the close at the end of the <code>try</code> suite instead, describe the exact path through the code on which the file would be left open.</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–7, plus your written answers for steps 2, 5, 6, and 7.</div>
+    </div>
+
+    <div class="note"><b>Tip.</b> Press the <kbd>↑</kbd> arrow key to bring back a line you already typed. If you lose track of a file's contents, open it and <code>print(infile.read())</code> to see exactly what is in it.</div>
+  </section>
+
+  <div class="keybreak">Answer key begins on the next page</div>
+
+  <!-- ============ ANSWER KEY ============ -->
+  <section id="answers">
+    <div class="sec-head"><span class="sec-num">✓</span><h2>Week 07 Answer Key</h2><span class="pts">Instructor copy</span></div>
+    <p class="lead">Files and Exceptions — 100 points total.</p>
+
+    <div class="note"><b>Do not distribute with the question set.</b> When printed, this key starts on its own page. To post the questions to students without the key, delete everything from this section to the end of the page.</div>
+
+    <div class="akey">
+      <h3>Multiple Choice · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">b</span> — output file</li>
+        <li><span class="n">2.</span><span class="v">b</span> — open, process, close</li>
+        <li><span class="n">3.</span><span class="v">b</span> — text file</li>
+        <li><span class="n">4.</span><span class="v">c</span> — sequential</li>
+        <li><span class="n">5.</span><span class="v">a</span> — file object</li>
+        <li><span class="n">6.</span><span class="v">b</span> — open</li>
+        <li><span class="n">7.</span><span class="v">b</span> — 'w'</li>
+        <li><span class="n">8.</span><span class="v">c</span> — 'a'</li>
+        <li><span class="n">9.</span><span class="v">a</span> — method</li>
+        <li><span class="n">10.</span><span class="v">b</span> — write</li>
+        <li><span class="n">11.</span><span class="v">b</span> — no line breaks</li>
+        <li><span class="n">12.</span><span class="v">b</span> — read</li>
+        <li><span class="n">13.</span><span class="v">c</span> — a newline</li>
+        <li><span class="n">14.</span><span class="v">b</span> — rstrip</li>
+        <li><span class="n">15.</span><span class="v">a</span> — read position</li>
+        <li><span class="n">16.</span><span class="v">c</span> — str</li>
+        <li><span class="n">17.</span><span class="v">a</span> — string</li>
+        <li><span class="n">18.</span><span class="v">b</span> — an empty string</li>
+        <li><span class="n">19.</span><span class="v">b</span> — no priming read</li>
+        <li><span class="n">20.</span><span class="v">b</span> — record</li>
+        <li><span class="n">21.</span><span class="v">a</span> — field</li>
+        <li><span class="n">22.</span><span class="v">b</span> — FileNotFoundError</li>
+        <li><span class="n">23.</span><span class="v">b</span> — ValueError</li>
+        <li><span class="n">24.</span><span class="v">d</span> — finally</li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>True or False · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">False</span> — RAM is cleared</li>
+        <li><span class="n">2.</span><span class="v">True</span></li>
+        <li><span class="n">3.</span><span class="v">False</span> — 'a' creates it</li>
+        <li><span class="n">4.</span><span class="v">False</span> — you add '\n'</li>
+        <li><span class="n">5.</span><span class="v">False</span> — raises TypeError</li>
+        <li><span class="n">6.</span><span class="v">True</span></li>
+        <li><span class="n">7.</span><span class="v">True</span></li>
+        <li><span class="n">8.</span><span class="v">False</span> — it can vanish in between</li>
+        <li><span class="n">9.</span><span class="v">True</span></li>
+        <li><span class="n">10.</span><span class="v">False</span> — it is skipped</li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>Short Answer · 2 points each</h3>
+      <ol class="akeys">
+        <li><span class="qtext">Why files?</span><span class="atext">Variables live in RAM, which is wiped clean when the program ends. For data to survive between runs — a saved game, a customer list, last month's readings — it must be written to a file, usually on a disk.</span></li>
+        <li><span class="qtext">The three steps.</span><span class="atext"><strong>Open</strong> — connect the program to the file and state whether you intend to read or write. <strong>Process</strong> — write data to it or read data from it. <strong>Close</strong> — disconnect, which flushes any pending writes and frees the file for other programs.</span></li>
+        <li><span class="qtext">File types and access methods.</span><span class="atext">A text file holds data encoded as readable characters; a binary file holds data in the computer's raw internal format, not converted to text. Sequential access reads straight through from beginning to end without skipping; direct (random) access jumps straight to any piece of data in any order. This module uses text files and sequential access throughout.</span></li>
+        <li><span class="qtext">File object.</span><span class="atext">An object that represents one specific open file and provides the methods used to work with it. A variable references the file object, and the file object is associated with the actual file on disk — so calling a method on the object operates on that file.</span></li>
+        <li><span class="qtext">'w' versus 'a'.</span><span class="atext"><span class="mono">'w'</span> erases the file's existing contents the moment it opens and starts fresh. <span class="mono">'a'</span> preserves the contents and adds new data at the end. Both create the file if it does not already exist.</span></li>
+        <li><span class="qtext">The newline.</span><span class="atext"><span class="mono">write</span> adds no line breaks, so without <span class="mono">'\n'</span> every item runs together on one line. You concatenate it on with <span class="mono">+</span>. Coming back, <span class="mono">readline</span> includes that newline in the string it returns, so you remove it with <span class="mono">rstrip('\n')</span>.</span></li>
+        <li><span class="qtext">Two conversions.</span><span class="atext">Going out, <span class="mono">write</span> accepts only strings, so each number must be converted with <span class="mono">str</span>. Coming in, every value read from a text file arrives as a string, so it must be converted back with <span class="mono">int</span> or <span class="mono">float</span> before arithmetic.</span></li>
+        <li><span class="qtext">End of file.</span><span class="atext"><span class="mono">readline</span> returns an empty string, <span class="mono">''</span>. That serves as a sentinel: do a priming read before the loop, loop <span class="mono">while line != "":</span>, and read the next line at the bottom of each pass.</span></li>
+        <li><span class="qtext">Advantage of the for loop.</span><span class="atext">It needs no priming read and no end-of-file test — it hands you one line per pass and stops automatically. That removes the two places the <span class="mono">while</span> version most often goes wrong: a forgotten priming read, or a forgotten read at the bottom of the loop.</span></li>
+        <li><span class="qtext">Record and field.</span><span class="atext">A record is a complete set of data describing one item; a field is a single piece of data within that record. A common approach in a sequential text file is one field per line, written in a fixed order — so reading a record back means reading that same number of lines in that same order.</span></li>
+        <li><span class="qtext">Why handle rather than check.</span><span class="atext">A file could be deleted or moved in the instant between the existence check and the <span class="mono">open</span>, so the check guarantees nothing. Attempting the operation and handling <span class="mono">FileNotFoundError</span> covers every case, including the ones a check cannot see.</span></li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Algorithm Workbench · 1 point each</h3>
+      <ol class="akeys">
+        <li><span class="qtext">Open for writing.</span><span class="atext"><span class="mono">outfile = open("notes.txt", "w")</span></span></li>
+        <li><span class="qtext">Open for reading, and close.</span><span class="atext"><span class="mono">infile = open("notes.txt", "r")</span> then <span class="mono">infile.close()</span></span></li>
+        <li><span class="qtext">Write three cities.</span><span class="atext">Three calls of the form <span class="mono">outfile.write("Tokyo\n")</span>, or a loop over a list writing <span class="mono">city + "\n"</span>. <em>The newline is required for credit.</em></span></li>
+        <li><span class="qtext">Write a number.</span><span class="atext"><span class="mono">outfile.write(str(level) + "\n")</span> — both the <span class="mono">str</span> conversion and the newline are required.</span></li>
+        <li><span class="qtext">Read and strip.</span><span class="atext"><span class="mono">line = infile.readline()</span>, then <span class="mono">line = line.rstrip("\n")</span>, then <span class="mono">print(line)</span>.</span></li>
+        <li><span class="qtext">for-loop accumulator.</span><span class="atext"><span class="mono">total = 0</span> before the loop, then <span class="mono">for line in infile:</span> containing <span class="mono">total += float(line)</span> (or <span class="mono">int</span>). <em>The conversion is the graded part.</em></span></li>
+        <li><span class="qtext">while-loop version.</span><span class="atext"><span class="mono">total = 0</span>, <span class="mono">line = infile.readline()</span> as the priming read, then <span class="mono">while line != "":</span> containing <span class="mono">total += float(line)</span> and a second <span class="mono">line = infile.readline()</span> at the bottom.</span></li>
+        <li><span class="qtext">Trace 1.</span><span class="atext"><span class="mono">'Tokyo\n'</span> — <span class="mono">repr</span> reveals the trailing newline that <span class="mono">readline</span> includes. <em>Answering <span class="mono">Tokyo</span> shows the newline was missed; that is the point of using <span class="mono">repr</span>.</em></span></li>
+        <li><span class="qtext">Trace 2.</span><span class="atext">The file now contains only <span class="mono">Oslo</span> followed by a newline. Opening in <span class="mono">'w'</span> mode erased Tokyo, Cairo, and Lima the instant the file was opened — before anything was written.</span></li>
+        <li><span class="qtext">Trace 3.</span><span class="atext">It displays <span class="mono">955</span>. Both operands are strings, so <span class="mono">+</span> performs concatenation rather than addition. <em>Note the related failure: <span class="mono">"95" + 5</span> raises <span class="mono">TypeError</span> instead.</em></span></li>
+        <li><span class="qtext">Handling a missing file.</span><span class="atext"><span class="mono">try:</span> / <span class="mono">infile = open("data.txt", "r")</span> / <span class="mono">except FileNotFoundError:</span> / <span class="mono">print("That file isn't there.")</span></span></li>
+        <li><span class="qtext">Second except clause.</span><span class="atext">Add <span class="mono">except ValueError:</span> with its own message, after the <span class="mono">FileNotFoundError</span> clause. Both clauses attach to the same <span class="mono">try</span>.</span></li>
+        <li><span class="qtext">Guaranteed close.</span><span class="atext">Move the <span class="mono">open</span> above the <span class="mono">try</span>, put the read and conversion inside the <span class="mono">try</span>, and put <span class="mono">infile.close()</span> in a <span class="mono">finally</span> suite. <em>The <span class="mono">open</span> stays outside because if it fails there is nothing to close.</em></span></li>
+        <li><span class="qtext">Write a record.</span><span class="atext">Open <span class="mono">players.txt</span> for writing, then <span class="mono">outfile.write("Rey\n")</span>, <span class="mono">outfile.write(str(7) + "\n")</span>, <span class="mono">outfile.write(str(2480) + "\n")</span>, then close.</span></li>
+        <li><span class="qtext">Read a record.</span><span class="atext"><span class="mono">name = infile.readline().rstrip("\n")</span>, <span class="mono">level = int(infile.readline())</span>, <span class="mono">score = int(infile.readline())</span>. <em>The name needs stripping; the numbers do not, because <span class="mono">int</span> tolerates surrounding whitespace.</em></span></li>
+        <li><span class="qtext">Name the exceptions.</span><span class="atext"><strong>a.</strong> <span class="mono">FileNotFoundError</span> · <strong>b.</strong> <span class="mono">ValueError</span> · <strong>c.</strong> <span class="mono">TypeError</span></span></li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Exercise 1 · The Sensor Readings File — 14 points</h3>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> outfile = <span class="c-fn">open</span>(<span class="c-str">"readings.txt"</span>, <span class="c-str">"w"</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">for</span> r <span class="c-kw">in</span> [<span class="c-num">18.5</span>, <span class="c-num">22.0</span>, <span class="c-num">19.75</span>]:
+<span class="c-prompt">...</span>     outfile.<span class="c-fn">write</span>(<span class="c-fn">str</span>(r) + <span class="c-str">"\n"</span>)
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> outfile.<span class="c-fn">close</span>()
+<span class="c-prompt">&gt;&gt;&gt;</span> outfile = <span class="c-fn">open</span>(<span class="c-str">"readings.txt"</span>, <span class="c-str">"a"</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> outfile.<span class="c-fn">write</span>(<span class="c-str">"24.5\n"</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> outfile.<span class="c-fn">close</span>()
+<span class="c-prompt">&gt;&gt;&gt;</span> infile = <span class="c-fn">open</span>(<span class="c-str">"readings.txt"</span>, <span class="c-str">"r"</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">print</span>(infile.<span class="c-fn">read</span>())
+<span class="c-out">18.5
+22.0
+19.75
+24.5</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> infile.<span class="c-fn">close</span>()
+<span class="c-prompt">&gt;&gt;&gt;</span> infile = <span class="c-fn">open</span>(<span class="c-str">"readings.txt"</span>, <span class="c-str">"r"</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> total = <span class="c-num">0.0</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> count = <span class="c-num">0</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">for</span> line <span class="c-kw">in</span> infile:
+<span class="c-prompt">...</span>     total += <span class="c-fn">float</span>(line)
+<span class="c-prompt">...</span>     count += <span class="c-num">1</span>
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> infile.<span class="c-fn">close</span>()
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">print</span>(f<span class="c-str">"{count} readings, total {total:.2f}, average {total/count:.2f}"</span>)
+<span class="c-out">4 readings, total 84.75, average 21.19</span></code></pre>
+      </div>
+      <ol class="akeys">
+        <li><span class="qtext">Step 1 — the two things.</span><span class="atext">A <span class="mono">str</span> conversion and a newline. Without <span class="mono">str</span>, <span class="mono">write</span> raises a <span class="mono">TypeError</span> because it accepts only strings. Without <span class="mono">'\n'</span>, the program runs fine but all four values are concatenated onto a single line — <span class="mono">18.522.019.7524.5</span> — which cannot be read back as separate values.</span></li>
+        <li><span class="qtext">Step 3 — 'w' instead of 'a'.</span><span class="atext">Opening in <span class="mono">'w'</span> would have erased the three readings immediately, leaving only 24.5 in the file. The erasure happens when the file is opened, not when something is written.</span></li>
+        <li><span class="qtext">Step 5 — the conversion.</span><span class="atext"><span class="mono">float</span> (or <span class="mono">int</span> for whole numbers). Omitting it makes <span class="mono">total += line</span> attempt to add a string to a number, raising <span class="mono">TypeError: unsupported operand type(s) for +=: 'float' and 'str'</span>. <em>Accept a close paraphrase of the message.</em></span></li>
+        <li><span class="qtext">Step 6 — the sentinel and the comparison.</span><span class="atext"><span class="mono">readline</span> returns an empty string, <span class="mono">''</span>, at end of file — not <span class="mono">None</span>. Most students prefer the <span class="mono">for</span> version: no priming read, no end-of-file test, and no chance of forgetting the read at the bottom of the loop, which is the classic way the <span class="mono">while</span> version becomes infinite.</span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>4</td><td>Steps 1–3: writes with <span class="mono">str</span> and <span class="mono">'\n'</span>, appends correctly, reads back all four values.</td></tr>
+          <tr><td>3</td><td>Step 4: <span class="mono">for</span> loop accumulates count, total, and average, formatted to two decimals.</td></tr>
+          <tr><td>2</td><td>Step 1 explanation — both the conversion and the newline, with the consequence of omitting each.</td></tr>
+          <tr><td>2</td><td>Step 3 explanation — <span class="mono">'w'</span> would have erased the earlier readings.</td></tr>
+          <tr><td>1</td><td>Step 5 — conversion error reproduced and named.</td></tr>
+          <tr><td>2</td><td>Step 6 — working <span class="mono">while</span> version, with the empty string identified as the sentinel.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="akey">
+      <h3>Exercise 2 · The Player Records File — 14 points</h3>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> outfile = <span class="c-fn">open</span>(<span class="c-str">"players.txt"</span>, <span class="c-str">"w"</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">for</span> name, level, score <span class="c-kw">in</span> [(<span class="c-str">"Rey"</span>,<span class="c-num">7</span>,<span class="c-num">2480</span>), (<span class="c-str">"Finn"</span>,<span class="c-num">4</span>,<span class="c-num">1120</span>), (<span class="c-str">"Poe"</span>,<span class="c-num">9</span>,<span class="c-num">3050</span>)]:
+<span class="c-prompt">...</span>     outfile.<span class="c-fn">write</span>(name + <span class="c-str">"\n"</span>)
+<span class="c-prompt">...</span>     outfile.<span class="c-fn">write</span>(<span class="c-fn">str</span>(level) + <span class="c-str">"\n"</span>)
+<span class="c-prompt">...</span>     outfile.<span class="c-fn">write</span>(<span class="c-fn">str</span>(score) + <span class="c-str">"\n"</span>)
+<span class="c-prompt">...</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> outfile.<span class="c-fn">close</span>()
+<span class="c-prompt">&gt;&gt;&gt;</span> infile = <span class="c-fn">open</span>(<span class="c-str">"players.txt"</span>, <span class="c-str">"r"</span>)
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">while</span> <span class="c-kw">True</span>:
+<span class="c-prompt">...</span>     name = infile.<span class="c-fn">readline</span>()
+<span class="c-prompt">...</span>     <span class="c-kw">if</span> name == <span class="c-str">""</span>:
+<span class="c-prompt">...</span>         <span class="c-kw">break</span>
+<span class="c-prompt">...</span>     name = name.<span class="c-fn">rstrip</span>(<span class="c-str">"\n"</span>)
+<span class="c-prompt">...</span>     level = <span class="c-fn">int</span>(infile.<span class="c-fn">readline</span>())
+<span class="c-prompt">...</span>     score = <span class="c-fn">int</span>(infile.<span class="c-fn">readline</span>())
+<span class="c-prompt">...</span>     <span class="c-fn">print</span>(name, <span class="c-str">"— level"</span>, level, <span class="c-str">"— score"</span>, score)
+<span class="c-prompt">...</span>
+<span class="c-out">Rey — level 7 — score 2480
+Finn — level 4 — score 1120
+Poe — level 9 — score 3050</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> infile.<span class="c-fn">close</span>()
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">open</span>(<span class="c-str">"missing.txt"</span>, <span class="c-str">"r"</span>)
+<span class="c-err">FileNotFoundError: [Errno 2] No such file or directory: 'missing.txt'</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-kw">try</span>:
+<span class="c-prompt">...</span>     infile = <span class="c-fn">open</span>(<span class="c-str">"missing.txt"</span>, <span class="c-str">"r"</span>)
+<span class="c-prompt">...</span> <span class="c-kw">except</span> FileNotFoundError:
+<span class="c-prompt">...</span>     <span class="c-fn">print</span>(<span class="c-str">"That file isn't there."</span>)
+<span class="c-prompt">...</span>
+<span class="c-out">That file isn't there.</span>
+<span class="c-com"># after appending the bad record with level "N/A"</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> level = <span class="c-fn">int</span>(infile.<span class="c-fn">readline</span>())
+<span class="c-err">ValueError: invalid literal for int() with base 10: 'N/A\n'</span></code></pre>
+      </div>
+      <ol class="akeys">
+        <li><span class="qtext">Step 2 — why not a for loop.</span><span class="atext">A <span class="mono">for</span> loop hands you exactly one line per iteration, but a record spans three lines that must be read together and given different treatment — one stripped as text, two converted to integers. The <span class="mono">while</span> form lets you call <span class="mono">readline</span> three times per pass and keep the fields aligned with their meanings. <em>Accept: it can be done with a <span class="mono">for</span> loop plus a counter, but it is clumsier.</em></span></li>
+        <li><span class="qtext">Step 5 — why it isn't a file error.</span><span class="atext"><span class="mono">ValueError</span>. The file opened perfectly and the line was read without trouble — the failure was <span class="mono">int()</span> refusing the text <span class="mono">'N/A'</span>. It is a <em>data</em> problem that happens to have arrived from a file. This is why file-handling code so often needs both a file exception and a conversion exception handled separately.</span></li>
+        <li><span class="qtext">Step 6 — why two clauses.</span><span class="atext">The two failures are different types, happen at different points, and deserve different messages: <span class="mono">FileNotFoundError</span> means the file is absent and nothing can be read at all, while <span class="mono">ValueError</span> means the file was read fine but one record is malformed. A single catch-all would report both with the same message and would also swallow unrelated bugs.</span></li>
+        <li><span class="qtext">Step 7 — the path that leaks the file.</span><span class="atext">If <span class="mono">int()</span> raises a <span class="mono">ValueError</span> partway through reading, control jumps immediately to the <span class="mono">except</span> clause and every remaining statement in the <span class="mono">try</span> suite is skipped — including the <span class="mono">close()</span> at the bottom. The file object stays open. A <span class="mono">finally</span> suite runs on that path too, so the file is released whether the read succeeded, failed and was handled, or failed and was not.</span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>Step 1: three records written, one field per line, with <span class="mono">str</span> on both numeric fields.</td></tr>
+          <tr><td>3</td><td>Step 2: reading loop displays all three players with correct types and stops at end of file.</td></tr>
+          <tr><td>2</td><td>Steps 3–4: <span class="mono">FileNotFoundError</span> reproduced verbatim, then handled so the program continues.</td></tr>
+          <tr><td>2</td><td>Step 5: bad record appended, <span class="mono">ValueError</span> reproduced and correctly distinguished from a file error.</td></tr>
+          <tr><td>2</td><td>Step 6: second <span class="mono">except</span> clause added, with a reason for keeping them separate.</td></tr>
+          <tr><td>2</td><td>Step 7: <span class="mono">finally</span> used, and the leaking path described exactly.</td></tr>
+        </tbody>
+      </table>
+      <div class="keypt"><b>Common error to watch for.</b> Reading the three fields but forgetting <span class="mono">rstrip</span> on the name. Nothing appears wrong — the name simply prints with a line break inside it, so the output looks oddly spaced. Comparing such a name to a target string will also silently fail, since <span class="mono">"Rey\n" != "Rey"</span>.</div>
+    </div>
+
+    <div class="akey">
+      <h3>Point Summary</h3>
+      <table class="ctable">
+        <thead><tr><th>Section</th><th>Items</th><th>Points</th></tr></thead>
+        <tbody>
+          <tr><td>Multiple Choice</td><td>24 × 1 pt</td><td>24</td></tr>
+          <tr><td>True or False</td><td>10 × 1 pt</td><td>10</td></tr>
+          <tr><td>Short Answer</td><td>11 × 2 pts</td><td>22</td></tr>
+          <tr><td>Algorithm Workbench</td><td>16 × 1 pt</td><td>16</td></tr>
+          <tr><td>Programming Exercises</td><td>2 × 14 pts</td><td>28</td></tr>
+          <tr><td>Total</td><td>—</td><td>100</td></tr>
+        </tbody>
+      </table>
+      <div class="keypt"><b>Canvas note.</b> Multiple Choice and True/False convert directly into an auto-graded Canvas quiz. Short Answer and Algorithm Workbench work well as essay questions; the two Programming Exercises are best set up as a text-entry assignment so students can paste their console transcripts.</div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>CIS181 · Python Programming · Week 07 — Review Questions &amp; Answer Key</span>
+    <span>Original questions &amp; exercises · for classroom use</span>
+  </div>
+</footer>
+
+<script>
+  // scroll progress bar
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
+    bar.style.width = Math.min(100, Math.max(0, scrolled * 100)) + '%';
+  };
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // scrollspy active section
+  const links = Array.from(document.querySelectorAll('nav.toc a'));
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('main section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 11 — Review of Weeks 1–10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;--py-blue-dark:#306998;--py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;--py-yellow-deep:#f0b400;
+    --slate-900:#0f172a;--slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;
+    --slate-500:#64748b;--slate-400:#94a3b8;--slate-300:#cbd5e1;--slate-200:#e2e8f0;
+    --slate-100:#f1f5f9;--slate-50:#f8fafc;
+    --good:#15803d;--good-bg:#dcfce7;--bad:#b91c1c;--bad-bg:#fee2e2;
+    --display:'Space Grotesk',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'Fira Code',ui-monospace,monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;font-size:17px;}
+  body{margin:0;font-family:var(--body);color:#2b303b;background:var(--slate-50);line-height:1.7;-webkit-font-smoothing:antialiased;}
+  a{color:var(--py-blue-dark);}
+  code{font-family:var(--mono);font-size:.92em;}
+  .hero{background:linear-gradient(150deg,var(--py-blue-deep) 0%,var(--py-blue-dark) 55%,var(--py-blue) 100%);color:#fff;padding:64px 24px 0;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;background:radial-gradient(circle,rgba(255,212,59,.22),transparent 70%);}
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{font-family:var(--mono);letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:var(--py-yellow);font-weight:600;margin-bottom:14px;}
+  .hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:0 0 18px;letter-spacing:-.02em;}
+  .hero h1 .accent{background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p.lede{font-size:1.12rem;max-width:60ch;color:#e0ecf5;margin:0 0 26px;}
+  .hero-bar{display:flex;flex-wrap:wrap;gap:8px;padding:18px 0 22px;}
+  .hero-bar a{font-size:.82rem;font-weight:600;color:#fff;text-decoration:none;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);padding:7px 13px;border-radius:999px;transition:.18s;}
+  .hero-bar a:hover{background:var(--py-yellow);color:var(--slate-900);border-color:var(--py-yellow);}
+  .hero-bar a.out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+  .toc-out{display:block;margin:14px 0 0;padding:9px 13px;text-decoration:none;font-size:.86rem;
+    font-weight:600;color:var(--py-blue-deep);background:#eaf2f9;border:1px solid #cfe0ee;
+    border-radius:9px;transition:.16s;}
+  .toc-out:hover{background:var(--py-blue-deep);color:#fff;border-color:var(--py-blue-deep);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:grid;grid-template-columns:232px 1fr;gap:42px;align-items:start;}
+  .toc{position:sticky;top:18px;padding:28px 0;align-self:start;}
+  .toc h2{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-500);margin:0 0 12px;}
+  .toc ol{list-style:none;margin:0;padding:0;counter-reset:t;}
+  .toc li{counter-increment:t;}
+  .toc a{display:block;text-decoration:none;color:var(--slate-600);font-size:.9rem;font-weight:500;padding:6px 10px 6px 34px;border-left:2px solid var(--slate-200);position:relative;transition:.16s;}
+  .toc a::before{content:counter(t,decimal-leading-zero);position:absolute;left:8px;top:6px;font-family:var(--mono);font-size:.68rem;color:var(--slate-400);}
+  .toc a:hover{color:var(--py-blue-dark);border-left-color:var(--py-blue);}
+  .toc a.active{color:var(--py-blue-deep);border-left-color:var(--py-yellow-deep);background:#fff;font-weight:600;}
+  main{padding:34px 0 60px;min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:18px;}
+  .sec-tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--py-blue);font-weight:600;margin-bottom:6px;}
+  h2.title{font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.12;margin:0 0 6px;color:var(--slate-900);letter-spacing:-.015em;}
+  h2.title .bar{display:block;width:54px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));margin-top:12px;}
+  h3{font-family:var(--display);font-weight:600;font-size:1.18rem;color:var(--slate-900);margin:30px 0 10px;}
+  p{margin:0 0 14px;}
+  .lead{font-size:1.06rem;color:var(--slate-700);}
+  .code{background:var(--slate-900);border-radius:12px;margin:16px 0;overflow:hidden;border:1px solid #0b1220;box-shadow:0 10px 30px -16px rgba(15,23,42,.5);}
+  .code-top{display:flex;align-items:center;gap:7px;padding:11px 15px;background:#0b1220;border-bottom:1px solid #1e293b;}
+  .code-top .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+  .code-top .dot.r{background:#f87171;}.code-top .dot.y{background:#fbbf24;}.code-top .dot.g{background:#34d399;}
+  .code-top .fn{margin-left:8px;font-family:var(--mono);font-size:.74rem;color:var(--slate-400);}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.7;color:#e2e8f0;}
+  .kw{color:#ff9d6f;}.bif{color:#7cc3ff;}.str{color:#ffd87a;}.num{color:#a5f3a0;}.com{color:#64748b;font-style:italic;}.op{color:#f0abfc;}.out{color:#94a3b8;}
+  .cards{display:grid;gap:12px;margin:18px 0;}
+  details.card{background:#fff;border:1px solid var(--slate-200);border-radius:12px;box-shadow:0 1px 2px rgba(15,23,42,.04);overflow:hidden;}
+  details.card>summary{cursor:pointer;list-style:none;padding:15px 18px;font-weight:600;color:var(--slate-900);display:flex;align-items:center;gap:12px;font-family:var(--display);}
+  details.card>summary::-webkit-details-marker{display:none;}
+  details.card>summary .ix{font-family:var(--mono);font-size:.72rem;color:var(--py-blue-dark);background:#e8f1f8;border-radius:6px;padding:3px 7px;font-weight:600;flex:none;}
+  details.card>summary .chev{margin-left:auto;color:var(--slate-400);transition:.2s;flex:none;}
+  details.card[open]>summary .chev{transform:rotate(90deg);color:var(--py-blue);}
+  details.card .body{padding:0 18px 17px;color:var(--slate-700);}
+  details.card .body>*:first-child{margin-top:0;}
+  .call{border-radius:11px;padding:14px 16px;margin:16px 0;border:1px solid;font-size:.95rem;}
+  .call .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:5px;}
+  .call.good{background:var(--good-bg);border-color:#86efac;color:#14532d;}
+  .call.good .lbl{background:var(--good);color:#fff;}
+  .call.bad{background:var(--bad-bg);border-color:#fca5a5;color:#7f1d1d;}
+  .call.bad .lbl{background:var(--bad);color:#fff;}
+  .call.note{background:#fff8e1;border-color:#fde68a;color:#713f12;}
+  .call.note .lbl{background:var(--py-yellow-deep);color:var(--slate-900);}
+  .call p:last-child{margin-bottom:0;}
+  .call code{background:rgba(15,23,42,.07);padding:1px 5px;border-radius:4px;}
+  .tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--slate-200);}
+  .tbl th{background:var(--py-blue-dark);color:#fff;text-align:left;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:.88rem;}
+  .tbl td{padding:9px 14px;border-top:1px solid var(--slate-200);vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:var(--slate-50);}
+  .tbl td code{color:var(--py-blue-deep);font-weight:600;}
+  figure{margin:22px 0;background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px 16px 8px;text-align:center;}
+  figure svg{max-width:100%;height:auto;}
+  figcaption{font-size:.84rem;color:var(--slate-500);margin-top:8px;padding-bottom:8px;}
+  figcaption b{color:var(--slate-700);font-family:var(--display);}
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.reveal{opacity:1;transform:none;transition:none;}}
+  @media (max-width:880px){.wrap{grid-template-columns:1fr;gap:0;}.toc{display:none;}main{padding-top:24px;}}
+  :focus-visible{outline:3px solid var(--py-yellow-deep);outline-offset:2px;border-radius:4px;}
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Week 11</div>
+    <h1>Review: <span class="accent">Weeks 1&ndash;10</span></h1>
+    <p class="lede">Everything the course has covered so far, gathered in one place. Each block below names the <b>key concepts</b> from one week, shows the syntax that matters, and flags the mistakes that cost the most points. Use it to find your weak spots &mdash; then go back to that week's module for the full treatment and its review questions.</p>
+    <nav class="hero-bar" aria-label="Module topics">
+      <a href="#w1">1 &middot; Computers</a>
+      <a href="#w2">2 &middot; Input/Output</a>
+      <a href="#w3">3 &middot; Decisions</a>
+      <a href="#w4">4 &middot; Repetition</a>
+      <a href="#w5">5 &middot; Functions</a>
+      <a href="#w6">6 &middot; Exceptions</a>
+      <a href="#w7">7 &middot; Files</a>
+      <a href="#w8">8 &middot; Lists</a>
+      <a href="#w9">9 &middot; Strings</a>
+      <a href="#w10">10 &middot; Dictionaries</a>
+      <a href="#traps">Top Traps</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="toc">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#w1">Computers &amp; programming</a></li>
+      <li><a href="#w2">Input, processing, output</a></li>
+      <li><a href="#w3">Decision structures</a></li>
+      <li><a href="#w4">Repetition structures</a></li>
+      <li><a href="#w5">Functions</a></li>
+      <li><a href="#w6">Exceptions</a></li>
+      <li><a href="#w7">Files</a></li>
+      <li><a href="#w8">Lists &amp; tuples</a></li>
+      <li><a href="#w9">Strings</a></li>
+      <li><a href="#w10">Dictionaries &amp; sets</a></li>
+      <li><a href="#traps">Top ten traps</a></li>
+      <li><a href="#console">Practice console</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <!-- ============ WEEK 1 ============ -->
+    <section id="w1" class="reveal">
+      <div class="sec-tag">Week 01</div>
+      <h2 class="title">Computers and programming<span class="bar"></span></h2>
+      <p class="lead">The vocabulary everything else rests on: what the machine is made of, how it stores information, and what a program actually is.</p>
+
+      <h3>Hardware and software</h3>
+      <p>A computer is a <b>general-purpose machine</b> — the program currently loaded decides what job it does. The four hardware categories are the <b>CPU</b> (runs the instructions), <b>main memory / RAM</b> (holds the running program and its data, and is <b>volatile</b> — erased when power is lost), <b>secondary storage</b> (keeps data without power), and <b>input/output devices</b>. Software divides into <b>system software</b> (the operating system and utilities) and <b>application software</b> (word processors, browsers, games).</p>
+
+      <h3>Storing numbers and characters</h3>
+      <p>A <b>bit</b> holds 0 or 1; eight bits make a <b>byte</b>. All eight bits on gives 128+64+32+16+8+4+2+1 = <b>255</b>, the largest value one byte can hold — and 2<sup>8</sup> = 256 possible patterns counting from 0. Characters are stored as numeric codes: <b>ASCII</b> defines 128 of them, and <b>Unicode</b> extends that to nearly every writing system while keeping the ASCII codes intact.</p>
+
+      <div class="call note">
+        <span class="lbl">The distinction to hold onto</span>
+        <p>The character <code>"9"</code> and the number <code>9</code> are different things. <code>ord("9")</code> is 57 — its character code — while the number 9 is a value you can do arithmetic with. This is exactly why keyboard and file input must be converted before you can calculate with it.</p>
+      </div>
+
+      <h3>How a program works, and using Python</h3>
+      <p>The CPU repeats a three-step cycle: <b>fetch</b> the next instruction, <b>decode</b> it, <b>execute</b> it. It understands only <b>machine language</b> from its own instruction set, so high-level code must be translated. A <b>compiler</b> translates the whole program into a separate executable file; an <b>interpreter</b> translates and runs one statement at a time and produces no such file. <b>Python uses an interpreter.</b> <b>Interactive mode</b> runs statements immediately at the <code>&gt;&gt;&gt;</code> prompt but saves nothing; <b>script mode</b> runs a saved <code>.py</code> file.</p>
+      <p>A <b>syntax error</b> breaks the language's rules, so the program never runs at all.</p>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk01-intro-to-computers-and-programming.html">&rarr;&nbsp; Week 01 module</a>
+    </section>
+
+    <!-- ============ WEEK 2 ============ -->
+    <section id="w2" class="reveal">
+      <div class="sec-tag">Week 02</div>
+      <h2 class="title">Input, processing, and output<span class="bar"></span></h2>
+      <p class="lead">Designing before coding, then the core statements every program is built from.</p>
+
+      <h3>Pseudocode and flowcharts</h3>
+      <p>An <b>algorithm</b> is a set of well-defined logical steps. <b>Pseudocode</b> is informal "fake code" with no syntax rules, so you can focus purely on the design. A <b>flowchart</b> draws it: ovals are terminals, <b>parallelograms are input/output</b>, rectangles are processing, and diamonds are decisions. Design is the most important stage — code comes after it.</p>
+
+      <h3>Input, processing, output</h3>
+      <p>Nearly every program receives <b>input</b>, performs <b>processing</b> on it, and produces <b>output</b> — in that order.</p>
+
+      <h3>print, strings, comments, and variables</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">basics.py</span></div>
+<pre><span class="com"># A comment — ignored by the interpreter, written for people</span>
+<span class="bif">print</span>(<span class="str">"Welcome to the trail log."</span>)     <span class="com"># a string literal in quotes</span>
+<span class="bif">print</span>(<span class="str">"Distance:"</span>, miles, <span class="str">"miles"</span>)      <span class="com"># commas → a space between items</span>
+
+trail_name <span class="op">=</span> <span class="str">"Sunrise Loop"</span>              <span class="com"># = is the assignment operator</span>
+elevation <span class="op">=</span> <span class="num">1240</span>                        <span class="com"># int; 12.5 would be a float</span></pre>
+      </div>
+      <p>A <b>string</b> is a sequence of characters; a <b>string literal</b> is one written directly in code, in quotes. A <b>variable</b> is a name referencing a value in memory, created by an <b>assignment statement</b>. The three first data types are <code>int</code>, <code>float</code>, and <code>str</code>.</p>
+
+      <h3>Reading input and performing calculations</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">calc.py</span></div>
+<pre>age <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Enter your age: "</span>))    <span class="com"># nested function call</span>
+price <span class="op">=</span> <span class="bif">float</span>(<span class="bif">input</span>(<span class="str">"Enter the price: "</span>))</pre>
+      </div>
+      <p><code>input</code> <b>always returns a string</b>, so convert with <code>int()</code> or <code>float()</code> before doing math. Operators: <code>+ - * /</code>, plus <code>//</code> (integer division, truncates), <code>%</code> (remainder), and <code>**</code> (exponent). <code>*</code> and <code>/</code> outrank <code>+</code> and <code>-</code>; parentheses override. An <code>int</code> combined with a <code>float</code> produces a <code>float</code>.</p>
+
+      <h3>Concatenation, escape sequences, and suppressing the newline</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">output.py</span></div>
+<pre>greeting <span class="op">=</span> <span class="str">"Welcome, "</span> <span class="op">+</span> <span class="str">"traveler!"</span>     <span class="com"># + joins two strings</span>
+
+<span class="bif">print</span>(<span class="str">"Name:\tAda\nLevel:\t7"</span>)            <span class="com"># \t tab, \n newline</span>
+<span class="bif">print</span>(<span class="str">"Loading"</span>, end<span class="op">=</span><span class="str">"..."</span>)              <span class="com"># end= replaces the newline</span>
+<span class="bif">print</span>(<span class="str">"2025"</span>, <span class="str">"11"</span>, <span class="str">"30"</span>, sep<span class="op">=</span><span class="str">"-"</span>)       <span class="com"># sep= replaces the space</span></pre>
+      </div>
+
+      <h3>Formatting output, and named constants</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">formatting.py</span></div>
+<pre><span class="bif">print</span>(<span class="bif">format</span>(<span class="num">12345.678</span>, <span class="str">",.2f"</span>))          <span class="com"># 12,345.68</span>
+<span class="bif">print</span>(f<span class="str">"Total: {total:,.2f}"</span>)              <span class="com"># same, as an f-string</span>
+<span class="bif">print</span>(f<span class="str">"Rate: {rate:.2%}"</span>)                 <span class="com"># 8.25%</span>
+
+SALES_TAX <span class="op">=</span> <span class="num">0.0725</span>                          <span class="com"># named constant, ALL_CAPS</span>
+total <span class="op">=</span> subtotal <span class="op">*</span> SALES_TAX</pre>
+      </div>
+      <p>An <b>f-string</b> is a literal prefixed with <code>f</code> whose braced placeholders are replaced by the values inside them; a format specifier follows a colon. A <b>named constant</b> replaces a <b>magic number</b> — it makes code self-documenting, changeable in one place, and safe from retyping errors.</p>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk02-input-processing-and-output.html">&rarr;&nbsp; Week 02 module</a>
+    </section>
+
+    <!-- ============ WEEK 3 ============ -->
+    <section id="w3" class="reveal">
+      <div class="sec-tag">Week 03</div>
+      <h2 class="title">Decision structures<span class="bar"></span></h2>
+      <p class="lead">Teaching a program to choose a path.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">decisions.py</span></div>
+<pre><span class="com"># single alternative — one optional path</span>
+<span class="kw">if</span> temperature <span class="op">&gt;</span> <span class="num">28</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Fan ON"</span>)
+
+<span class="com"># dual alternative — exactly one of two paths always runs</span>
+<span class="kw">if</span> member_id <span class="op">!=</span> <span class="num">0</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Welcome back"</span>)
+<span class="kw">else</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"See the front desk"</span>)
+
+<span class="com"># multiple alternative — first true condition wins, rest are skipped</span>
+<span class="kw">if</span> aqi <span class="op">&lt;=</span> <span class="num">50</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Good"</span>)
+<span class="kw">elif</span> aqi <span class="op">&lt;=</span> <span class="num">100</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Moderate"</span>)
+<span class="kw">else</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Unhealthy"</span>)</pre>
+      </div>
+      <p>Every <code>if</code> clause ends in a <b>colon</b>, and <b>indentation</b> — not braces — marks the block. A <b>Boolean expression</b> is one that is <code>True</code> or <code>False</code>; build one with a <b>relational operator</b>: <code>&gt; &lt; &gt;= &lt;= == !=</code>. A single <code>=</code> assigns; a double <code>==</code> compares.</p>
+
+      <h3>Comparing strings</h3>
+      <p>String comparison is <b>case-sensitive</b> — <code>"Start" == "start"</code> is <code>False</code>. Ordering compares character by character using each character's numeric code, stopping at the first difference. Because uppercase codes are lower than lowercase, <code>"Banana" &lt; "apple"</code> is <code>True</code>. If one string is a prefix of another, the longer one is greater.</p>
+
+      <h3>Logical operators and Boolean variables</h3>
+      <table class="tbl">
+        <thead><tr><th>Operator</th><th>Result is True when&hellip;</th></tr></thead>
+        <tbody>
+          <tr><td><code>and</code></td><td>both sides are true</td></tr>
+          <tr><td><code>or</code></td><td>at least one side is true</td></tr>
+          <tr><td><code>not</code></td><td>the single operand is false (it flips the value)</td></tr>
+        </tbody>
+      </table>
+      <p><b>Short-circuit evaluation</b> stops as soon as the answer is certain, which lets the left side guard the right: <code>count != 0 and total / count &gt; 10</code> never divides by zero. For ranges, <b>inside uses <code>and</code></b> (<code>temp &gt;= 18 and temp &lt;= 24</code>) and <b>outside uses <code>or</code></b> (<code>temp &lt; 18 or temp &gt; 24</code>).</p>
+      <p>A <b>Boolean variable</b> holds <code>True</code> or <code>False</code> and is often used as a <b>flag</b>: initialize it to <code>False</code>, set it to <code>True</code> when the condition occurs, and test it bare — <code>if found:</code>, never <code>if found == True:</code>.</p>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk03-decision-structures-and-boolean-logic.html">&rarr;&nbsp; Week 03 module</a>
+    </section>
+
+    <!-- ============ WEEK 4 ============ -->
+    <section id="w4" class="reveal">
+      <div class="sec-tag">Week 04</div>
+      <h2 class="title">Repetition structures<span class="bar"></span></h2>
+      <p class="lead">Two kinds of loop, and the four patterns you will use them for.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">loops.py</span></div>
+<pre><span class="com"># condition-controlled — repeats while a condition holds</span>
+seconds <span class="op">=</span> <span class="num">5</span>
+<span class="kw">while</span> seconds <span class="op">&gt;</span> <span class="num">0</span><span class="op">:</span>
+    <span class="bif">print</span>(seconds)
+    seconds <span class="op">-=</span> <span class="num">1</span>          <span class="com"># without this: an INFINITE loop</span>
+
+<span class="com"># count-controlled — repeats a known number of times</span>
+<span class="kw">for</span> n <span class="kw">in</span> <span class="bif">range</span>(<span class="num">1</span>, <span class="num">6</span>)<span class="op">:</span>     <span class="com"># 1, 2, 3, 4, 5 — the limit is EXCLUDED</span>
+    <span class="bif">print</span>(n, n <span class="op">**</span> <span class="num">2</span>)</pre>
+      </div>
+      <p><code>while</code> is a <b>pretest</b> loop: if the condition is false at the start, the body never runs. <code>range</code> takes a limit, a start and limit, or a start, limit, and <b>step</b> — and a negative step counts down.</p>
+
+      <h3>Accumulating a total, and augmented assignment</h3>
+      <p>An <b>accumulator</b> starts at 0 <em>before</em> the loop and grows inside it. Initializing it inside would reset it every pass.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">accumulate.py</span></div>
+<pre>total <span class="op">=</span> <span class="num">0.0</span>
+<span class="kw">for</span> amount <span class="kw">in</span> expenses<span class="op">:</span>
+    total <span class="op">+=</span> amount        <span class="com"># += -= *= /= %= are augmented assignment</span>
+average <span class="op">=</span> total <span class="op">/</span> <span class="bif">len</span>(expenses)</pre>
+      </div>
+
+      <h3>Sentinels, input validation, and nested loops</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">patterns.py</span></div>
+<pre><span class="com"># SENTINEL — a value that cannot appear in the real data</span>
+score <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Score (-1 to finish): "</span>))   <span class="com"># priming read</span>
+<span class="kw">while</span> score <span class="op">!=</span> <span class="op">-</span><span class="num">1</span><span class="op">:</span>
+    total <span class="op">+=</span> score
+    score <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Score (-1 to finish): "</span>))  <span class="com"># read again!</span>
+
+<span class="com"># INPUT VALIDATION — loop while the input is BAD</span>
+rating <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Rate 1-5: "</span>))
+<span class="kw">while</span> rating <span class="op">&lt;</span> <span class="num">1</span> <span class="kw">or</span> rating <span class="op">&gt;</span> <span class="num">5</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Not between 1 and 5."</span>)
+    rating <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Rate 1-5: "</span>))
+
+<span class="com"># NESTED — inner runs fully for EACH pass of the outer</span>
+<span class="kw">for</span> row <span class="kw">in</span> <span class="bif">range</span>(<span class="num">1</span>, <span class="num">4</span>)<span class="op">:</span>
+    <span class="kw">for</span> seat <span class="kw">in</span> <span class="bif">range</span>(<span class="num">1</span>, <span class="num">5</span>)<span class="op">:</span>
+        <span class="bif">print</span>(row, seat)      <span class="com"># 3 × 4 = 12 lines total</span></pre>
+      </div>
+      <p>A sentinel loop needs <b>two</b> input statements — the priming read before, and a matching read at the bottom. Total nested iterations are <b>inner count × outer count</b>.</p>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk04-repetition-structures.html">&rarr;&nbsp; Week 04 module</a>
+    </section>
+
+    <!-- ============ WEEK 5 ============ -->
+    <section id="w5" class="reveal">
+      <div class="sec-tag">Week 05</div>
+      <h2 class="title">Functions<span class="bar"></span></h2>
+      <p class="lead">Splitting a program into named pieces — the divide-and-conquer approach.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">functions.py</span></div>
+<pre><span class="kw">def</span> <span class="bif">show_area</span>(width, height)<span class="op">:</span>      <span class="com"># VOID — does something, returns nothing</span>
+    <span class="bif">print</span>(<span class="str">"Area:"</span>, width <span class="op">*</span> height)
+
+<span class="kw">def</span> <span class="bif">to_celsius</span>(fahrenheit)<span class="op">:</span>        <span class="com"># VALUE-RETURNING — hands a value back</span>
+    <span class="kw">return</span> (fahrenheit <span class="op">-</span> <span class="num">32</span>) <span class="op">*</span> <span class="num">5</span> <span class="op">/</span> <span class="num">9</span>
+
+<span class="bif">show_area</span>(<span class="num">8</span>, <span class="num">3</span>)                     <span class="com"># 8 and 3 are ARGUMENTS</span>
+c <span class="op">=</span> <span class="bif">to_celsius</span>(<span class="num">212</span>)                 <span class="com"># width/height are PARAMETERS</span>
+<span class="bif">book_room</span>(guests<span class="op">=</span><span class="num">2</span>, nights<span class="op">=</span><span class="num">3</span>)        <span class="com"># keyword arguments — order free</span></pre>
+      </div>
+      <p>A function <b>definition</b> is the <code>def</code> header plus its indented block; defining does not run it — a <b>call</b> does. Arguments match parameters <b>by position</b> unless named. Python passes <b>by value</b>: the function gets a copy, so reassigning a parameter never changes the caller's variable.</p>
+
+      <h3>Scope, globals, and modules</h3>
+      <p>A <b>local variable</b> is created inside a function and exists only there; its <b>scope</b> runs from its assignment to the end of that function. A <b>global variable</b> is assigned outside all functions — readable anywhere, but a function needs the <code>global</code> keyword to <em>reassign</em> it. Globals are discouraged; a <b>global constant</b> in ALL_CAPS is fine, and needs no <code>global</code> keyword because it is only read.</p>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">modules.py</span></div>
+<pre><span class="kw">import</span> random, math
+random<span class="op">.</span><span class="bif">randint</span>(<span class="num">1</span>, <span class="num">6</span>)        <span class="com"># both ends included</span>
+random<span class="op">.</span><span class="bif">randrange</span>(<span class="num">0</span>, <span class="num">35</span>, <span class="num">5</span>)   <span class="com"># limit excluded, like range</span>
+math<span class="op">.</span><span class="bif">sqrt</span>(<span class="num">144</span>)              <span class="com"># 12.0 — always a float</span></pre>
+      </div>
+      <p>Module functions are reached with <b>dot notation</b>. Random numbers are <b>pseudo-random</b>: a <b>seed</b> initializes the formula, so <code>random.seed(7)</code> makes the same series repeat.</p>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk05-functions.html">&rarr;&nbsp; Week 05 module</a>
+    </section>
+
+    <!-- ============ WEEK 6 ============ -->
+    <section id="w6" class="reveal">
+      <div class="sec-tag">Week 06</div>
+      <h2 class="title">Exceptions<span class="bar"></span></h2>
+      <p class="lead">Runtime errors, how to catch them, and how your own functions should report trouble.</p>
+
+      <p>An <b>exception</b> is an error that occurs <em>while the program runs</em> — unlike a syntax error, earlier statements already executed. Unhandled, it halts the program and prints a <b>traceback</b>; read it <b>bottom-up</b>, where the last line names the type and describes the problem.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">handling.py</span></div>
+<pre><span class="kw">try</span><span class="op">:</span>
+    age <span class="op">=</span> <span class="bif">int</span>(<span class="bif">input</span>(<span class="str">"Age: "</span>))
+<span class="kw">except</span> ValueError <span class="kw">as</span> err<span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Not a number:"</span>, err)   <span class="com"># err is the exception object</span>
+<span class="kw">else</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Accepted"</span>)              <span class="com"># only if nothing was raised</span>
+<span class="kw">finally</span><span class="op">:</span>
+    <span class="bif">print</span>(<span class="str">"Done"</span>)                  <span class="com"># every time — used for cleanup</span></pre>
+      </div>
+      <p>When an exception is raised, the <b>rest of the try suite is skipped</b>. List an <code>except</code> clause per type; a bare catch-all must come <b>last</b>. Common types: <code>ValueError</code>, <code>TypeError</code>, <code>ZeroDivisionError</code>, <code>IndexError</code>, <code>KeyError</code>, <code>NameError</code>, <code>FileNotFoundError</code>.</p>
+
+      <h3>Raising from your own functions</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">raising.py</span></div>
+<pre><span class="kw">def</span> <span class="bif">to_kelvin</span>(celsius)<span class="op">:</span>
+    <span class="kw">if</span> celsius <span class="op">&lt;</span> <span class="op">-</span><span class="num">273.15</span><span class="op">:</span>
+        <span class="kw">raise</span> ValueError(<span class="str">"below absolute zero"</span>)
+    <span class="kw">return</span> celsius <span class="op">+</span> <span class="num">273.15</span>
+
+<span class="kw">class</span> <span class="bif">TemperatureError</span>(Exception)<span class="op">:</span>   <span class="com"># custom type</span>
+    <span class="kw">pass</span></pre>
+      </div>
+      <p>The principle: a function <b>detects</b> the problem, the caller <b>decides</b> the response. <code>raise</code> ends the function immediately. Raise for the <em>exceptional</em>, return a value for the <em>normal</em>. An unhandled exception <b>propagates up the call chain</b> until something catches it.</p>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk06-functions-and-exceptions.html">&rarr;&nbsp; Week 06 module</a>
+    </section>
+
+    <!-- ============ WEEK 7 ============ -->
+    <section id="w7" class="reveal">
+      <div class="sec-tag">Week 07</div>
+      <h2 class="title">Files<span class="bar"></span></h2>
+      <p class="lead">Making data outlive the program that created it.</p>
+
+      <p>Three steps every time: <b>open</b>, <b>process</b>, <b>close</b>. Modes: <code>'r'</code> read (error if absent), <code>'w'</code> write (<b>erases</b> existing contents), <code>'a'</code> append (keeps them). Both <code>'w'</code> and <code>'a'</code> create the file if it doesn't exist.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">files.py</span></div>
+<pre>outfile <span class="op">=</span> <span class="bif">open</span>(<span class="str">"scores.txt"</span>, <span class="str">"w"</span>)
+outfile<span class="op">.</span><span class="bif">write</span>(<span class="bif">str</span>(score) <span class="op">+</span> <span class="str">"\n"</span>)   <span class="com"># str() AND \n — both required</span>
+outfile<span class="op">.</span><span class="bif">close</span>()
+
+infile <span class="op">=</span> <span class="bif">open</span>(<span class="str">"scores.txt"</span>, <span class="str">"r"</span>)
+<span class="kw">for</span> line <span class="kw">in</span> infile<span class="op">:</span>                  <span class="com"># no priming read, stops automatically</span>
+    total <span class="op">+=</span> <span class="bif">int</span>(line)              <span class="com"># everything read is a STRING</span>
+infile<span class="op">.</span><span class="bif">close</span>()</pre>
+      </div>
+      <p><code>write</code> adds no line breaks and accepts only strings. <code>read()</code> returns the whole file; <code>readline()</code> returns one line <em>including</em> its <code>'\n'</code>, which <code>rstrip('\n')</code> removes. At end of file <code>readline</code> returns an <b>empty string</b>, which serves as the sentinel in a <code>while</code> version. A <b>record</b> is one item's complete data; a <b>field</b> is one piece of it.</p>
+      <div class="call note">
+        <span class="lbl">Closing safely</span>
+        <p>Put <code>close()</code> in a <code>finally</code> suite. If an exception fires partway through the <code>try</code>, a <code>close()</code> at the bottom of that suite is skipped and the file is left open.</p>
+      </div>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk07-files-and-exceptions.html">&rarr;&nbsp; Week 07 module</a>
+    </section>
+
+    <!-- ============ WEEK 8 ============ -->
+    <section id="w8" class="reveal">
+      <div class="sec-tag">Week 08</div>
+      <h2 class="title">Lists and tuples<span class="bar"></span></h2>
+      <p class="lead">Ordered collections — one you can change, one you cannot.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lists.py</span></div>
+<pre>data <span class="op">=</span> [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>]
+data[<span class="num">0</span>]        <span class="com"># 10 — first index is 0</span>
+data[<span class="op">-</span><span class="num">1</span>]       <span class="com"># 50 — last element</span>
+data[<span class="num">1</span>:<span class="num">4</span>]      <span class="com"># [20, 30, 40] — end is EXCLUDED, returns a NEW list</span>
+<span class="bif">len</span>(data)      <span class="com"># 5 — so the last valid index is len - 1</span>
+
+data<span class="op">.</span><span class="bif">append</span>(<span class="num">60</span>)      <span class="com"># add to the end</span>
+data<span class="op">.</span><span class="bif">insert</span>(<span class="num">0</span>, <span class="num">5</span>)     <span class="com"># by POSITION</span>
+data<span class="op">.</span><span class="bif">remove</span>(<span class="num">30</span>)      <span class="com"># by VALUE — first occurrence only</span>
+<span class="kw">del</span> data[<span class="num">2</span>]         <span class="com"># by POSITION</span>
+data<span class="op">.</span><span class="bif">sort</span>()          <span class="com"># in place — RETURNS None</span></pre>
+      </div>
+      <p><code>append</code>, <code>insert</code>, <code>remove</code>, <code>sort</code>, and <code>reverse</code> all change the list in place and return <code>None</code>. <code>index</code> and <code>remove</code> raise <code>ValueError</code> when the value is absent; a bad index raises <code>IndexError</code>.</p>
+
+      <h3>Copying, comprehensions, 2-D lists, tuples</h3>
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">more_lists.py</span></div>
+<pre>alias <span class="op">=</span> original       <span class="com"># NOT a copy — both names, one list</span>
+copy <span class="op">=</span> original[:]     <span class="com"># a real copy (also list(original))</span>
+
+feet <span class="op">=</span> [<span class="bif">round</span>(m <span class="op">*</span> <span class="num">3.28</span>) <span class="kw">for</span> m <span class="kw">in</span> meters]   <span class="com"># transforms</span>
+big  <span class="op">=</span> [d <span class="kw">for</span> d <span class="kw">in</span> donations <span class="kw">if</span> d <span class="op">&gt;</span> <span class="num">30</span>]     <span class="com"># filters</span>
+
+grid <span class="op">=</span> [[<span class="num">88</span>, <span class="num">91</span>], [<span class="num">64</span>, <span class="num">82</span>]]
+grid[<span class="num">1</span>][<span class="num">0</span>]            <span class="com"># 64 — row index, then column index</span>
+
+point <span class="op">=</span> (<span class="num">3</span>, <span class="num">7</span>)         <span class="com"># tuple — immutable</span>
+point[<span class="num">0</span>] <span class="op">=</span> <span class="num">9</span>           <span class="com"># TypeError</span></pre>
+      </div>
+      <p>A <b>list comprehension</b> is <code>[expression for variable in iterable]</code>, optionally followed by an <code>if</code> clause. The <em>expression</em> transforms; the <em>if clause</em> filters. Tuples support every read operation — indexing, slicing, <code>in</code>, <code>len</code> — but none that would change them. Convert with <code>list()</code> and <code>tuple()</code>.</p>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk08-lists-and-tuples.html">&rarr;&nbsp; Week 08 module</a>
+    </section>
+
+    <!-- ============ WEEK 9 ============ -->
+    <section id="w9" class="reveal">
+      <div class="sec-tag">Week 09</div>
+      <h2 class="title">Strings<span class="bar"></span></h2>
+      <p class="lead">A string is a sequence too — with one crucial difference from a list.</p>
+
+      <p>Indexing, slicing, <code>in</code>, <code>len</code>, iteration, and <code>*</code> all work on strings. But strings are <b>immutable</b>: <code>tag[0] = "H"</code> raises <code>TypeError</code>. Every method that appears to modify a string actually <b>returns a new copy</b>.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">strings.py</span></div>
+<pre>code <span class="op">=</span> <span class="str">"ORD-48715"</span>
+code[<span class="num">0</span>:<span class="num">3</span>]                 <span class="com"># 'ORD'</span>
+code[<span class="num">4</span>:]                   <span class="com"># '48715'</span>
+
+<span class="com"># TESTING — return True/False</span>
+<span class="str">"2026"</span><span class="op">.</span><span class="bif">isdigit</span>()          <span class="com"># True  ("12.5" → False!)</span>
+<span class="str">"Falcon"</span><span class="op">.</span><span class="bif">isalpha</span>()        <span class="com"># True</span>
+<span class="str">"Bay12"</span><span class="op">.</span><span class="bif">isalnum</span>()         <span class="com"># True  ("Bay 12" → False)</span>
+
+<span class="com"># MODIFYING — return a COPY; you must capture it</span>
+label <span class="op">=</span> label<span class="op">.</span><span class="bif">strip</span>()      <span class="com"># also lower(), upper(), lstrip(), rstrip()</span>
+
+<span class="com"># SEARCHING</span>
+sentence<span class="op">.</span><span class="bif">find</span>(<span class="str">"brown"</span>)     <span class="com"># 10, or -1 if absent — NOT an exception</span>
+sentence<span class="op">.</span><span class="bif">replace</span>(<span class="str">"fox"</span>, <span class="str">"cat"</span>)
+sku<span class="op">.</span><span class="bif">startswith</span>(<span class="str">"BOLT"</span>)     <span class="com"># also endswith()</span>
+sentence<span class="op">.</span><span class="bif">split</span>()            <span class="com"># → a LIST of words; split(",") for commas</span></pre>
+      </div>
+      <p>Comparisons are case-sensitive, so compare with <code>answer.lower() == "yes"</code>. Use <code>in</code> for a yes/no answer and <code>find</code> when you need the position.</p>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk09-more-about-strings.html">&rarr;&nbsp; Week 09 module</a>
+    </section>
+
+    <!-- ============ WEEK 10 ============ -->
+    <section id="w10" class="reveal">
+      <div class="sec-tag">Week 10</div>
+      <h2 class="title">Dictionaries and sets<span class="bar"></span></h2>
+      <p class="lead">Lookup by key, and collections of unique items.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">dicts.py</span></div>
+<pre>slots <span class="op">=</span> {<span class="str">"A1"</span><span class="op">:</span> <span class="str">"pretzels"</span>, <span class="str">"A2"</span><span class="op">:</span> <span class="str">"almonds"</span>}   <span class="com"># key: value</span>
+slots[<span class="str">"A1"</span>]                  <span class="com"># by KEY, never by position</span>
+slots[<span class="str">"B2"</span>] <span class="op">=</span> <span class="str">"cashews"</span>      <span class="com"># adds if new, REPLACES if the key exists</span>
+<span class="kw">del</span> slots[<span class="str">"A2"</span>]              <span class="com"># KeyError if absent — guard with in</span>
+
+slots<span class="op">.</span><span class="bif">get</span>(<span class="str">"C9"</span>, <span class="num">0</span>)          <span class="com"># safe lookup — a default, never KeyError</span>
+<span class="kw">for</span> key, value <span class="kw">in</span> slots<span class="op">.</span><span class="bif">items</span>()<span class="op">:</span>   <span class="com"># both at once</span>
+    <span class="bif">print</span>(key, value)</pre>
+      </div>
+      <p>Keys must be <b>immutable</b> and are <b>unique</b>; values can be anything. <code>in</code> tests <b>keys</b>, not values. A plain <code>for</code> loop gives keys; <code>items()</code> gives pairs. Methods: <code>get</code>, <code>keys</code>, <code>values</code>, <code>items</code>, <code>pop</code>, <code>popitem</code>, <code>clear</code>.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">sets.py</span></div>
+<pre>unique <span class="op">=</span> <span class="bif">set</span>([<span class="num">204</span>, <span class="num">118</span>, <span class="num">204</span>])   <span class="com"># duplicates collapse → 2 items</span>
+empty <span class="op">=</span> <span class="bif">set</span>()                    <span class="com"># {} is an empty DICTIONARY</span>
+
+roster<span class="op">.</span><span class="bif">add</span>(<span class="str">"Ravi"</span>)              <span class="com"># one item</span>
+roster<span class="op">.</span><span class="bif">update</span>([<span class="str">"Kim"</span>, <span class="str">"Lee"</span>])    <span class="com"># several</span>
+roster<span class="op">.</span><span class="bif">discard</span>(<span class="str">"Jordan"</span>)        <span class="com"># safe; remove() raises KeyError</span>
+
+py <span class="op">|</span> ja      <span class="com"># union — in either</span>
+py <span class="op">&amp;</span> ja      <span class="com"># intersection — in both</span>
+py <span class="op">-</span> ja      <span class="com"># difference — ORDER MATTERS</span>
+py <span class="op">^</span> ja      <span class="com"># symmetric difference — in one but not both</span>
+required<span class="op">.</span><span class="bif">issubset</span>(completed)</pre>
+      </div>
+      <p>Sets are <b>unique</b>, <b>unordered</b> (no indexing), and may mix types. <b>Serializing</b> — called <b>pickling</b> in Python — writes an object to a file as bytes; use modes <code>"wb"</code> and <code>"rb"</code>.</p>
+      <a class="toc-out" style="display:inline-block;margin-top:6px;" href="python-wk10-dictionaries-sets.html">&rarr;&nbsp; Week 10 module</a>
+    </section>
+
+    <!-- ============ TOP TRAPS ============ -->
+    <section id="traps" class="reveal">
+      <div class="sec-tag">Exam prep</div>
+      <h2 class="title">The ten traps that cost the most points<span class="bar"></span></h2>
+      <p class="lead">Every one of these produces code that <em>looks</em> right. Learn to spot them on sight.</p>
+
+      <table class="tbl">
+        <thead><tr><th>Looks fine, but&hellip;</th><th>What actually happens</th></tr></thead>
+        <tbody>
+          <tr><td><code>counts = counts.sort()</code></td><td><code>sort</code> returns <code>None</code>, so the list is destroyed. Call it as its own statement.</td></tr>
+          <tr><td><code>label.strip()</code> on its own line</td><td>Strings are immutable — the copy is discarded. Write <code>label = label.strip()</code>.</td></tr>
+          <tr><td><code>total = total + input(...)</code></td><td><code>input</code> returns a <b>string</b>. Convert with <code>int()</code> or <code>float()</code> first.</td></tr>
+          <tr><td><code>while count &gt; 0:</code> with no update</td><td>Infinite loop. Something in the body must move toward the stopping point.</td></tr>
+          <tr><td>Sentinel loop with one <code>input</code></td><td>The same value is tested forever. You need a priming read <em>and</em> a read inside.</td></tr>
+          <tr><td><code>range(1, 10)</code> to reach 10</td><td>The limit is excluded — it stops at 9. Use <code>range(1, 11)</code>.</td></tr>
+          <tr><td><code>temp &lt; 18 and temp &gt; 24</code></td><td>Can never be true. "Outside a range" always needs <code>or</code>.</td></tr>
+          <tr><td><code>alias = original</code> to copy a list</td><td>Both names reference one list. Use <code>original[:]</code> or <code>list(original)</code>.</td></tr>
+          <tr><td><code>"pretzels" in slots</code></td><td><code>in</code> searches dictionary <b>keys</b>, not values — this is <code>False</code>.</td></tr>
+          <tr><td><code>empty = {}</code> for a set</td><td>That is an empty <b>dictionary</b>. An empty set is <code>set()</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="call note">
+        <span class="lbl">How to study this page</span>
+        <p>Don't read it straight through. Pick a week, cover the code block, and try to write the syntax from the description alone. Whatever you can't produce from memory is the module worth re-reading — and every week's review questions are linked from its module page.</p>
+      </div>
+    </section>
+
+
+    <section id="console" class="reveal">
+      <div class="sec-tag">Hands-on</div>
+      <h2 class="title">Practice console<span class="bar"></span></h2>
+      <p class="lead">The best way to use this page is to try things as you read. The course console is a real Python interpreter running in your browser — open it in a second tab and test any snippet above.</p>
+      <p style="margin-top:14px;">
+        <a href="python-interactive-console.html"
+           style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;
+                  background:var(--py-blue-deep);color:#fff;font-family:var(--display);
+                  font-weight:600;font-size:1rem;padding:12px 24px;border-radius:999px;">
+          <span style="font-family:var(--mono);color:var(--py-yellow);">&gt;&gt;&gt;</span>
+          Open the Interactive Python Console
+        </a>
+      </p>
+      <div class="call note">
+        <span class="lbl">A fast self-test</span>
+        <p>Pick any trap from the table above, type the broken version at the prompt, and watch it fail. Then type the fix. Seeing <code>None</code> come back from <code>counts.sort()</code> once is worth more than reading about it three times.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+
+<footer style="background:var(--slate-900);color:#94a3b8;padding:30px 24px;text-align:center;font-size:.85rem;">
+  <div style="max-width:var(--maxw);margin:0 auto;">
+    <span style="font-family:var(--mono);color:var(--py-yellow);">Week 11</span> &middot; Review of Weeks 1&ndash;10 &middot; original course materials, concepts only
+  </div>
+</footer>
+<style>
+  dl.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;background:#fff;border:1px solid var(--slate-200);border-radius:12px;overflow:hidden;}
+  dl.gloss>div{padding:13px 16px;border-bottom:1px solid var(--slate-100);border-right:1px solid var(--slate-100);}
+  dl.gloss dt{font-family:var(--mono);font-weight:600;color:var(--py-blue-deep);font-size:.86rem;margin-bottom:3px;}
+  dl.gloss dd{margin:0;color:var(--slate-600);font-size:.9rem;line-height:1.5;}
+  dl.gloss code{background:rgba(15,23,42,.06);padding:1px 4px;border-radius:4px;}
+</style><script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var spy = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map[e.target.id]; if(a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin:'-10% 0px -75% 0px', threshold:0 });
+  document.querySelectorAll('main section[id]').forEach(function(s){ spy.observe(s); });
+
+  var rev = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } });
+  }, { threshold:0.08 });
+  document.querySelectorAll('.reveal').forEach(function(s){ rev.observe(s); });
+
+  var PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.4/full/";
+  var startBtn = document.getElementById('replStartBtn');
+  var startBox = document.getElementById('replStart');
+  var statusEl = document.getElementById('replStatus');
+  var screenEl = document.getElementById('replScreen');
+  var outEl    = document.getElementById('replOut');
+  var inputEl  = document.getElementById('replInput');
+  var promptEl = document.getElementById('replPrompt');
+  var resetBtn = document.getElementById('replReset');
+
+  var pyodide=null, pushLine=null, resetConsole=null, loading=false;
+  var history=[], hIdx=0, contMode=false;
+
+  window._webInput = function(p){ var v = window.prompt(p || ""); return v===null ? "" : v; };
+
+  function append(text, cls){
+    if(text===undefined || text===null || text==="") return;
+    var span=document.createElement('span');
+    if(cls) span.className=cls;
+    span.textContent=text;
+    outEl.appendChild(span);
+    outEl.scrollTop=outEl.scrollHeight;
+  }
+  function echoLine(promptStr, code){ append(promptStr+' ', 'ps'); append(code+'\n', 'echo'); }
+
+  var SETUP = [
+    "import sys, io, code, builtins",
+    "from js import _webInput",
+    "class WebConsole(code.InteractiveConsole):",
+    "    def write(self, data):",
+    "        sys.stdout.write(data)",
+    "_ns = {'__name__': '__main__'}",
+    "_console = WebConsole(locals=_ns)",
+    "def _web_input(prompt=''):",
+    "    sys.stdout.write(str(prompt))",
+    "    val = _webInput(str(prompt))",
+    "    sys.stdout.write(str(val) + chr(10))",
+    "    return val",
+    "builtins.input = _web_input",
+    "def push_line(line):",
+    "    buf = io.StringIO()",
+    "    old = sys.stdout",
+    "    sys.stdout = buf",
+    "    try:",
+    "        more = _console.push(line)",
+    "    finally:",
+    "        sys.stdout = old",
+    "    return [bool(more), buf.getvalue()]",
+    "def reset_console():",
+    "    global _console",
+    "    _console = WebConsole(locals={'__name__': '__main__'})"
+  ].join("\n");
+
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s=document.createElement('script'); s.src=src;
+      s.onload=res; s.onerror=function(){ rej(new Error('Could not load '+src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function start(){
+    if(loading || pyodide) return;
+    loading=true; startBtn.disabled=true;
+    statusEl.textContent='Downloading the Python runtime…';
+    try{
+      await loadScript(PYODIDE_URL+'pyodide.js');
+      statusEl.textContent='Starting Python…';
+      pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
+      pyodide.runPython(SETUP);
+      pushLine = pyodide.globals.get('push_line');
+      resetConsole = pyodide.globals.get('reset_console');
+      var ver = pyodide.runPython("sys.version.split()[0]");
+      startBox.style.display='none';
+      screenEl.style.display='block';
+      resetBtn.style.display='inline-block';
+      append('Python '+ver+' (Pyodide) — type a statement and press Enter.\n', 'res');
+      inputEl.focus();
+    }catch(err){
+      statusEl.textContent='Could not start: '+err.message+'  (check your connection and try again)';
+      startBtn.disabled=false; loading=false;
+    }
+  }
+
+  function process(line){
+    var shownPrompt = contMode ? '...' : '>>>';
+    echoLine(shownPrompt, line);
+    var res = pushLine(line);
+    var arr = res.toJs(); res.destroy();
+    var more = arr[0], output = arr[1];
+    if(output){
+      var cls = /(^|\n)\s*(Traceback|[A-Za-z]*Error|[A-Za-z]*Warning)/.test(output) ? 'err' : 'res';
+      append(output, cls);
+    }
+    contMode = more;
+    promptEl.textContent = contMode ? '...' : '>>>';
+  }
+
+  function runChip(code){
+    if(!pyodide){ return; }
+    var lines = code.split('\n');
+    for(var i=0;i<lines.length;i++){ process(lines[i]); }
+    if(contMode){ process(''); }
+    inputEl.focus();
+  }
+
+  inputEl && inputEl.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      var line = inputEl.value;
+      if(line.trim()!=='') { history.push(line); }
+      hIdx = history.length;
+      inputEl.value='';
+      process(line);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      if(hIdx>0){ hIdx--; inputEl.value=history[hIdx]||''; }
+    } else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(hIdx<history.length-1){ hIdx++; inputEl.value=history[hIdx]||''; }
+      else { hIdx=history.length; inputEl.value=''; }
+    }
+  });
+
+  startBtn && startBtn.addEventListener('click', start);
+  resetBtn && resetBtn.addEventListener('click', function(){
+    if(resetConsole){ resetConsole(); }
+    outEl.innerHTML=''; contMode=false; promptEl.textContent='>>>';
+    append('Session reset.\n', 'res'); inputEl.focus();
+  });
+
+  document.querySelectorAll('.chips button[data-code]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var code = b.getAttribute('data-code');
+      if(pyodide){ runChip(code); }
+      else { if(code.indexOf('\n')===-1){ inputEl.value=code; } start(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>

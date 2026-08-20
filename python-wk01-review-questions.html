@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 01 · Review Questions — Introduction to Computers and Programming</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;
+    --py-blue-dk:#306998;
+    --py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;
+    --py-yellow-dk:#E5A800;
+    --ink:#2b303b;
+    --ink-soft:#5b6470;
+    --ink-faint:#8a929d;
+    --page:#f6f8fa;
+    --surface:#ffffff;
+    --border:#e1e4e8;
+    --border-strong:#cfd6dd;
+    --code-bg:#1e2530;
+    --code-bg2:#262f3d;
+    --code-text:#e6edf3;
+    --code-comment:#7d8893;
+    --shadow:0 1px 2px rgba(27,40,55,.06),0 6px 22px rgba(27,40,55,.07);
+    --shadow-lift:0 8px 30px rgba(27,40,55,.13);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:88px;}
+  body{
+    margin:0;background:var(--page);color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:"Space Grotesk","Inter",sans-serif;line-height:1.18;margin:0;}
+  code,kbd,pre,.mono{font-family:"Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;}
+  a{color:var(--py-blue-dk);}
+
+  /* ---------- scroll progress ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:4px;width:0%;z-index:60;
+    background:linear-gradient(90deg,var(--py-blue) 0%,var(--py-blue) 55%,var(--py-yellow) 100%);
+    transition:width .08s linear;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:
+      radial-gradient(1100px 380px at 82% -40%,rgba(255,212,59,.20),transparent 60%),
+      linear-gradient(160deg,var(--py-blue-deep) 0%,var(--py-blue-dk) 52%,var(--py-blue) 120%);
+    color:#fff;padding:64px 24px 54px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"?";position:absolute;right:5%;bottom:-58px;
+    font-family:"Fira Code",monospace;font-size:210px;font-weight:600;
+    color:rgba(255,255,255,.07);pointer-events:none;
+  }
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:2;}
+  .brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .brand .mark{
+    font-family:"Fira Code",monospace;font-weight:600;font-size:15px;
+    color:var(--py-blue-deep);background:var(--py-yellow);
+    padding:4px 10px;border-radius:7px;letter-spacing:1px;
+  }
+  .brand .brand-txt{font-family:"Space Grotesk";font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.82);}
+  .eyebrow{font-family:"Fira Code",monospace;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--py-yellow);margin-bottom:14px;}
+  .hero h1{font-size:clamp(30px,5vw,52px);font-weight:700;letter-spacing:-.5px;max-width:20ch;}
+  .hero .sub{margin-top:18px;font-size:clamp(16px,2vw,19px);color:rgba(255,255,255,.9);max-width:64ch;}
+  .topics{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px;}
+  .topics a{
+    text-decoration:none;color:#fff;font-size:14.5px;font-weight:500;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);
+    padding:8px 14px;border-radius:999px;transition:.18s;backdrop-filter:blur(2px);
+  }
+  .topics a:hover{background:var(--py-yellow);color:var(--py-blue-deep);border-color:var(--py-yellow);transform:translateY(-1px);}
+  .topics a .n{font-family:"Fira Code";color:var(--py-yellow);margin-right:7px;font-size:13px;}
+  .topics a:hover .n{color:var(--py-blue-deep);}
+  .topics a.topic-out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  .grid{display:grid;grid-template-columns:232px minmax(0,1fr);gap:40px;align-items:start;padding:40px 24px 80px;max-width:var(--maxw);margin:0 auto;}
+
+  /* ---------- side nav ---------- */
+  nav.toc{position:sticky;top:24px;align-self:start;}
+  nav.toc .toc-title{font-family:"Fira Code";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);margin:0 0 12px 14px;}
+  nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border);}
+  nav.toc a{
+    display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink-soft);
+    font-size:14.5px;font-weight:500;padding:8px 14px;margin-left:-2px;
+    border-left:2px solid transparent;transition:.16s;line-height:1.35;
+  }
+  nav.toc a .num{font-family:"Fira Code";font-size:12px;color:var(--py-blue);opacity:.8;}
+  nav.toc a:hover{color:var(--ink);background:#eef2f6;}
+  nav.toc a.active{color:var(--py-blue-dk);border-left-color:var(--py-blue);background:#eaf2f9;font-weight:600;}
+  nav.toc a.active .num{opacity:1;}
+  nav.toc .toc-out{
+    display:flex;gap:9px;align-items:baseline;margin:14px 0 0;padding:9px 14px;
+    text-decoration:none;font-size:14.5px;font-weight:600;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:9px;transition:.16s;
+  }
+  nav.toc .toc-out:hover{background:var(--py-blue-dk);color:#fff;border-color:var(--py-blue-dk);}
+  nav.toc .toc-out .num{font-family:"Fira Code";font-size:12px;color:inherit;opacity:1;}
+
+  /* ---------- sections ---------- */
+  main{min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:84px;}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;flex-wrap:wrap;}
+  .sec-num{
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:#fff;
+    background:var(--py-blue-dk);min-width:34px;height:34px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  section h2{font-size:clamp(23px,3vw,31px);font-weight:700;letter-spacing:-.3px;}
+  .pts{
+    font-family:"Fira Code";font-size:12.5px;letter-spacing:.5px;color:var(--py-blue-dk);
+    background:#eaf2f9;border:1px solid #cfe0ee;border-radius:999px;padding:3px 11px;white-space:nowrap;
+  }
+  .lead{color:var(--ink-soft);font-size:18px;margin:6px 0 22px;}
+  section h3{font-size:20px;font-weight:600;margin:30px 0 10px;color:var(--py-blue-deep);}
+  p{margin:0 0 15px;}
+  .wrap-note{max-width:74ch;}
+  strong{font-weight:600;}
+  .term{font-weight:600;color:var(--py-blue-deep);}
+
+  /* ---------- callouts ---------- */
+  .note{
+    border:1px solid var(--border);border-left:4px solid var(--py-yellow);
+    background:#fffdf3;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .note b{color:var(--py-yellow-dk);}
+  .keypt{
+    border:1px solid var(--border);border-left:4px solid var(--py-blue);
+    background:#f3f8fc;border-radius:10px;padding:14px 18px;margin:20px 0;font-size:15.5px;
+  }
+  .keypt b{color:var(--py-blue-dk);}
+
+  /* ---------- question lists ---------- */
+  .qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:8px 26px;}
+  ol.qs{list-style:none;counter-reset:q;margin:0;padding:0;}
+  ol.qs > li{
+    counter-increment:q;position:relative;padding:18px 0 18px 46px;
+    border-bottom:1px solid var(--border);break-inside:avoid;
+  }
+  ol.qs > li:last-child{border-bottom:none;}
+  ol.qs > li::before{
+    content:counter(q) ".";position:absolute;left:0;top:17px;
+    font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);
+  }
+  ol.qs > li .stem{margin:0;font-size:16.5px;}
+  .opts{list-style:none;margin:11px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:5px 22px;}
+  .opts li{font-size:16px;color:var(--ink-soft);}
+  .opts .lbl{font-family:"Fira Code";font-weight:600;color:var(--py-blue);margin-right:9px;}
+  .blank{display:inline-block;min-width:70px;border-bottom:1.5px solid var(--border-strong);}
+  ol.qs.tf > li{padding-left:78px;}
+  ol.qs.tf > li::before{top:18px;}
+  .tfbox{
+    position:absolute;left:32px;top:18px;font-family:"Fira Code";font-size:14px;
+    color:var(--ink-faint);letter-spacing:1px;
+  }
+  ol.qs.sa > li{padding-bottom:22px;}
+  ol.qs.sa .hint{display:block;margin-top:6px;font-size:14.5px;color:var(--ink-faint);font-style:italic;}
+
+  /* ---------- code blocks ---------- */
+  .code{
+    background:var(--code-bg);border-radius:11px;margin:16px 0;overflow:hidden;
+    border:1px solid #2c3645;box-shadow:var(--shadow);
+  }
+  .code .bar{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--code-bg2);border-bottom:1px solid #313c4c;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .d1{background:#ff5f56;}.code .bar .d2{background:#ffbd2e;}.code .bar .d3{background:#27c93f;}
+  .code .bar .fname{margin-left:8px;font-family:"Fira Code";font-size:12.5px;color:#9aa6b2;}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;}
+  .code code{font-size:14.5px;color:var(--code-text);line-height:1.65;display:block;white-space:pre;}
+  .c-kw{color:#ff9d6b;}
+  .c-fn{color:#7cc4ff;}
+  .c-str{color:#9ae26b;}
+  .c-num{color:#f7c873;}
+  .c-com{color:var(--code-comment);font-style:italic;}
+  .c-prompt{color:#6fae4f;}
+  .c-out{color:#cbd3dc;}
+  .c-err{color:#ff7b72;}
+  kbd{font-size:13px;background:#eef2f6;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;padding:1px 7px;color:var(--ink);}
+
+  /* ---------- exercise cards ---------- */
+  .ex{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    box-shadow:var(--shadow);padding:24px 26px;margin:22px 0;break-inside:avoid;
+  }
+  .ex-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .ex-tag{
+    font-family:"Fira Code";font-size:12.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+    color:var(--py-blue-deep);background:var(--py-yellow);padding:3px 10px;border-radius:6px;
+  }
+  .ex h3{margin:0;font-size:21px;color:var(--ink);}
+  .ex .why{color:var(--ink-soft);font-size:15.5px;margin:6px 0 14px;}
+  .ex ol.steps{margin:0 0 4px;padding-left:22px;}
+  .ex ol.steps > li{margin-bottom:11px;padding-left:4px;}
+  .ex ol.steps code{
+    background:#eef2f6;border:1px solid var(--border);border-radius:5px;
+    padding:1px 7px;font-size:14.5px;color:var(--py-blue-deep);white-space:nowrap;
+  }
+  .console-btn{
+    display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+    background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;font-size:15px;
+    padding:10px 20px;border-radius:999px;margin:6px 0 2px;transition:.18s;box-shadow:var(--shadow);
+  }
+  .console-btn:hover{background:var(--py-blue-deep);transform:translateY(-1px);box-shadow:var(--shadow-lift);}
+  .console-btn .arrow{font-family:"Fira Code";color:var(--py-yellow);}
+
+  /* ---------- answer key ---------- */
+  .keybreak{
+    border-top:2px dashed var(--border-strong);margin:0 0 40px;padding-top:26px;
+    text-align:center;color:var(--ink-faint);font-family:"Fira Code";font-size:13px;letter-spacing:2px;text-transform:uppercase;
+  }
+  #answers{break-before:page;}
+  .akey{background:linear-gradient(160deg,#f3f8fc,#fffdf3);border:1px solid var(--border);border-radius:14px;padding:22px 26px;margin-bottom:26px;}
+  .akey h3{margin-top:0;}
+  .agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:8px 26px;margin:0;padding:0;list-style:none;}
+  .agrid li{font-size:16px;padding:5px 0;border-bottom:1px dotted var(--border-strong);}
+  .agrid .n{font-family:"Fira Code";color:var(--py-blue-dk);font-weight:600;margin-right:10px;}
+  .agrid .v{font-weight:600;color:var(--py-blue-deep);}
+  ol.akeys{list-style:none;counter-reset:ak;margin:0;padding:0;}
+  ol.akeys > li{counter-increment:ak;position:relative;padding:14px 0 14px 46px;border-bottom:1px solid var(--border);break-inside:avoid;}
+  ol.akeys > li:last-child{border-bottom:none;}
+  ol.akeys > li::before{content:counter(ak) ".";position:absolute;left:0;top:14px;font-family:"Fira Code";font-weight:600;font-size:15px;color:var(--py-blue-dk);}
+  ol.akeys .qtext{display:block;font-weight:600;color:var(--ink);margin-bottom:5px;}
+  ol.akeys .atext{color:var(--ink-soft);font-size:16px;}
+
+  /* ---------- rubric table ---------- */
+  .ctable{width:100%;border-collapse:collapse;margin:20px 0;font-size:15.5px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .ctable th,.ctable td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .ctable thead th{background:var(--py-blue-dk);color:#fff;font-family:"Space Grotesk";font-weight:600;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td:first-child{font-weight:600;color:var(--py-blue-deep);}
+  .ctable tbody tr:nth-child(even){background:#f9fbfc;}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:26px 24px;color:var(--ink-faint);font-size:13.5px;}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:880px){
+    .grid{grid-template-columns:1fr;gap:0;padding-top:0;}
+    nav.toc{position:sticky;top:0;z-index:40;background:var(--page);margin:0 -24px 24px;padding:10px 0;border-bottom:1px solid var(--border);}
+    nav.toc .toc-title{display:none;}
+    nav.toc ol{display:flex;overflow-x:auto;border-left:none;padding:0 18px;gap:4px;}
+    nav.toc a{white-space:nowrap;border-left:none;border-bottom:2px solid transparent;border-radius:8px 8px 0 0;}
+    nav.toc a.active{border-left:none;border-bottom-color:var(--py-blue);}
+    nav.toc .toc-out{display:none;}
+    .hero::after{font-size:120px;bottom:-30px;}
+    .qcard{padding:6px 16px;}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none!important;}}
+  :focus-visible{outline:3px solid var(--py-yellow);outline-offset:2px;border-radius:4px;}
+
+  /* ---------- print: answer key starts on its own page ---------- */
+  @media print{
+    body{background:#fff;font-size:11.5pt;line-height:1.5;}
+    #progress,nav.toc,.home-link,.topics,.console-btn{display:none!important;}
+    .hero{background:none;color:var(--ink);padding:0 0 14px;border-bottom:2px solid var(--py-blue-dk);}
+    .hero::after{display:none;}
+    .hero .brand .mark{background:none;color:var(--ink);padding:0;}
+    .hero .brand .brand-txt,.hero .sub{color:var(--ink-soft);}
+    .eyebrow{color:var(--py-blue-dk);}
+    .grid{display:block;padding:14px 0 0;max-width:100%;}
+    .qcard,.ex,.akey,.keypt,.note{box-shadow:none;}
+    section{margin-bottom:26px;}
+    #answers{page-break-before:always;break-before:page;}
+    .keybreak{display:none;}
+    footer{page-break-before:avoid;}
+    a{color:var(--ink);text-decoration:none;}
+  }
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:880px){ nav.toc{ top:48px; } }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+<div id="progress"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand">
+      <span class="mark">&gt;&gt;&gt;</span>
+      <span class="brand-txt">CIS181 · Python Programming</span>
+    </div>
+    <div class="eyebrow">Week 01 · Review Questions</div>
+    <h1>Introduction to Computers and Programming</h1>
+    <p class="sub">Following the structure of the text: Multiple Choice, True or False, Short Answer, Exercises, and Programming Exercises. The last two sections are done in the browser-based Interactive Python Console. Total: 100 points.</p>
+    <div class="topics">
+      <a href="#mc"><span class="n">01</span>Multiple Choice</a>
+      <a href="#tf"><span class="n">02</span>True or False</a>
+      <a href="#sa"><span class="n">03</span>Short Answer</a>
+      <a href="#ex"><span class="n">04</span>Exercises</a>
+      <a href="#pe"><span class="n">05</span>Programming Exercises</a>
+      <a href="#answers"><span class="n">✓</span>Answer Key</a>
+      <a href="python-wk01-intro-to-computers-and-programming.html" class="topic-out"><span class="n">&larr;</span>Week 1 Concepts</a>
+    </div>
+  </div>
+</header>
+
+<div class="grid">
+  <nav class="toc" aria-label="Section navigation">
+    <p class="toc-title">On this page</p>
+    <ol>
+      <li><a href="#mc"><span class="num">1</span>Multiple Choice</a></li>
+      <li><a href="#tf"><span class="num">2</span>True or False</a></li>
+      <li><a href="#sa"><span class="num">3</span>Short Answer</a></li>
+      <li><a href="#ex"><span class="num">4</span>Exercises</a></li>
+      <li><a href="#pe"><span class="num">5</span>Programming Exercises</a></li>
+      <li><a href="#answers"><span class="num">✓</span>Answer Key</a></li>
+    </ol>
+    <a class="toc-out" href="python-wk01-intro-to-computers-and-programming.html">
+      <span class="num">&larr;</span>Week 1 Concepts
+    </a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 1 · MULTIPLE CHOICE ============ -->
+  <section id="mc">
+    <div class="sec-head"><span class="sec-num">1</span><h2>Multiple Choice</h2><span class="pts">20 × 1 pt = 20</span></div>
+    <p class="lead">Choose the one best answer for each question.</p>
+
+    <div class="qcard">
+    <ol class="qs">
+      <li>
+        <p class="stem">A(n) <span class="blank"></span> is a set of instructions that a computer follows to perform a task.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>compiler</li>
+          <li><span class="lbl">b.</span>program</li>
+          <li><span class="lbl">c.</span>bit</li>
+          <li><span class="lbl">d.</span>mnemonic</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The physical devices that a computer is made of are referred to as <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>hardware</li>
+          <li><span class="lbl">b.</span>software</li>
+          <li><span class="lbl">c.</span>utilities</li>
+          <li><span class="lbl">d.</span>source code</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The part of a computer that actually runs programs is called the <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>main memory</li>
+          <li><span class="lbl">b.</span>secondary storage</li>
+          <li><span class="lbl">c.</span>CPU</li>
+          <li><span class="lbl">d.</span>input device</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Today, CPUs are small chips known as <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>bytes</li>
+          <li><span class="lbl">b.</span>assemblers</li>
+          <li><span class="lbl">c.</span>interpreters</li>
+          <li><span class="lbl">d.</span>microprocessors</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The computer stores a program while the program is running, as well as the data the program is working with, in <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>secondary storage</li>
+          <li><span class="lbl">b.</span>main memory</li>
+          <li><span class="lbl">c.</span>the instruction set</li>
+          <li><span class="lbl">d.</span>an optical device</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">This is a volatile type of memory, used only for temporary storage while a program is running.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>RAM</li>
+          <li><span class="lbl">b.</span>secondary storage</li>
+          <li><span class="lbl">c.</span>a solid-state drive</li>
+          <li><span class="lbl">d.</span>a USB drive</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">This type of memory can hold data for long periods of time, even when there is no power to the computer.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>main memory</li>
+          <li><span class="lbl">b.</span>RAM</li>
+          <li><span class="lbl">c.</span>volatile memory</li>
+          <li><span class="lbl">d.</span>secondary storage</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A component that collects data from people or other devices and sends it to the computer is called <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>an output device</li>
+          <li><span class="lbl">b.</span>an input device</li>
+          <li><span class="lbl">c.</span>secondary storage</li>
+          <li><span class="lbl">d.</span>the instruction set</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The most fundamental piece of system software — it controls the hardware components and lets other programs run on top of it — is the <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>utility program</li>
+          <li><span class="lbl">b.</span>operating system</li>
+          <li><span class="lbl">c.</span>application software</li>
+          <li><span class="lbl">d.</span>assembler</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Word processing programs, spreadsheet programs, and web browsers are all examples of <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>operating systems</li>
+          <li><span class="lbl">b.</span>utility programs</li>
+          <li><span class="lbl">c.</span>application software</li>
+          <li><span class="lbl">d.</span>software development tools</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">A byte is made up of <span class="blank"></span> bits.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>two</li>
+          <li><span class="lbl">b.</span>four</li>
+          <li><span class="lbl">c.</span>eight</li>
+          <li><span class="lbl">d.</span>sixteen</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The largest value that can be stored in a single byte is <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>8</li>
+          <li><span class="lbl">b.</span>128</li>
+          <li><span class="lbl">c.</span>255</li>
+          <li><span class="lbl">d.</span>1,024</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">In the <span class="blank"></span> numbering system, all numeric values are written as sequences of 0s and 1s.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>decimal</li>
+          <li><span class="lbl">b.</span>binary</li>
+          <li><span class="lbl">c.</span>hexadecimal</li>
+          <li><span class="lbl">d.</span>octal</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">This encoding scheme is backward-compatible with ASCII but can represent the characters of virtually every written language.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>Unicode</li>
+          <li><span class="lbl">b.</span>two's complement</li>
+          <li><span class="lbl">c.</span>floating-point notation</li>
+          <li><span class="lbl">d.</span>machine language</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Negative numbers are encoded in binary using this technique.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>Unicode</li>
+          <li><span class="lbl">b.</span>floating-point notation</li>
+          <li><span class="lbl">c.</span>two's complement</li>
+          <li><span class="lbl">d.</span>pixelation</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The tiny dots of color that a digital image is composed of are called <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>bits</li>
+          <li><span class="lbl">b.</span>bytes</li>
+          <li><span class="lbl">c.</span>pixels</li>
+          <li><span class="lbl">d.</span>mnemonics</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">The numeric codes drawn from a CPU's instruction set, which the CPU understands and executes directly, are called <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>source code</li>
+          <li><span class="lbl">b.</span>assembly language</li>
+          <li><span class="lbl">c.</span>machine language</li>
+          <li><span class="lbl">d.</span>syntax</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">This program translates an assembly language program into a machine language program.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>compiler</li>
+          <li><span class="lbl">b.</span>interpreter</li>
+          <li><span class="lbl">c.</span>assembler</li>
+          <li><span class="lbl">d.</span>operating system</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Words that have a special, predefined meaning in a programming language — such as <span class="mono">if</span>, <span class="mono">while</span>, and <span class="mono">def</span> — are called <span class="blank"></span>.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>operators</li>
+          <li><span class="lbl">b.</span>key words</li>
+          <li><span class="lbl">c.</span>statements</li>
+          <li><span class="lbl">d.</span>mnemonics</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">This type of program translates and executes a high-level program one statement at a time, and produces no separate machine language file.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>assembler</li>
+          <li><span class="lbl">b.</span>compiler</li>
+          <li><span class="lbl">c.</span>interpreter</li>
+          <li><span class="lbl">d.</span>utility program</li>
+        </ul>
+      </li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 2 · TRUE OR FALSE ============ -->
+  <section id="tf">
+    <div class="sec-head"><span class="sec-num">2</span><h2>True or False</h2><span class="pts">10 × 1 pt = 10</span></div>
+
+    <div class="qcard">
+    <ol class="qs tf">
+      <li><span class="tfbox">T / F</span><p class="stem">Software refers to the physical components that a computer is made of.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Main memory is also known as RAM, and it is volatile.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A storage drive can act as both an input device and an output device, depending on which way the data is flowing.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Any piece of data stored in a computer's memory — including images and audio — must be stored as a binary number.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A machine language program written for one brand of CPU will run without change on a different brand of CPU.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Assembly language is considered a high-level language.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A compiler produces a separate machine language file that can be executed later, but an interpreter does not.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">Statements typed in Python's interactive mode are saved automatically, so you can run them again in a later session.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">A syntax error does not prevent a program from being executed.</p></li>
+      <li><span class="tfbox">T / F</span><p class="stem">IDLE is installed along with Python and can be used to write, run, and test programs.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 3 · SHORT ANSWER ============ -->
+  <section id="sa">
+    <div class="sec-head"><span class="sec-num">3</span><h2>Short Answer</h2><span class="pts">10 × 2 pts = 20</span></div>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li><p class="stem">Why is a computer described as a <em>general-purpose</em> machine? What single thing determines the job it performs at any given moment?</p></li>
+      <li><p class="stem">Name the four major categories of computer hardware, and state in one sentence each what they do.</p></li>
+      <li><p class="stem">A student loses two hours of unsaved work during a power outage. Identify the hardware component responsible and the property of that component that explains the loss. What should the student have done differently?</p></li>
+      <li><p class="stem">What number does a bit that is turned on represent? What number does a bit that is turned off represent?</p></li>
+      <li><p class="stem">Define <em>bit</em> and <em>byte</em>, state the relationship between them, and explain why 255 is the largest value a single byte can hold.</p></li>
+      <li><p class="stem">Memory can store only numbers, yet a program can store your name. Explain how that is possible, then describe the difference between ASCII and Unicode.</p></li>
+      <li><p class="stem">What are the words that make up a high-level programming language called? What are the short words used in assembly language called?</p></li>
+      <li><p class="stem">List, in order, the three steps of the cycle a CPU repeats while a program runs, and describe what happens in each step.</p></li>
+      <li><p class="stem">Describe two differences between a compiler and an interpreter, and state which of the two Python uses.</p></li>
+      <li><p class="stem">Contrast interactive mode with script mode. Give one situation in which each is the better choice.</p></li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 4 · EXERCISES ============ -->
+  <section id="ex">
+    <div class="sec-head"><span class="sec-num">4</span><h2>Exercises</h2><span class="pts">6 × 3 pts = 18</span></div>
+    <p class="lead">Work these out on paper first. You may then verify your answers in the console — but show your reasoning, not just the result.</p>
+
+    <div class="qcard">
+    <ol class="qs sa">
+      <li>
+        <p class="stem">Convert each of the following bytes to a decimal number. Show the place values you added.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span><span class="mono">00001111</span></li>
+          <li><span class="lbl">b.</span><span class="mono">01010101</span></li>
+          <li><span class="lbl">c.</span><span class="mono">10000001</span></li>
+          <li><span class="lbl">d.</span><span class="mono">11111111</span></li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">Convert each of the following decimal values to a full eight-bit byte.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>5</li>
+          <li><span class="lbl">b.</span>40</li>
+          <li><span class="lbl">c.</span>100</li>
+          <li><span class="lbl">d.</span>200</li>
+        </ul>
+      </li>
+      <li><p class="stem">A single byte can hold 256 different patterns of 0s and 1s. How many different patterns can two bytes hold, and what is the largest value two bytes can store? Explain how you arrived at both numbers.</p></li>
+      <li><p class="stem">The ASCII code for the character <span class="mono">A</span> is 65, and the codes for the uppercase letters run consecutively from there. Determine the codes for <span class="mono">B</span>, <span class="mono">C</span>, and <span class="mono">Z</span>. Then, given that the lowercase letters begin at 97, state the code for <span class="mono">a</span>.</p></li>
+      <li>
+        <p class="stem">Classify each of the following as CPU, main memory, secondary storage, input device, or output device.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>microphone</li>
+          <li><span class="lbl">b.</span>solid-state drive</li>
+          <li><span class="lbl">c.</span>RAM module</li>
+          <li><span class="lbl">d.</span>laser printer</li>
+          <li><span class="lbl">e.</span>microprocessor</li>
+        </ul>
+      </li>
+      <li>
+        <p class="stem">State whether each of the following is system software or application software.</p>
+        <ul class="opts">
+          <li><span class="lbl">a.</span>Android</li>
+          <li><span class="lbl">b.</span>a photo editor</li>
+          <li><span class="lbl">c.</span>a disk backup utility</li>
+          <li><span class="lbl">d.</span>a web browser</li>
+        </ul>
+      </li>
+    </ol>
+    </div>
+  </section>
+
+  <!-- ============ 5 · PROGRAMMING EXERCISES ============ -->
+  <section id="pe">
+    <div class="sec-head"><span class="sec-num">5</span><h2>Programming Exercises</h2><span class="pts">2 × 16 pts = 32</span></div>
+    <p class="lead">Both exercises are done at the <span class="mono">&gt;&gt;&gt;</span> prompt in the course console — no installation, no files to save.</p>
+
+    <a class="console-btn" href="python-interactive-console.html"><span class="arrow">&gt;&gt;&gt;</span> Open the Interactive Python Console</a>
+
+    <div class="note"><b>How to submit.</b> Copy the full text of your console session (or take a screenshot of it) and paste it into the Canvas submission box, followed by your written answers to the items marked <strong>Explain</strong>. Your transcript must show every line you typed and every line Python printed back.</div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 1</span><h3>Meet the Interpreter</h3></div>
+      <p class="why">Goal: get comfortable with interactive mode, and see for yourself what happens when you break a syntax rule.</p>
+      <ol class="steps">
+        <li>Type <code>15 + 27</code> and press <kbd>Enter</kbd>. Notice that the interpreter answered without your having to ask it to print anything.</li>
+        <li>Type <code>2 ** 8</code> and press <kbd>Enter</kbd>. <strong>Explain:</strong> in one sentence, what does the number you got back have to do with the eight bits in a byte?</li>
+        <li>Use the <code>print</code> function to display a sentence that includes your own name — for example, <code>print("My name is Ada")</code>.</li>
+        <li>Type <code>minutes = 90</code> and press <kbd>Enter</kbd>. Nothing appears — that is expected. Now type <code>minutes / 60</code> and press <kbd>Enter</kbd>. <strong>Explain:</strong> why did the first line print nothing while the second line printed a value?</li>
+        <li>Now break a rule on purpose. Type <code>print("Hello)</code> — with the closing quotation mark missing — and press <kbd>Enter</kbd>. Copy the error message exactly. <strong>Explain:</strong> what kind of error is this, which rule did you break, and did the statement run at all?</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–5, plus your written answers for steps 2, 4, and 5.</div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="ex-tag">Exercise 2</span><h3>Seeing the Bits</h3></div>
+      <p class="why">Goal: confirm the binary and character-encoding ideas from the module by asking Python to show them to you directly.</p>
+      <ol class="steps">
+        <li>Type <code>bin(77)</code>. Compare what comes back to Figure 1.2 in the Week 1 concepts page. (The <span class="mono">0b</span> at the front is just Python's way of saying "this is binary.")</li>
+        <li>Now go the other direction: type <code>int("01001101", 2)</code>. The <span class="mono">2</span> tells Python to read the string as base 2. <strong>Explain:</strong> what did steps 1 and 2 just demonstrate about the relationship between decimal and binary?</li>
+        <li>Type <code>128 + 64 + 32 + 16 + 8 + 4 + 2 + 1</code>, then on the next line type <code>2 ** 8 - 1</code>. <strong>Explain:</strong> why do these two very different expressions produce the same number, and what does that number represent?</li>
+        <li>Type <code>ord("A")</code>, then <code>chr(66)</code>. <strong>Explain:</strong> in one or two sentences, what do these two functions demonstrate about the way characters are stored in memory?</li>
+        <li>Type <code>ord("9")</code>, then <code>int("9")</code>. <strong>Explain:</strong> the results are different numbers. What is the difference between the <em>character</em> <span class="mono">9</span> and the <em>number</em> 9?</li>
+        <li>Type <code>chr(960)</code>. <strong>Explain:</strong> which encoding standard makes this character possible, and why could the original 128-character ASCII scheme not represent it?</li>
+      </ol>
+      <div class="keypt"><b>Submit:</b> your console transcript for steps 1–6, plus your written answers for steps 2, 3, 4, 5, and 6.</div>
+    </div>
+
+    <div class="note"><b>Tip.</b> If the console gets cluttered, use the <strong>Clear</strong> button to reset it — but copy your transcript first. Press the <kbd>↑</kbd> arrow key to bring back a line you already typed instead of retyping it.</div>
+  </section>
+
+  <div class="keybreak">Answer key begins on the next page</div>
+
+  <!-- ============ ANSWER KEY ============ -->
+  <section id="answers">
+    <div class="sec-head"><span class="sec-num">✓</span><h2>Week 01 Answer Key</h2><span class="pts">Instructor copy</span></div>
+    <p class="lead">Introduction to Computers and Programming — 100 points total.</p>
+
+    <div class="note"><b>Do not distribute with the question set.</b> When printed, this key starts on its own page. To post the questions to students without the key, delete everything from this section to the end of the page.</div>
+
+    <div class="akey">
+      <h3>Multiple Choice · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">b</span> — program</li>
+        <li><span class="n">2.</span><span class="v">a</span> — hardware</li>
+        <li><span class="n">3.</span><span class="v">c</span> — CPU</li>
+        <li><span class="n">4.</span><span class="v">d</span> — microprocessors</li>
+        <li><span class="n">5.</span><span class="v">b</span> — main memory</li>
+        <li><span class="n">6.</span><span class="v">a</span> — RAM</li>
+        <li><span class="n">7.</span><span class="v">d</span> — secondary storage</li>
+        <li><span class="n">8.</span><span class="v">b</span> — an input device</li>
+        <li><span class="n">9.</span><span class="v">b</span> — operating system</li>
+        <li><span class="n">10.</span><span class="v">c</span> — application software</li>
+        <li><span class="n">11.</span><span class="v">c</span> — eight</li>
+        <li><span class="n">12.</span><span class="v">c</span> — 255</li>
+        <li><span class="n">13.</span><span class="v">b</span> — binary</li>
+        <li><span class="n">14.</span><span class="v">a</span> — Unicode</li>
+        <li><span class="n">15.</span><span class="v">c</span> — two's complement</li>
+        <li><span class="n">16.</span><span class="v">c</span> — pixels</li>
+        <li><span class="n">17.</span><span class="v">c</span> — machine language</li>
+        <li><span class="n">18.</span><span class="v">c</span> — assembler</li>
+        <li><span class="n">19.</span><span class="v">b</span> — key words</li>
+        <li><span class="n">20.</span><span class="v">c</span> — interpreter</li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>True or False · 1 point each</h3>
+      <ul class="agrid">
+        <li><span class="n">1.</span><span class="v">False</span> — that is hardware</li>
+        <li><span class="n">2.</span><span class="v">True</span></li>
+        <li><span class="n">3.</span><span class="v">True</span></li>
+        <li><span class="n">4.</span><span class="v">True</span></li>
+        <li><span class="n">5.</span><span class="v">False</span> — instruction sets differ</li>
+        <li><span class="n">6.</span><span class="v">False</span> — it is low-level</li>
+        <li><span class="n">7.</span><span class="v">True</span></li>
+        <li><span class="n">8.</span><span class="v">False</span> — they are discarded</li>
+        <li><span class="n">9.</span><span class="v">False</span> — it never runs</li>
+        <li><span class="n">10.</span><span class="v">True</span></li>
+      </ul>
+    </div>
+
+    <div class="akey">
+      <h3>Short Answer · 2 points each</h3>
+      <ol class="akeys">
+        <li>
+          <span class="qtext">Why is a computer a general-purpose machine?</span>
+          <span class="atext">Because it has no built-in job of its own. The program (software) currently loaded determines what it does, so the same hardware can edit a photo, route a delivery truck, or forecast the weather depending only on which program is running.</span>
+        </li>
+        <li>
+          <span class="qtext">Four major hardware categories.</span>
+          <span class="atext"><strong>CPU</strong> — runs the program's instructions. <strong>Main memory (RAM)</strong> — holds the running program and its data. <strong>Secondary storage</strong> — keeps data long-term, even with the power off. <strong>Input/output devices</strong> — collect data for the computer (keyboard, mouse, camera) and present the computer's results (display, printer).</span>
+        </li>
+        <li>
+          <span class="qtext">Lost work in a power outage.</span>
+          <span class="atext">Main memory (RAM) is responsible, and the property is <em>volatility</em> — RAM holds data only while it is powered, so its contents vanish the instant power is lost. The student should have saved the work to secondary storage, which retains data without power.</span>
+        </li>
+        <li>
+          <span class="qtext">Bit on / bit off.</span>
+          <span class="atext">A bit that is turned on represents the number <strong>1</strong>; a bit that is turned off represents the number <strong>0</strong>.</span>
+        </li>
+        <li>
+          <span class="qtext">Bit, byte, and the value 255.</span>
+          <span class="atext">A <em>bit</em> (binary digit) is the smallest unit of storage and holds either 0 or 1. A <em>byte</em> is a group of eight bits, enough to store one character or a small number. When all eight bits are 1, the place values 128+64+32+16+8+4+2+1 total 255, so 255 is the largest value; 0 (all bits off) is the smallest.</span>
+        </li>
+        <li>
+          <span class="qtext">Storing characters; ASCII vs. Unicode.</span>
+          <span class="atext">Each character is assigned a numeric code, and that code is what gets stored in binary — so a name is really a sequence of numbers. ASCII defines codes for only 128 characters, which covers English but not the world's other writing systems. Unicode is backward-compatible with ASCII but extends far beyond it, representing characters from virtually every written language.</span>
+        </li>
+        <li>
+          <span class="qtext">High-level words; assembly words.</span>
+          <span class="atext">The words of a high-level language are called <strong>key words</strong> (or reserved words). The short words used in assembly language are called <strong>mnemonics</strong>.</span>
+        </li>
+        <li>
+          <span class="qtext">The three steps of the CPU's cycle.</span>
+          <span class="atext"><strong>Fetch</strong> — read the next instruction from main memory. <strong>Decode</strong> — determine which operation that numeric code represents. <strong>Execute</strong> — carry the operation out. The CPU then repeats the cycle, billions of times per second, until the program ends.</span>
+        </li>
+        <li>
+          <span class="qtext">Compiler vs. interpreter.</span>
+          <span class="atext">Any two of: a compiler translates the <em>entire</em> program at once, while an interpreter translates and runs it <em>one statement at a time</em>; a compiler produces a separate machine language file you can run later without the source, while an interpreter produces no such file; compiled languages include C and C++. Python uses an <strong>interpreter</strong>.</span>
+        </li>
+        <li>
+          <span class="qtext">Interactive mode vs. script mode.</span>
+          <span class="atext">In interactive mode you type one statement at a time at the <span class="mono">&gt;&gt;&gt;</span> prompt and it runs immediately, but nothing is saved when the session ends — best for experimenting, testing an idea, or checking how something behaves. In script mode you save statements in a <span class="mono">.py</span> file and run the whole file — best for any program you want to keep, reuse, or turn in.</span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Exercises · 3 points each</h3>
+      <ol class="akeys">
+        <li>
+          <span class="qtext">Bytes to decimal.</span>
+          <span class="atext"><strong>a.</strong> 8+4+2+1 = <strong>15</strong> · <strong>b.</strong> 64+16+4+1 = <strong>85</strong> · <strong>c.</strong> 128+1 = <strong>129</strong> · <strong>d.</strong> 128+64+32+16+8+4+2+1 = <strong>255</strong>. <em>Award 1 point for correct sums, 1 for showing place values.</em></span>
+        </li>
+        <li>
+          <span class="qtext">Decimal to eight-bit bytes.</span>
+          <span class="atext"><strong>a.</strong> 5 = <span class="mono">00000101</span> · <strong>b.</strong> 40 = <span class="mono">00101000</span> · <strong>c.</strong> 100 = <span class="mono">01100100</span> · <strong>d.</strong> 200 = <span class="mono">11001000</span>. <em>Leading zeros are required — the question asks for a full byte. Students can check with <span class="mono">format(5, '08b')</span>.</em></span>
+        </li>
+        <li>
+          <span class="qtext">Two bytes.</span>
+          <span class="atext">Two bytes are 16 bits, so there are 2<sup>16</sup> = <strong>65,536</strong> patterns, and the largest value is <strong>65,535</strong> (one less, because the count begins at 0). Each added bit doubles the number of patterns.</span>
+        </li>
+        <li>
+          <span class="qtext">ASCII codes.</span>
+          <span class="atext"><span class="mono">B</span> = 66, <span class="mono">C</span> = 67, <span class="mono">Z</span> = 90 (65 + 25), <span class="mono">a</span> = 97. <em>Verifiable with <span class="mono">ord("Z")</span>.</em></span>
+        </li>
+        <li>
+          <span class="qtext">Classify the hardware.</span>
+          <span class="atext"><strong>a.</strong> input device · <strong>b.</strong> secondary storage · <strong>c.</strong> main memory · <strong>d.</strong> output device · <strong>e.</strong> CPU</span>
+        </li>
+        <li>
+          <span class="qtext">System vs. application software.</span>
+          <span class="atext"><strong>a.</strong> system (an operating system) · <strong>b.</strong> application · <strong>c.</strong> system (a utility program) · <strong>d.</strong> application</span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="akey">
+      <h3>Programming Exercise 1 · Meet the Interpreter — 16 points</h3>
+      <p style="margin-top:0;color:var(--ink-soft);font-size:15.5px;">Expected session (the student's name and the exact <span class="mono">SyntaxError</span> wording will vary slightly by Python version):</p>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-num">15</span> + <span class="c-num">27</span>
+<span class="c-out">42</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-num">2</span> ** <span class="c-num">8</span>
+<span class="c-out">256</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">print</span>(<span class="c-str">"My name is Ada"</span>)
+<span class="c-out">My name is Ada</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> minutes = <span class="c-num">90</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> minutes / <span class="c-num">60</span>
+<span class="c-out">1.5</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">print</span>(<span class="c-str">"Hello)</span>
+<span class="c-err">SyntaxError: unterminated string literal (detected at line 1)</span></code></pre>
+      </div>
+      <ol class="akeys">
+        <li><span class="qtext">Step 2 — what does 256 have to do with a byte?</span><span class="atext">Each of the 8 bits has two possible states, so a byte has 2<sup>8</sup> = 256 distinct on/off patterns. Those 256 patterns represent the values 0 through 255 — which is why 255, not 256, is the largest value a byte can hold.</span></li>
+        <li><span class="qtext">Step 4 — why did one line print and the other not?</span><span class="atext"><span class="mono">minutes = 90</span> is an assignment: it stores a value in memory and produces no result to display. <span class="mono">minutes / 60</span> is an expression: interactive mode evaluates it and immediately shows the resulting value, 1.5.</span></li>
+        <li><span class="qtext">Step 5 — what kind of error, and did it run?</span><span class="atext">A <strong>syntax error</strong> — the rule broken is that a string literal must be closed with a matching quotation mark. The statement never ran: the interpreter could not translate it, so it reported the problem instead of executing anything.</span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>7</td><td>Complete transcript showing all five steps, including the deliberate error.</td></tr>
+          <tr><td>3</td><td>Step 2 explanation connects 256 to 2<sup>8</sup> patterns in a byte.</td></tr>
+          <tr><td>3</td><td>Step 4 explanation distinguishes an assignment from an expression.</td></tr>
+          <tr><td>3</td><td>Step 5 names it a syntax error, identifies the unclosed quote, and states the line did not run.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="akey">
+      <h3>Programming Exercise 2 · Seeing the Bits — 16 points</h3>
+      <div class="code">
+        <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="fname">interactive mode</span></div>
+<pre><code><span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">bin</span>(<span class="c-num">77</span>)
+<span class="c-out">'0b1001101'</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">int</span>(<span class="c-str">"01001101"</span>, <span class="c-num">2</span>)
+<span class="c-out">77</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-num">128</span> + <span class="c-num">64</span> + <span class="c-num">32</span> + <span class="c-num">16</span> + <span class="c-num">8</span> + <span class="c-num">4</span> + <span class="c-num">2</span> + <span class="c-num">1</span>
+<span class="c-out">255</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-num">2</span> ** <span class="c-num">8</span> - <span class="c-num">1</span>
+<span class="c-out">255</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">ord</span>(<span class="c-str">"A"</span>)
+<span class="c-out">65</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">chr</span>(<span class="c-num">66</span>)
+<span class="c-out">'B'</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">ord</span>(<span class="c-str">"9"</span>)
+<span class="c-out">57</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">int</span>(<span class="c-str">"9"</span>)
+<span class="c-out">9</span>
+<span class="c-prompt">&gt;&gt;&gt;</span> <span class="c-fn">chr</span>(<span class="c-num">960</span>)
+<span class="c-out">'π'</span></code></pre>
+      </div>
+      <ol class="akeys">
+        <li><span class="qtext">Step 2 — decimal and binary.</span><span class="atext">They are two notations for the same value, not two different numbers. 77 and 1001101 are the same quantity written in base 10 and base 2, and Python can convert freely in either direction. <em>The leading 0 in "01001101" is ignored — it simply pads the value out to a full byte.</em></span></li>
+        <li><span class="qtext">Step 3 — why both give 255.</span><span class="atext">The first expression adds the place values of all eight bits when every bit is 1. The second counts the 256 possible patterns in a byte and subtracts one because the counting starts at 0. Both describe the same limit: 255 is the largest value one byte can hold.</span></li>
+        <li><span class="qtext">Step 4 — what ord and chr show.</span><span class="atext">Characters are not stored as characters; each one is stored as a numeric code. <span class="mono">ord</span> reveals the code for a character (A is 65) and <span class="mono">chr</span> turns a code back into the character it represents (66 is B) — exactly the process in Figure 1.3.</span></li>
+        <li><span class="qtext">Step 5 — the character 9 versus the number 9.</span><span class="atext">The character <span class="mono">"9"</span> is a symbol stored under code 57, like any other text character; the number 9 is a numeric value the computer can do arithmetic with. Same appearance on screen, entirely different things in memory — which is why input read from a keyboard must be converted before you can calculate with it. <em>This previews the <span class="mono">int()</span> conversion in Week 2.</em></span></li>
+        <li><span class="qtext">Step 6 — why π is possible.</span><span class="atext"><strong>Unicode.</strong> The original ASCII scheme defines codes for only 128 characters, so code 960 falls far outside its range. Unicode keeps the ASCII codes intact but extends the numbering far enough to cover Greek and virtually every other writing system.</span></li>
+      </ol>
+      <table class="ctable">
+        <thead><tr><th>Points</th><th>Earned for</th></tr></thead>
+        <tbody>
+          <tr><td>6</td><td>Complete transcript showing all six steps with correct output.</td></tr>
+          <tr><td>4</td><td>Steps 2 and 3: decimal and binary are the same value; 255 is the byte's ceiling.</td></tr>
+          <tr><td>3</td><td>Step 4: characters are stored as numeric codes.</td></tr>
+          <tr><td>3</td><td>Steps 5 and 6: character "9" ≠ number 9; Unicode extends beyond ASCII's 128 codes.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="akey">
+      <h3>Point Summary</h3>
+      <table class="ctable">
+        <thead><tr><th>Section</th><th>Items</th><th>Points</th></tr></thead>
+        <tbody>
+          <tr><td>Multiple Choice</td><td>20 × 1 pt</td><td>20</td></tr>
+          <tr><td>True or False</td><td>10 × 1 pt</td><td>10</td></tr>
+          <tr><td>Short Answer</td><td>10 × 2 pts</td><td>20</td></tr>
+          <tr><td>Exercises</td><td>6 × 3 pts</td><td>18</td></tr>
+          <tr><td>Programming Exercises</td><td>2 × 16 pts</td><td>32</td></tr>
+          <tr><td>Total</td><td>—</td><td>100</td></tr>
+        </tbody>
+      </table>
+      <div class="keypt"><b>Canvas note.</b> Multiple Choice and True/False convert directly into an auto-graded Canvas quiz. Short Answer and Exercises work well as essay questions; the two Programming Exercises are best set up as a text-entry assignment so students can paste their console transcripts.</div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>CIS181 · Python Programming · Week 01 — Review Questions &amp; Answer Key</span>
+    <span>Original questions &amp; exercises · for classroom use</span>
+  </div>
+</footer>
+
+<script>
+  // scroll progress bar
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
+    bar.style.width = Math.min(100, Math.max(0, scrolled * 100)) + '%';
+  };
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // scrollspy active section
+  const links = Array.from(document.querySelectorAll('nav.toc a'));
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('main section').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

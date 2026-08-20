@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 13 — Object Serialization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --py-blue:#4B8BBE;--py-blue-dark:#306998;--py-blue-deep:#1f4a6e;
+    --py-yellow:#FFD43B;--py-yellow-deep:#f0b400;
+    --slate-900:#0f172a;--slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;
+    --slate-500:#64748b;--slate-400:#94a3b8;--slate-300:#cbd5e1;--slate-200:#e2e8f0;
+    --slate-100:#f1f5f9;--slate-50:#f8fafc;
+    --good:#15803d;--good-bg:#dcfce7;--bad:#b91c1c;--bad-bg:#fee2e2;
+    --display:'Space Grotesk',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'Fira Code',ui-monospace,monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;font-size:17px;}
+  body{margin:0;font-family:var(--body);color:#2b303b;background:var(--slate-50);line-height:1.7;-webkit-font-smoothing:antialiased;}
+  a{color:var(--py-blue-dark);}
+  code{font-family:var(--mono);font-size:.92em;}
+  .hero{background:linear-gradient(150deg,var(--py-blue-deep) 0%,var(--py-blue-dark) 55%,var(--py-blue) 100%);color:#fff;padding:64px 24px 0;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;background:radial-gradient(circle,rgba(255,212,59,.22),transparent 70%);}
+  .hero-inner{max-width:var(--maxw);margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{font-family:var(--mono);letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:var(--py-yellow);font-weight:600;margin-bottom:14px;}
+  .hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:0 0 18px;letter-spacing:-.02em;}
+  .hero h1 .accent{background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p.lede{font-size:1.12rem;max-width:60ch;color:#e0ecf5;margin:0 0 26px;}
+  .hero-bar{display:flex;flex-wrap:wrap;gap:8px;padding:18px 0 22px;}
+  .hero-bar a{font-size:.82rem;font-weight:600;color:#fff;text-decoration:none;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);padding:7px 13px;border-radius:999px;transition:.18s;}
+  .hero-bar a:hover{background:var(--py-yellow);color:var(--slate-900);border-color:var(--py-yellow);}
+  .hero-bar a.out{background:rgba(255,212,59,.17);border-color:rgba(255,212,59,.55);}
+  .toc-out{display:block;margin:14px 0 0;padding:9px 13px;text-decoration:none;font-size:.86rem;
+    font-weight:600;color:var(--py-blue-deep);background:#eaf2f9;border:1px solid #cfe0ee;
+    border-radius:9px;transition:.16s;}
+  .toc-out:hover{background:var(--py-blue-deep);color:#fff;border-color:var(--py-blue-deep);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:grid;grid-template-columns:232px 1fr;gap:42px;align-items:start;}
+  .toc{position:sticky;top:18px;padding:28px 0;align-self:start;}
+  .toc h2{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-500);margin:0 0 12px;}
+  .toc ol{list-style:none;margin:0;padding:0;counter-reset:t;}
+  .toc li{counter-increment:t;}
+  .toc a{display:block;text-decoration:none;color:var(--slate-600);font-size:.9rem;font-weight:500;padding:6px 10px 6px 34px;border-left:2px solid var(--slate-200);position:relative;transition:.16s;}
+  .toc a::before{content:counter(t,decimal-leading-zero);position:absolute;left:8px;top:6px;font-family:var(--mono);font-size:.68rem;color:var(--slate-400);}
+  .toc a:hover{color:var(--py-blue-dark);border-left-color:var(--py-blue);}
+  .toc a.active{color:var(--py-blue-deep);border-left-color:var(--py-yellow-deep);background:#fff;font-weight:600;}
+  main{padding:34px 0 60px;min-width:0;}
+  section{margin-bottom:54px;scroll-margin-top:18px;}
+  .sec-tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--py-blue);font-weight:600;margin-bottom:6px;}
+  h2.title{font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.12;margin:0 0 6px;color:var(--slate-900);letter-spacing:-.015em;}
+  h2.title .bar{display:block;width:54px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--py-yellow),var(--py-yellow-deep));margin-top:12px;}
+  h3{font-family:var(--display);font-weight:600;font-size:1.18rem;color:var(--slate-900);margin:30px 0 10px;}
+  p{margin:0 0 14px;}
+  .lead{font-size:1.06rem;color:var(--slate-700);}
+  .code{background:var(--slate-900);border-radius:12px;margin:16px 0;overflow:hidden;border:1px solid #0b1220;box-shadow:0 10px 30px -16px rgba(15,23,42,.5);}
+  .code-top{display:flex;align-items:center;gap:7px;padding:11px 15px;background:#0b1220;border-bottom:1px solid #1e293b;}
+  .code-top .dot{width:11px;height:11px;border-radius:50%;background:#334155;}
+  .code-top .dot.r{background:#f87171;}.code-top .dot.y{background:#fbbf24;}.code-top .dot.g{background:#34d399;}
+  .code-top .fn{margin-left:8px;font-family:var(--mono);font-size:.74rem;color:var(--slate-400);}
+  .code pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.7;color:#e2e8f0;}
+  .kw{color:#ff9d6f;}.bif{color:#7cc3ff;}.str{color:#ffd87a;}.num{color:#a5f3a0;}.com{color:#64748b;font-style:italic;}.op{color:#f0abfc;}.out{color:#94a3b8;}
+  .cards{display:grid;gap:12px;margin:18px 0;}
+  details.card{background:#fff;border:1px solid var(--slate-200);border-radius:12px;box-shadow:0 1px 2px rgba(15,23,42,.04);overflow:hidden;}
+  details.card>summary{cursor:pointer;list-style:none;padding:15px 18px;font-weight:600;color:var(--slate-900);display:flex;align-items:center;gap:12px;font-family:var(--display);}
+  details.card>summary::-webkit-details-marker{display:none;}
+  details.card>summary .ix{font-family:var(--mono);font-size:.72rem;color:var(--py-blue-dark);background:#e8f1f8;border-radius:6px;padding:3px 7px;font-weight:600;flex:none;}
+  details.card>summary .chev{margin-left:auto;color:var(--slate-400);transition:.2s;flex:none;}
+  details.card[open]>summary .chev{transform:rotate(90deg);color:var(--py-blue);}
+  details.card .body{padding:0 18px 17px;color:var(--slate-700);}
+  details.card .body>*:first-child{margin-top:0;}
+  .call{border-radius:11px;padding:14px 16px;margin:16px 0;border:1px solid;font-size:.95rem;}
+  .call .lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:5px;}
+  .call.good{background:var(--good-bg);border-color:#86efac;color:#14532d;}
+  .call.good .lbl{background:var(--good);color:#fff;}
+  .call.bad{background:var(--bad-bg);border-color:#fca5a5;color:#7f1d1d;}
+  .call.bad .lbl{background:var(--bad);color:#fff;}
+  .call.note{background:#fff8e1;border-color:#fde68a;color:#713f12;}
+  .call.note .lbl{background:var(--py-yellow-deep);color:var(--slate-900);}
+  .call p:last-child{margin-bottom:0;}
+  .call code{background:rgba(15,23,42,.07);padding:1px 5px;border-radius:4px;}
+  .tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--slate-200);}
+  .tbl th{background:var(--py-blue-dark);color:#fff;text-align:left;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:.88rem;}
+  .tbl td{padding:9px 14px;border-top:1px solid var(--slate-200);vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:var(--slate-50);}
+  .tbl td code{color:var(--py-blue-deep);font-weight:600;}
+  figure{margin:22px 0;background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px 16px 8px;text-align:center;}
+  figure svg{max-width:100%;height:auto;}
+  figcaption{font-size:.84rem;color:var(--slate-500);margin-top:8px;padding-bottom:8px;}
+  figcaption b{color:var(--slate-700);font-family:var(--display);}
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.reveal{opacity:1;transform:none;transition:none;}}
+  @media (max-width:880px){.wrap{grid-template-columns:1fr;gap:0;}.toc{display:none;}main{padding-top:24px;}}
+  :focus-visible{outline:3px solid var(--py-yellow-deep);outline-offset:2px;border-radius:4px;}
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M28 34 C28 22, 40 16, 50 20 C62 24, 60 38, 50 40 C40 42, 38 54, 48 58' fill='none' stroke='%23FFD43B' stroke-width='9' stroke-linecap='round'/><path d='M72 66 C72 78, 60 84, 50 80 C38 76, 40 62, 50 60 C60 58, 62 46, 52 42' fill='none' stroke='%234B8BBE' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== COURSE HOME LINK ===== -->
+<style>
+  .home-link{
+    position:fixed; top:16px; left:16px; z-index:9999;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 16px 9px 13px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(31,74,110,.18);
+    border-radius:999px;
+    font-family:"Space Grotesk","Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13.5px; font-weight:600; letter-spacing:.2px;
+    color:#1f4a6e; text-decoration:none; white-space:nowrap;
+    box-shadow:0 1px 2px rgba(27,40,55,.08), 0 6px 18px rgba(27,40,55,.16);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease;
+  }
+  .home-link:hover{
+    background:#fff; color:#306998; transform:translateY(-1px);
+    box-shadow:0 2px 4px rgba(27,40,55,.10), 0 10px 26px rgba(27,40,55,.20);
+  }
+  .home-link:focus-visible{ outline:3px solid #FFD43B; outline-offset:2px; }
+  .home-link svg{ width:15px; height:15px; flex:none; }
+  @media (max-width:640px){
+    .home-link{ top:10px; left:10px; padding:8px 13px 8px 11px; font-size:12.5px; }
+    .home-link .label-long{ display:none; }
+  }
+  @media print{ .home-link{ display:none; } }
+</style>
+
+<a class="home-link" href="python-course-home.html" aria-label="Back to course home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/>
+    <path d="M5.5 9.5V20h13V9.5"/>
+    <path d="M9.75 20v-5.5h4.5V20"/>
+  </svg>
+  <span class="label-long">Course&nbsp;</span>Home
+</a>
+<!-- ===== END COURSE HOME LINK ===== -->
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Week 13</div>
+    <h1>Object <span class="accent">Serialization</span></h1>
+    <p class="lede">You can build objects that hold data and protect it with their own methods. You can write text to a file and read it back. This module joins the two: how to save an <b>entire object</b> — attributes and all — to a file, and rebuild it later as a working object with its methods intact. Converting an object to bytes is <b>serializing</b>; rebuilding it is <b>deserializing</b>. Python calls the pair <b>pickling</b> and <b>unpickling</b>, and together they turn a program that forgets everything when it closes into one that remembers.</p>
+    <nav class="hero-bar" aria-label="Module topics">
+      <a href="#why">Why Serialize</a>
+      <a href="#basics">dump and load</a>
+      <a href="#dicts">Serializing a Dictionary</a>
+      <a href="#objects">Serializing Your Own Objects</a>
+      <a href="#many">Many Objects, One File</a>
+      <a href="#collections">Pickling a Collection</a>
+      <a href="#errors">What Goes Wrong</a>
+      <a href="#trust">Trust and Portability</a>
+      <a href="#console">Practice Console</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="toc">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#why">Why serialize?</a></li>
+      <li><a href="#basics">dump and load</a></li>
+      <li><a href="#dicts">Serializing a dictionary</a></li>
+      <li><a href="#objects">Serializing your own objects</a></li>
+      <li><a href="#many">Many objects, one file</a></li>
+      <li><a href="#collections">Pickling a whole collection</a></li>
+      <li><a href="#errors">What goes wrong</a></li>
+      <li><a href="#trust">Trust and portability</a></li>
+      <li><a href="#console">Practice console</a></li>
+      <li><a href="#check">Check yourself</a></li>
+      <li><a href="#glossary">Key terms</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <!-- 1. WHY -->
+    <section id="why" class="reveal">
+      <div class="sec-tag">The problem</div>
+      <h2 class="title">Why serialize?<span class="bar"></span></h2>
+      <p class="lead">Everything a program builds lives in RAM, and RAM is wiped the moment the program ends. In Week 07 you solved that for <em>text</em>: write the values to a file, read them back, convert them. That works — but look at what it costs when the data is an object.</p>
+
+      <p>Suppose an <code>Aircraft</code> object holds a tail number, a model, and an hours-flown total. Saving it as text means taking the object apart by hand, and loading it means putting it back together by hand:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">the hard way.py</span></div>
+<pre><span class="com"># saving — disassemble the object, field by field</span>
+out <span class="op">=</span> <span class="bif">open</span>(<span class="str">"fleet.txt"</span>, <span class="str">"w"</span>)
+out<span class="op">.</span><span class="bif">write</span>(plane<span class="op">.</span><span class="bif">get_tail</span>() <span class="op">+</span> <span class="str">"\n"</span>)
+out<span class="op">.</span><span class="bif">write</span>(plane<span class="op">.</span><span class="bif">get_model</span>() <span class="op">+</span> <span class="str">"\n"</span>)
+out<span class="op">.</span><span class="bif">write</span>(<span class="bif">str</span>(plane<span class="op">.</span><span class="bif">get_hours</span>()) <span class="op">+</span> <span class="str">"\n"</span>)   <span class="com"># don't forget str()</span>
+out<span class="op">.</span><span class="bif">close</span>()
+
+<span class="com"># loading — reassemble it, in exactly the right order</span>
+inp <span class="op">=</span> <span class="bif">open</span>(<span class="str">"fleet.txt"</span>, <span class="str">"r"</span>)
+tail <span class="op">=</span> inp<span class="op">.</span><span class="bif">readline</span>()<span class="op">.</span><span class="bif">rstrip</span>(<span class="str">"\n"</span>)          <span class="com"># don't forget rstrip()</span>
+model <span class="op">=</span> inp<span class="op">.</span><span class="bif">readline</span>()<span class="op">.</span><span class="bif">rstrip</span>(<span class="str">"\n"</span>)
+hours <span class="op">=</span> <span class="bif">float</span>(inp<span class="op">.</span><span class="bif">readline</span>())               <span class="com"># don't forget float()</span>
+inp<span class="op">.</span><span class="bif">close</span>()
+plane <span class="op">=</span> Aircraft(tail, model, hours)         <span class="com"># rebuild by hand</span></pre>
+      </div>
+
+      <p>Three attributes, and already there are six places to make a mistake. Add a fourth attribute and you must edit both halves. Change the order in one half and the data loads into the wrong fields — silently.</p>
+
+      <div class="call note">
+        <span class="lbl">Serializing does this for you</span>
+        <p><b>Serializing</b> an object means converting it into a stream of bytes that can be written to a file. <b>Deserializing</b> is the reverse — reading those bytes back and rebuilding an equivalent object. Python's words for the two directions are <b>pickling</b> and <b>unpickling</b>. The whole exchange above collapses to two lines in each direction — and it never gets longer as the class grows.</p>
+      </div>
+
+      <p>You met pickling briefly in Week 10, applied to a dictionary. This module takes it further: pickling <b>objects of the classes you write</b>, several of them, and whole collections at once.</p>
+    </section>
+
+    <!-- 2. BASICS -->
+    <section id="basics" class="reveal">
+      <div class="sec-tag">The two calls</div>
+      <h2 class="title">dump and load<span class="bar"></span></h2>
+      <p class="lead">The <code>pickle</code> module has exactly two functions you need. Both take a file object — and both require that file to be opened in <b>binary</b> mode.</p>
+
+      <table class="tbl">
+        <thead><tr><th>Call</th><th>What it does</th><th>File mode</th></tr></thead>
+        <tbody>
+          <tr><td><code>pickle.dump(object, file)</code></td><td>Serializes the object and writes the bytes to the file.</td><td><code>"wb"</code></td></tr>
+          <tr><td><code>pickle.load(file)</code></td><td>Reads the next object's bytes and rebuilds it.</td><td><code>"rb"</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">round_trip.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+<span class="com"># WRITE — note "wb", not "w"</span>
+out_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"data.dat"</span>, <span class="str">"wb"</span>)
+pickle<span class="op">.</span><span class="bif">dump</span>(some_object, out_file)
+out_file<span class="op">.</span><span class="bif">close</span>()
+
+<span class="com"># READ — note "rb", not "r"</span>
+in_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"data.dat"</span>, <span class="str">"rb"</span>)
+restored <span class="op">=</span> pickle<span class="op">.</span><span class="bif">load</span>(in_file)
+in_file<span class="op">.</span><span class="bif">close</span>()</pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Why the b</span>
+        <p>Every file mode you used in Week 07 — <code>'r'</code>, <code>'w'</code>, <code>'a'</code> — opens the file in <b>text</b> mode, where Python encodes and decodes characters for you. Pickle does not produce characters; it produces raw bytes. Adding <code>b</code> tells Python to pass those bytes through untouched. A pickle file opened in a text editor looks like garbage, and that is expected.</p>
+      </div>
+
+      <p>The bytes themselves are not meant to be read by people. Here is what a small pickled object actually looks like on disk:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">what's in the file</span></div>
+<pre><span class="op">&gt;&gt;&gt;</span> <span class="bif">open</span>(<span class="str">"data.dat"</span>, <span class="str">"rb"</span>)<span class="op">.</span><span class="bif">read</span>()[:<span class="num">12</span>]
+<span class="com">b'\x80\x04\x95x\x00\x00\x00\x00\x00\x00\x00\x8c'</span></pre>
+      </div>
+    </section>
+
+
+    <!-- 2b. DICTIONARIES -->
+    <section id="dicts" class="reveal">
+      <div class="sec-tag">Warming up</div>
+      <h2 class="title">Serializing a dictionary<span class="bar"></span></h2>
+      <p class="lead">Start with a container you already know. In Week 10 you pickled a dictionary; it is worth doing once more here, because everything that follows &mdash; including serializing your own objects &mdash; works exactly the same way.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">save_dict.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+logbook <span class="op">=</span> {<span class="str">"call_sign"</span><span class="op">:</span> <span class="str">"BR-204"</span>,
+           <span class="str">"hours"</span><span class="op">:</span> <span class="num">312.5</span>,
+           <span class="str">"ratings"</span><span class="op">:</span> [<span class="str">"IFR"</span>, <span class="str">"night"</span>]}
+
+<span class="com"># SERIALIZE — object in, bytes out</span>
+out_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"logbook.dat"</span>, <span class="str">"wb"</span>)
+pickle<span class="op">.</span><span class="bif">dump</span>(logbook, out_file)
+out_file<span class="op">.</span><span class="bif">close</span>()</pre>
+      </div>
+
+      <p>Deserializing gives back a real dictionary &mdash; not text that needs parsing, and not a flattened version. Everything nested inside it returns with its own type intact:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">load_dict.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+<span class="com"># DESERIALIZE — bytes in, object out</span>
+in_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"logbook.dat"</span>, <span class="str">"rb"</span>)
+logbook <span class="op">=</span> pickle<span class="op">.</span><span class="bif">load</span>(in_file)
+in_file<span class="op">.</span><span class="bif">close</span>()
+
+<span class="bif">print</span>(logbook[<span class="str">"call_sign"</span>])        <span class="com"># BR-204</span>
+<span class="bif">print</span>(logbook[<span class="str">"hours"</span>] <span class="op">+</span> <span class="num">10</span>)      <span class="com"># 322.5  ← a float, not a string</span>
+<span class="bif">print</span>(logbook[<span class="str">"ratings"</span>][<span class="num">0</span>])      <span class="com"># IFR    ← still a list inside</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Compare this to Week 07</span>
+        <p>Written as text, <code>312.5</code> would come back as the string <code>'312.5\n'</code> and need <code>rstrip</code> and <code>float</code> before you could add to it. The nested list would be worse &mdash; you would have to invent a way to store several values on one line and split them apart again. Pickle restores the <em>types</em>, not just the characters.</p>
+      </div>
+
+      <p>Nesting can go as deep as you like. A dictionary holding a set, a list, and another dictionary comes back whole:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">nested.py</span></div>
+<pre>flight <span class="op">=</span> {<span class="str">"crew"</span><span class="op">:</span> {<span class="str">"Ana"</span>, <span class="str">"Dev"</span>},                  <span class="com"># a set</span>
+          <span class="str">"legs"</span><span class="op">:</span> [{<span class="str">"from"</span><span class="op">:</span> <span class="str">"SNA"</span>, <span class="str">"to"</span><span class="op">:</span> <span class="str">"LAS"</span>}],  <span class="com"># a list of dicts</span>
+          <span class="str">"count"</span><span class="op">:</span> <span class="num">2</span>}
+
+<span class="com"># after a dump/load round trip:</span>
+<span class="bif">print</span>(<span class="bif">type</span>(flight[<span class="str">"crew"</span>]))       <span class="com"># &lt;class 'set'&gt;  ← still a set</span>
+<span class="bif">print</span>(flight[<span class="str">"legs"</span>][<span class="num">0</span>][<span class="str">"to"</span>])   <span class="com"># LAS           ← inner dict intact</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">One habit to notice</span>
+        <p>Deserializing builds a <em>new</em> object. If you compare the restored dictionary to the original with <code>==</code> the answer is <code>True</code> &mdash; the values match &mdash; but <code>is</code> returns <code>False</code>, because it is a separate object rebuilt from the file. That distinction matters more once you are restoring objects of your own classes.</p>
+      </div>
+    </section>
+
+    <!-- 3. OBJECTS -->
+    <section id="objects" class="reveal">
+      <div class="sec-tag">The main event</div>
+      <h2 class="title">Serializing your own objects<span class="bar"></span></h2>
+      <p class="lead">That is the warm-up. The real payoff is serializing instances of the classes <em>you</em> write &mdash; and the good news is that <code>dump</code> and <code>load</code> do not change at all. Here is a class of the kind you built in Week 12 — private attributes, accessors, a mutator, and a <code>__str__</code>:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">aircraft.py</span></div>
+<pre><span class="kw">class</span> <span class="bif">Aircraft</span><span class="op">:</span>
+    <span class="kw">def</span> <span class="bif">__init__</span>(self, tail, model, hours)<span class="op">:</span>
+        self<span class="op">.</span>__tail <span class="op">=</span> tail
+        self<span class="op">.</span>__model <span class="op">=</span> model
+        self<span class="op">.</span>__hours <span class="op">=</span> hours
+
+    <span class="kw">def</span> <span class="bif">add_hours</span>(self, amount)<span class="op">:</span>
+        self<span class="op">.</span>__hours <span class="op">=</span> self<span class="op">.</span>__hours <span class="op">+</span> amount
+
+    <span class="kw">def</span> <span class="bif">get_tail</span>(self)<span class="op">:</span>
+        <span class="kw">return</span> self<span class="op">.</span>__tail
+
+    <span class="kw">def</span> <span class="bif">get_hours</span>(self)<span class="op">:</span>
+        <span class="kw">return</span> self<span class="op">.</span>__hours
+
+    <span class="kw">def</span> <span class="bif">__str__</span>(self)<span class="op">:</span>
+        <span class="kw">return</span> f<span class="str">"{self.__tail} ({self.__model}) — {self.__hours} hrs"</span></pre>
+      </div>
+
+      <p>Pickling one is no different from pickling a dictionary — <code>dump</code> does not care what kind of object it receives:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">save_one.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+plane <span class="op">=</span> Aircraft(<span class="str">"N412SP"</span>, <span class="str">"Cessna 172"</span>, <span class="num">1840.5</span>)
+
+out_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"fleet.dat"</span>, <span class="str">"wb"</span>)
+pickle<span class="op">.</span><span class="bif">dump</span>(plane, out_file)
+out_file<span class="op">.</span><span class="bif">close</span>()</pre>
+      </div>
+
+      <p>Now the important part. What comes back from <code>load</code> is not a dictionary of values you must reassemble — it is a working <code>Aircraft</code>:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">load_one.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+in_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"fleet.dat"</span>, <span class="str">"rb"</span>)
+plane <span class="op">=</span> pickle<span class="op">.</span><span class="bif">load</span>(in_file)
+in_file<span class="op">.</span><span class="bif">close</span>()
+
+<span class="bif">print</span>(<span class="bif">type</span>(plane))          <span class="com"># &lt;class '__main__.Aircraft'&gt;</span>
+<span class="bif">print</span>(plane)                <span class="com"># N412SP (Cessna 172) — 1840.5 hrs  ← __str__ works</span>
+plane<span class="op">.</span><span class="bif">add_hours</span>(<span class="num">10.5</span>)       <span class="com"># ← its mutator works too</span>
+<span class="bif">print</span>(plane<span class="op">.</span><span class="bif">get_hours</span>())    <span class="com"># 1851.0</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Private attributes survive</span>
+        <p><code>__tail</code>, <code>__model</code>, and <code>__hours</code> are all private, yet they came back intact. Pickle stores an object's attributes regardless of privacy — the underscores control access from <em>other code</em>, not what the object itself contains. You still read them the same way you always did: through the accessors.</p>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">Equivalent, not identical</span>
+        <p>Unpickling builds a <em>new</em> object with the same state. If you pickle <code>plane</code> and immediately load it back into <code>copy</code>, then <code>copy is plane</code> is <code>False</code> — they are two separate objects that happen to hold equal values. That is exactly what you want from something reconstructed from a file.</p>
+      </div>
+    </section>
+
+    <!-- 4. MANY -->
+    <section id="many" class="reveal">
+      <div class="sec-tag">More than one</div>
+      <h2 class="title">Many objects, one file<span class="bar"></span></h2>
+      <p class="lead">You can call <code>dump</code> repeatedly on the same open file. Each call appends another object's bytes, and <code>load</code> retrieves them <b>in the same order</b>, one call per object.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">save_many.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+fleet <span class="op">=</span> [Aircraft(<span class="str">"N412SP"</span>, <span class="str">"Cessna 172"</span>, <span class="num">1840.5</span>),
+         Aircraft(<span class="str">"N78KL"</span>, <span class="str">"Piper Archer"</span>, <span class="num">932.0</span>),
+         Aircraft(<span class="str">"N221RV"</span>, <span class="str">"Cirrus SR20"</span>, <span class="num">405.25</span>)]
+
+out_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"many.dat"</span>, <span class="str">"wb"</span>)
+<span class="kw">for</span> plane <span class="kw">in</span> fleet<span class="op">:</span>
+    pickle<span class="op">.</span><span class="bif">dump</span>(plane, out_file)   <span class="com"># one dump per object</span>
+out_file<span class="op">.</span><span class="bif">close</span>()</pre>
+      </div>
+
+      <p>Reading them back raises a question you have faced before: how do you know when to stop? A text file signals end-of-file with an empty string. Pickle does something different — <code>load</code> raises an <b>EOFError</b> when there is nothing left. That makes the reading loop a <code>try</code>/<code>except</code>:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">load_many.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+fleet <span class="op">=</span> []
+in_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"many.dat"</span>, <span class="str">"rb"</span>)
+<span class="kw">try</span><span class="op">:</span>
+    <span class="kw">while</span> <span class="kw">True</span><span class="op">:</span>                       <span class="com"># keep going until the file runs out</span>
+        fleet<span class="op">.</span><span class="bif">append</span>(pickle<span class="op">.</span><span class="bif">load</span>(in_file))
+<span class="kw">except</span> EOFError<span class="op">:</span>
+    <span class="kw">pass</span>                              <span class="com"># normal ending, not a bug</span>
+<span class="kw">finally</span><span class="op">:</span>
+    in_file<span class="op">.</span><span class="bif">close</span>()                  <span class="com"># closes on every path</span>
+
+<span class="kw">for</span> plane <span class="kw">in</span> fleet<span class="op">:</span>
+    <span class="bif">print</span>(plane)
+<span class="com"># N412SP (Cessna 172) — 1840.5 hrs</span>
+<span class="com"># N78KL (Piper Archer) — 932.0 hrs</span>
+<span class="com"># N221RV (Cirrus SR20) — 405.25 hrs</span></pre>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">An exception used as a sentinel</span>
+        <p>This is the one place where catching an exception is the <em>normal</em> path rather than error handling. <code>EOFError</code> here means "you have read everything," which is a success, not a failure — so the handler does nothing but <code>pass</code>. Note the <code>finally</code>: it guarantees the file closes whether the loop ended cleanly or something else went wrong.</p>
+      </div>
+    </section>
+
+    <!-- 5. COLLECTIONS -->
+    <section id="collections" class="reveal">
+      <div class="sec-tag">The simpler way</div>
+      <h2 class="title">Pickling a whole collection<span class="bar"></span></h2>
+      <p class="lead">There is a shortcut that avoids the <code>EOFError</code> loop entirely. Pickle can serialize a <b>container</b> — a list, a dictionary, a set — and it serializes everything inside it, including your own objects, however deeply nested.</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">whole_list.py</span></div>
+<pre><span class="kw">import</span> pickle
+
+<span class="com"># SAVE the entire list in ONE dump</span>
+out_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"fleet_list.dat"</span>, <span class="str">"wb"</span>)
+pickle<span class="op">.</span><span class="bif">dump</span>(fleet, out_file)      <span class="com"># fleet is a list of Aircraft objects</span>
+out_file<span class="op">.</span><span class="bif">close</span>()
+
+<span class="com"># LOAD it back in ONE load — no loop, no EOFError</span>
+in_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"fleet_list.dat"</span>, <span class="str">"rb"</span>)
+fleet <span class="op">=</span> pickle<span class="op">.</span><span class="bif">load</span>(in_file)
+in_file<span class="op">.</span><span class="bif">close</span>()
+
+<span class="bif">print</span>(<span class="bif">len</span>(fleet))            <span class="com"># 3</span>
+<span class="bif">print</span>(fleet[<span class="num">0</span>])             <span class="com"># N412SP (Cessna 172) — 1840.5 hrs</span>
+<span class="bif">print</span>(<span class="bif">type</span>(fleet[<span class="num">0</span>]))       <span class="com"># &lt;class '__main__.Aircraft'&gt;  ← still an object</span></pre>
+      </div>
+
+      <p>A dictionary of objects works the same way, which is often the most useful shape — a lookup that survives between runs:</p>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">dict_of_objects.py</span></div>
+<pre>by_tail <span class="op">=</span> {<span class="str">"N412SP"</span><span class="op">:</span> plane_a, <span class="str">"N78KL"</span><span class="op">:</span> plane_b}
+
+out_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"hangar.dat"</span>, <span class="str">"wb"</span>)
+pickle<span class="op">.</span><span class="bif">dump</span>(by_tail, out_file)
+out_file<span class="op">.</span><span class="bif">close</span>()
+<span class="com"># later: by_tail = pickle.load(in_file) → keys AND Aircraft values, intact</span></pre>
+      </div>
+
+      <table class="tbl">
+        <thead><tr><th>Approach</th><th>Use it when&hellip;</th></tr></thead>
+        <tbody>
+          <tr><td>One <code>dump</code> per object</td><td>Objects are produced over time and appended as you go, or the file may be huge and you want them one at a time.</td></tr>
+          <tr><td>One <code>dump</code> of the whole collection</td><td>You have all the objects at once. Simpler code, no <code>EOFError</code> loop &mdash; the usual choice.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 6. ERRORS -->
+    <section id="errors" class="reveal">
+      <div class="sec-tag">Debugging</div>
+      <h2 class="title">What goes wrong<span class="bar"></span></h2>
+      <p class="lead">Four mistakes account for nearly every pickling problem. Each raises a different exception, so the message tells you which one you made.</p>
+
+      <div class="cards">
+        <details class="card" open>
+          <summary><span class="ix">1</span>Forgetting the <code>b</code> in the file mode<span class="chev">&#9656;</span></summary>
+          <div class="body">
+            <p>Opening with <code>"w"</code> instead of <code>"wb"</code> raises <code>TypeError: write() argument must be str, not bytes</code> — pickle handed the file bytes, and a text-mode file only accepts strings.</p>
+            <p>Reading with <code>"r"</code> instead of <code>"rb"</code> gives a <code>UnicodeDecodeError</code>, because Python tries to interpret the raw bytes as characters and the very first byte is not valid text.</p>
+          </div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">2</span>The file does not exist<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>FileNotFoundError</code>, exactly as in Week 07 — and handled the same way. A program that loads saved data at startup should expect this on its very first run, when no file has been written yet, and start with empty data instead of crashing.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">3</span>Loading from an empty or exhausted file<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>EOFError: Ran out of input</code>. Expected when a reading loop finishes — but if it happens on the <em>first</em> <code>load</code>, the file is empty, which usually means an earlier <code>dump</code> never ran or the file was never closed.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">4</span>The class is not defined when you load<span class="chev">&#9656;</span></summary>
+          <div class="body">
+            <p>This is the one that surprises people. A pickle file does <b>not</b> contain the class — it stores the object's data plus the class's <em>name</em>. Loading it in a program that has never defined <code>Aircraft</code> raises:</p>
+            <p><code>AttributeError: Can't get attribute 'Aircraft' on &lt;module '__main__'&gt;</code></p>
+            <p>The fix: the class definition must be available wherever you unpickle — normally by keeping the class in its own module and importing it in both programs.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="call note">
+        <span class="lbl">A safe startup pattern</span>
+        <p>Combine two of these into the pattern most programs use — try to load saved data, and fall back to empty if there is none yet:</p>
+      </div>
+
+      <div class="code">
+        <div class="code-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">safe_startup.py</span></div>
+<pre><span class="kw">try</span><span class="op">:</span>
+    in_file <span class="op">=</span> <span class="bif">open</span>(<span class="str">"fleet_list.dat"</span>, <span class="str">"rb"</span>)
+    fleet <span class="op">=</span> pickle<span class="op">.</span><span class="bif">load</span>(in_file)
+    in_file<span class="op">.</span><span class="bif">close</span>()
+<span class="kw">except</span> (FileNotFoundError, EOFError)<span class="op">:</span>
+    fleet <span class="op">=</span> []                <span class="com"># first run — nothing saved yet</span></pre>
+      </div>
+    </section>
+
+    <!-- 7. TRUST -->
+    <section id="trust" class="reveal">
+      <div class="sec-tag">Judgment</div>
+      <h2 class="title">Trust and portability<span class="bar"></span></h2>
+      <p class="lead">Pickle is convenient, and that convenience has two limits worth knowing before you reach for it in real work.</p>
+
+      <div class="call note">
+        <span class="lbl">Never unpickle data you do not trust</span>
+        <p>Unpickling can <b>execute code</b> contained in the file. A malicious pickle file can run anything the program's user can run. Treat a pickle file the way you would treat a program someone emailed you: load it only if you created it or it came from a source you fully trust. Never unpickle something uploaded by a user or downloaded from the open internet.</p>
+      </div>
+
+      <p>The second limit is portability. A pickle file is <b>Python-specific</b> — a Java or JavaScript program cannot read it, and it depends on your class definitions staying compatible. When data has to cross language boundaries or be read by people, a text format such as <b>JSON</b> or CSV is the better choice, at the cost of writing the conversion yourself.</p>
+
+      <table class="tbl">
+        <thead><tr><th></th><th>Pickle</th><th>Text / JSON</th></tr></thead>
+        <tbody>
+          <tr><td>Handles your own objects</td><td>Yes, automatically</td><td>Not directly &mdash; you convert by hand</td></tr>
+          <tr><td>Human-readable</td><td>No, binary</td><td>Yes</td></tr>
+          <tr><td>Readable by other languages</td><td>No</td><td>Yes</td></tr>
+          <tr><td>Safe with untrusted files</td><td>No</td><td>Yes</td></tr>
+        </tbody>
+      </table>
+
+      <div class="call note">
+        <span class="lbl">The rule of thumb</span>
+        <p>Pickle is excellent for a program saving its own state to reload later — a saved game, a cached fleet list, a program's settings. It is the wrong tool for exchanging data with other systems or accepting files from strangers.</p>
+      </div>
+    </section>
+
+    <!-- 8. CONSOLE -->
+    <section id="console" class="reveal">
+      <div class="sec-tag">Hands-on</div>
+      <h2 class="title">Practice console<span class="bar"></span></h2>
+      <p class="lead">Try it yourself. Define the <code>Aircraft</code> class, pickle one, load it back, and confirm its methods still work — then try one of the four mistakes on purpose and read the exception.</p>
+      <p style="margin-top:14px;">
+        <a href="python-interactive-console.html"
+           style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;
+                  background:var(--py-blue-deep);color:#fff;font-family:var(--display);
+                  font-weight:600;font-size:1rem;padding:12px 24px;border-radius:999px;">
+          <span style="font-family:var(--mono);color:var(--py-yellow);">&gt;&gt;&gt;</span>
+          Open the Interactive Python Console
+        </a>
+      </p>
+      <div class="call note">
+        <span class="lbl">About files in the console</span>
+        <p>The console has its own in-browser filesystem. Files you create are real while the page is open and disappear when you reload it, so finish an experiment in one sitting.</p>
+      </div>
+    </section>
+
+    <!-- 9. CHECK -->
+    <section id="check" class="reveal">
+      <div class="sec-tag">Self-test</div>
+      <h2 class="title">Check yourself<span class="bar"></span></h2>
+      <div class="cards">
+        <details class="card">
+          <summary><span class="ix">Q1</span>What does it mean to serialize an object, and what is Python's word for it?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Converting the object into a stream of bytes that can be written to a file and later read back and rebuilt into an equivalent object. Python calls it <b>pickling</b>; the reverse is <b>unpickling</b>.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q2</span>What is the difference between serializing a dictionary and serializing an object of your own class?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>From your side, nothing &mdash; both are one <code>pickle.dump</code> call and one <code>pickle.load</code>. The difference is on the way back: a dictionary returns as a dictionary, while your object returns as a full instance with its methods available. The one extra requirement for your own classes is that the class must be defined in the program doing the loading.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q3</span>Which two file modes does pickle require, and why?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>"wb"</code> to write and <code>"rb"</code> to read. The <b>b</b> means binary: pickle produces raw bytes rather than characters, so the file must not be opened in text mode.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q4</span>After unpickling an <code>Aircraft</code>, can you call its methods?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Yes. What comes back is a full <code>Aircraft</code> object, not a bag of values — its accessors, mutators, and <code>__str__</code> all work. Its private attributes come back intact too.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q5</span>How do you know when you have read the last object from a file of many?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p><code>pickle.load</code> raises <b>EOFError</b>. Wrap the reading loop in a <code>try</code>/<code>except EOFError</code>, where the handler simply ends the loop — here the exception is the normal ending, not an error.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q6</span>How can you avoid the EOFError loop altogether?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Put the objects in a list (or dictionary) and pickle the <em>collection</em> in a single <code>dump</code>. One <code>load</code> brings the whole thing back, objects included.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q7</span>Why might a load fail with <code>AttributeError: Can't get attribute 'Aircraft'</code>?<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>The pickle file stores the object's data and the class's name, not the class itself. The program doing the loading must have the <code>Aircraft</code> class defined or imported, or Python cannot rebuild the object.</p></div>
+        </details>
+        <details class="card">
+          <summary><span class="ix">Q8</span>Name one situation where pickle is the wrong choice.<span class="chev">&#9656;</span></summary>
+          <div class="body"><p>Any file coming from an untrusted source, since unpickling can execute code — or any data that must be read by a non-Python program or by a person, where JSON or CSV is appropriate instead.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 10. GLOSSARY -->
+    <section id="glossary" class="reveal">
+      <div class="sec-tag">Reference</div>
+      <h2 class="title">Key terms<span class="bar"></span></h2>
+      <dl class="gloss">
+        <div><dt>serialize</dt><dd>To convert an object into a stream of bytes that can be saved and later rebuilt.</dd></div>
+        <div><dt>pickling</dt><dd>Python's name for serializing an object, done with <code>pickle.dump</code>.</dd></div>
+        <div><dt>deserialize</dt><dd>To rebuild an object from its serialized bytes; the reverse of serializing.</dd></div>
+        <div><dt>unpickling</dt><dd>Rebuilding an object from its serialized bytes, done with <code>pickle.load</code>.</dd></div>
+        <div><dt>binary mode</dt><dd>A file mode — <code>"wb"</code> or <code>"rb"</code> — that reads and writes raw bytes instead of text.</dd></div>
+        <div><dt>EOFError</dt><dd>The exception <code>pickle.load</code> raises when no objects remain in the file.</dd></div>
+        <div><dt>pickle file</dt><dd>A binary file holding one or more serialized objects; not human-readable.</dd></div>
+      </dl>
+    </section>
+
+  </main>
+</div>
+
+
+<footer style="background:var(--slate-900);color:#94a3b8;padding:30px 24px;text-align:center;font-size:.85rem;">
+  <div style="max-width:var(--maxw);margin:0 auto;">
+    <span style="font-family:var(--mono);color:var(--py-yellow);">Week 13</span> &middot; Object Serialization &middot; original course materials, concepts only
+  </div>
+</footer>
+<style>
+  dl.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;background:#fff;border:1px solid var(--slate-200);border-radius:12px;overflow:hidden;}
+  dl.gloss>div{padding:13px 16px;border-bottom:1px solid var(--slate-100);border-right:1px solid var(--slate-100);}
+  dl.gloss dt{font-family:var(--mono);font-weight:600;color:var(--py-blue-deep);font-size:.86rem;margin-bottom:3px;}
+  dl.gloss dd{margin:0;color:var(--slate-600);font-size:.9rem;line-height:1.5;}
+  dl.gloss code{background:rgba(15,23,42,.06);padding:1px 4px;border-radius:4px;}
+</style><script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var spy = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map[e.target.id]; if(a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin:'-10% 0px -75% 0px', threshold:0 });
+  document.querySelectorAll('main section[id]').forEach(function(s){ spy.observe(s); });
+
+  var rev = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } });
+  }, { threshold:0.08 });
+  document.querySelectorAll('.reveal').forEach(function(s){ rev.observe(s); });
+
+  var PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.4/full/";
+  var startBtn = document.getElementById('replStartBtn');
+  var startBox = document.getElementById('replStart');
+  var statusEl = document.getElementById('replStatus');
+  var screenEl = document.getElementById('replScreen');
+  var outEl    = document.getElementById('replOut');
+  var inputEl  = document.getElementById('replInput');
+  var promptEl = document.getElementById('replPrompt');
+  var resetBtn = document.getElementById('replReset');
+
+  var pyodide=null, pushLine=null, resetConsole=null, loading=false;
+  var history=[], hIdx=0, contMode=false;
+
+  window._webInput = function(p){ var v = window.prompt(p || ""); return v===null ? "" : v; };
+
+  function append(text, cls){
+    if(text===undefined || text===null || text==="") return;
+    var span=document.createElement('span');
+    if(cls) span.className=cls;
+    span.textContent=text;
+    outEl.appendChild(span);
+    outEl.scrollTop=outEl.scrollHeight;
+  }
+  function echoLine(promptStr, code){ append(promptStr+' ', 'ps'); append(code+'\n', 'echo'); }
+
+  var SETUP = [
+    "import sys, io, code, builtins",
+    "from js import _webInput",
+    "class WebConsole(code.InteractiveConsole):",
+    "    def write(self, data):",
+    "        sys.stdout.write(data)",
+    "_ns = {'__name__': '__main__'}",
+    "_console = WebConsole(locals=_ns)",
+    "def _web_input(prompt=''):",
+    "    sys.stdout.write(str(prompt))",
+    "    val = _webInput(str(prompt))",
+    "    sys.stdout.write(str(val) + chr(10))",
+    "    return val",
+    "builtins.input = _web_input",
+    "def push_line(line):",
+    "    buf = io.StringIO()",
+    "    old = sys.stdout",
+    "    sys.stdout = buf",
+    "    try:",
+    "        more = _console.push(line)",
+    "    finally:",
+    "        sys.stdout = old",
+    "    return [bool(more), buf.getvalue()]",
+    "def reset_console():",
+    "    global _console",
+    "    _console = WebConsole(locals={'__name__': '__main__'})"
+  ].join("\n");
+
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s=document.createElement('script'); s.src=src;
+      s.onload=res; s.onerror=function(){ rej(new Error('Could not load '+src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function start(){
+    if(loading || pyodide) return;
+    loading=true; startBtn.disabled=true;
+    statusEl.textContent='Downloading the Python runtime…';
+    try{
+      await loadScript(PYODIDE_URL+'pyodide.js');
+      statusEl.textContent='Starting Python…';
+      pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
+      pyodide.runPython(SETUP);
+      pushLine = pyodide.globals.get('push_line');
+      resetConsole = pyodide.globals.get('reset_console');
+      var ver = pyodide.runPython("sys.version.split()[0]");
+      startBox.style.display='none';
+      screenEl.style.display='block';
+      resetBtn.style.display='inline-block';
+      append('Python '+ver+' (Pyodide) — type a statement and press Enter.\n', 'res');
+      inputEl.focus();
+    }catch(err){
+      statusEl.textContent='Could not start: '+err.message+'  (check your connection and try again)';
+      startBtn.disabled=false; loading=false;
+    }
+  }
+
+  function process(line){
+    var shownPrompt = contMode ? '...' : '>>>';
+    echoLine(shownPrompt, line);
+    var res = pushLine(line);
+    var arr = res.toJs(); res.destroy();
+    var more = arr[0], output = arr[1];
+    if(output){
+      var cls = /(^|\n)\s*(Traceback|[A-Za-z]*Error|[A-Za-z]*Warning)/.test(output) ? 'err' : 'res';
+      append(output, cls);
+    }
+    contMode = more;
+    promptEl.textContent = contMode ? '...' : '>>>';
+  }
+
+  function runChip(code){
+    if(!pyodide){ return; }
+    var lines = code.split('\n');
+    for(var i=0;i<lines.length;i++){ process(lines[i]); }
+    if(contMode){ process(''); }
+    inputEl.focus();
+  }
+
+  inputEl && inputEl.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      var line = inputEl.value;
+      if(line.trim()!=='') { history.push(line); }
+      hIdx = history.length;
+      inputEl.value='';
+      process(line);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      if(hIdx>0){ hIdx--; inputEl.value=history[hIdx]||''; }
+    } else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(hIdx<history.length-1){ hIdx++; inputEl.value=history[hIdx]||''; }
+      else { hIdx=history.length; inputEl.value=''; }
+    }
+  });
+
+  startBtn && startBtn.addEventListener('click', start);
+  resetBtn && resetBtn.addEventListener('click', function(){
+    if(resetConsole){ resetConsole(); }
+    outEl.innerHTML=''; contMode=false; promptEl.textContent='>>>';
+    append('Session reset.\n', 'res'); inputEl.focus();
+  });
+
+  document.querySelectorAll('.chips button[data-code]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var code = b.getAttribute('data-code');
+      if(pyodide){ runChip(code); }
+      else { if(code.indexOf('\n')===-1){ inputEl.value=code; } start(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
